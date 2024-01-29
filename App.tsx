@@ -26,13 +26,12 @@ export default function App() {
     .catch((err) => {
       // any exception including data not found
       // goes to catch()
-      console.error(err.message);
     });
 
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <CacheEvent></CacheEvent>
+        <MatchScoutAuto></MatchScoutAuto>
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>

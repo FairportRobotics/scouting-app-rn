@@ -115,8 +115,10 @@ export default function CacheEvent() {
           placeholder="Event Key..."
           keyboardType="default"
         />
-        <Button title="Cache" onPress={cacheEventData} />
-        <Button title="Retrieve" onPress={retrieveEventData} />
+        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <Button title="Fill Cache" onPress={cacheEventData} />
+          <Button title="Retrieve Cache" onPress={retrieveEventData} />
+        </View>
 
         <Text>Scouting Event: {event?.shortName}</Text>
         <Text>Matches Count: {Object.keys(eventMatches).length}</Text>
