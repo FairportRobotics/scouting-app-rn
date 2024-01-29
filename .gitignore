@@ -165,3 +165,4 @@ bare-apps
 
 # Other
 dist/*
+.DS_Store
