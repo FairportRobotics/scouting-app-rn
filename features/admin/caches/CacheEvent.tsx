@@ -15,15 +15,6 @@ import getMatches from "../../../helpers/getMatchesForEvent";
 import getTeams from "../../../helpers/getTeamsForEvent";
 
 export default function CacheEvent() {
-  let tbaKey =
-    "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs";
-
-  // Support for Speaker Score Non-Amplified
-  const [eventKey, setEventKey] = useState("");
-  const handleChangeKey = (key: string) => {
-    setEventKey((prev) => key);
-  };
-
   // Support for the Retrieve button.
   const retrieveEventData = () => {
     fetchEvent();
@@ -31,6 +22,13 @@ export default function CacheEvent() {
     fetchEventTeams();
   };
 
+  // Support for editing the Event Key
+  const [eventKey, setEventKey] = useState("");
+  const handleChangeKey = (key: string) => {
+    setEventKey((prev) => key);
+  };
+
+  // Support for retrieving Event
   const [event, setEvent] = useState<Event>();
   const fetchEvent = async () => {
     let event: Event = await getEvent(eventKey);
