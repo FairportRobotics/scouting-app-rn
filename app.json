@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "react-scouting",
-    "slug": "react-scouting",
+    "slug": "scouting-app-rn",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,6 +25,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a90a99f4-e77c-475d-9318-74c9c62a3396"
+      }
+    },
+    "owner": "fairport-robotics",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a90a99f4-e77c-475d-9318-74c9c62a3396"
     }
   }
 }
