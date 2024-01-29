@@ -1,8 +1,56 @@
-## Github
+## Getting Started
+
+**Clone the Github Repository**
+
+The repo can be found at [scouting-app-rn](https://github.com/FairportRobotics/scouting-app-rn)
+
+**Install Dependencies**
+
+Once the repo is cloned, open a terminal to the folder containing the source an execute the following to install all the dependencies we will need.
+
+```
+npm install
+```
+
+We only need to do this one time.
+
+**Install the Expo CLI**
+
+Expo is the tool used to transpule the React Code into iOS and Android.
+
+```
+npm install -g expo-cli
+```
+
+We only need to do this one time.
+
+## Running the Project
+
+In order to debug and see the application, we need to install the "Expo Go" app on your iOS device. The iPads will have this installed already, but if you want to test on a personal device, you will need the app.
+
+**Run the Project**
+
+Open a terminal to the folder containing the source and execute the following command:
+
+```
+npm expo start
+```
+
+This will load a launcher that can be used to refresh the app, connect to simulators and provides a QR code which can be used to load the application into Expo Go.
+
+The easiest thing to do is scan the QR code and allow Expo Go to open the application. The application should open.
+
+If there are ever any issues, shake the device to bring up the debug menu and select "Reload". This will refresh the application code on the device.
+
+Any changes made to code should immediately be deployed and available on the device making development very nice.
+
+## Setup
+
+### Github
 
 The repo is named `scouting-app-rn` and the repository name is [scouting-app-rn](https://github.com/FairportRobotics/scouting-app-rn).
 
-## Expo
+### Expo
 
 I created an Expo Dev account using
 
