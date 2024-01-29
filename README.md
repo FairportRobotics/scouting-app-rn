@@ -73,14 +73,13 @@ Once that was completed, I kicked off a build and publish with:
 eas update
 ```
 
-## Resources
+## Resources and Technologies
 
-### Icons
+**Icons**
 
 Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs in React Native are not trivial.
 
-### Storage
+**Expo**
 
-Deciding what to do for storage.
-
-https://react-native-async-storage.github.io/async-storage/docs/usage
+**Axios**
+https://axios-http.com/docs/intro

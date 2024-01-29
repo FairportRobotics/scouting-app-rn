@@ -14,12 +14,41 @@ import getEvent from "../../../helpers/getEvent";
 import getMatches from "../../../helpers/getMatchesForEvent";
 import getTeams from "../../../helpers/getTeamsForEvent";
 
+import storage from "../../../helpers/storage";
+
 export default function CacheEvent() {
-  // Support for the Retrieve button.
-  const retrieveEventData = () => {
+  // Support for the Cache button.
+  const cacheEventData = () => {
     fetchEvent();
     fetchEventMatches();
     fetchEventTeams();
+  };
+
+  // Support for the Retrieve button.
+  const retrieveEventData = async () => {
+    await storage
+      .load({
+        key: "event",
+      })
+      .then((ret) => {
+        setEvent(ret);
+      });
+
+    await storage
+      .load({
+        key: "event-matches",
+      })
+      .then((ret) => {
+        setEventMatches(ret);
+      });
+
+    await storage
+      .load({
+        key: "event-teams",
+      })
+      .then((ret) => {
+        setEventTeams(ret);
+      });
   };
 
   // Support for editing the Event Key
@@ -31,22 +60,37 @@ export default function CacheEvent() {
   // Support for retrieving Event
   const [event, setEvent] = useState<Event>();
   const fetchEvent = async () => {
-    let event: Event = await getEvent(eventKey);
-    setEvent((prev) => event);
+    let response: Event = await getEvent(eventKey);
+    setEvent((prev) => response);
+
+    await storage.save({
+      key: "event",
+      data: response,
+    });
   };
 
   // Support for retrieving Event Matches.
   const [eventMatches, setEventMatches] = useState<Record<string, Match>>({});
   const fetchEventMatches = async () => {
-    let matches: Record<string, Match> = await getMatches(eventKey);
-    setEventMatches((prev) => matches);
+    let response: Record<string, Match> = await getMatches(eventKey);
+    setEventMatches((prev) => response);
+
+    await storage.save({
+      key: "event-matches",
+      data: response,
+    });
   };
 
   // Support for retrieving Event Teams.
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
   const fetchEventTeams = async () => {
-    let teams: Record<string, Team> = await getTeams(eventKey);
-    setEventTeams((prev) => teams);
+    let response: Record<string, Team> = await getTeams(eventKey);
+    setEventTeams((prev) => response);
+
+    await storage.save({
+      key: "event-teams",
+      data: response,
+    });
   };
 
   return (
@@ -71,6 +115,7 @@ export default function CacheEvent() {
           placeholder="Event Key..."
           keyboardType="default"
         />
+        <Button title="Cache" onPress={cacheEventData} />
         <Button title="Retrieve" onPress={retrieveEventData} />
 
         <Text>Scouting Event: {event?.shortName}</Text>
