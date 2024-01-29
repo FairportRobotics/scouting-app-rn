@@ -5,6 +5,9 @@ import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import themes from "../themes/themes";
 
+import MetricCount from "./MetricCount";
+import MetricLabel from "./MetricLabel";
+
 interface MinusPlusProps {
   label: string;
   count: number | 0;
@@ -37,8 +40,8 @@ const MinusPlus: React.FC<MinusPlusProps> = ({ label, count, onChange }) => {
         <FontAwesomeIcon icon={faMinus} size={32} style={{ color: "white" }} />
       </TouchableOpacity>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ fontSize: 14, color: "darkgray" }}>{label}</Text>
-        <Text style={{ fontSize: 24, fontWeight: "800" }}>{count}</Text>
+        <MetricLabel label={label} />
+        <MetricCount count={count} />
       </View>
       <TouchableOpacity
         onPress={handleIncrement}
