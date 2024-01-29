@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Text, View, ScrollView } from "react-native";
+import { View, ScrollView } from "react-native";
 
 import themes from "../../../themes/themes";
 import Check from "../../../components/Check";
 import MinusPlusPair from "../../../components/MinusPlusPair";
+import ContainerGroup from "../../../components/ContainerGroup";
 
 export default function Auto() {
   const [startedWithNote, setStartedWithNote] = useState(false);
@@ -46,8 +47,7 @@ export default function Auto() {
 
   return (
     <ScrollView style={{ margin: 10 }}>
-      <View style={themes.containerGroup}>
-        <Text style={themes.containerGroupTitle}>Start</Text>
+      <ContainerGroup title="Start">
         <View
           style={{
             flexDirection: "row",
@@ -66,10 +66,9 @@ export default function Auto() {
             onToggle={handleToggleLeftStartArea}
           />
         </View>
-      </View>
+      </ContainerGroup>
 
-      <View style={themes.containerGroup}>
-        <Text style={themes.containerGroupTitle}>Speaker</Text>
+      <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
           count={speakerScore}
@@ -85,17 +84,16 @@ export default function Auto() {
           count={speakerMiss}
           onChange={handleSpeakerMiss}
         />
-      </View>
+      </ContainerGroup>
 
-      <View style={themes.containerGroup}>
-        <Text style={themes.containerGroupTitle}>Amp</Text>
+      <ContainerGroup title="Amp">
         <MinusPlusPair
           label="Score"
           count={ampScore}
           onChange={handleAmpScore}
         />
         <MinusPlusPair label="Miss" count={ampMiss} onChange={handleAmpMiss} />
-      </View>
+      </ContainerGroup>
     </ScrollView>
   );
 }
