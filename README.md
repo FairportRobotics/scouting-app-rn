@@ -16,7 +16,7 @@ We only need to do this one time.
 
 **Install the Expo CLI**
 
-Expo is the tool used to transpule the React Code into iOS and Android.
+Expo is the tool used to transpile the React Code into iOS and Android.
 
 ```
 npm install -g expo-cli
