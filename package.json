@@ -24,7 +24,8 @@
     "react-native-storage": "^1.0.1",
     "react-native-svg": "^14.1.0",
     "react-native-gesture-handler": "~2.14.0",
-    "react-native-reanimated": "~3.6.2"
+    "react-native-reanimated": "~3.6.2",
+    "expo-sqlite": "~13.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

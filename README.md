@@ -89,5 +89,7 @@ Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs
 https://axios-http.com/docs/intro
 
 **SQLite Storage**
+https://docs.expo.dev/versions/latest/sdk/sqlite/
+
 https://www.youtube.com/watch?v=1kSLd9oQX7c
 https://stackoverflow.com/questions/46299268/download-and-use-sqlite-database-on-react-native-application

@@ -4,10 +4,10 @@ import type { Team } from "@/helpers/types";
 
 export default async (eventKey: string) => {
   // Initialize the list of Match.
-  let teams: Record<string, Team> = {};
+  let teams: Array<Team> = [];
 
   // Add the Practice Team.
-  teams["practice"] = {
+  teams.push({
     key: "practice",
     teamNumber: "00000",
     name: "Practice Team",
@@ -15,7 +15,7 @@ export default async (eventKey: string) => {
     schoolName: "Practice Team School",
     city: "Practice Team City",
     stateProv: "Practice Team State",
-  } as Team;
+  } as Team);
 
   // Define the API endpoint.
   let url = `https://www.thebluealliance.com/api/v3/event/${eventKey}/teams`;
@@ -33,22 +33,21 @@ export default async (eventKey: string) => {
       let tbaTeams: Array<TbaTeam> = JSON.parse(response.data);
 
       // Convert the array to a dictionary for faster and easier lookups.
-      tbaTeams.forEach(
-        (element: TbaTeam) =>
-          (teams[element.key] = {
-            key: element.key,
-            teamNumber: element.team_number,
-            name: element.name,
-            nickname: element.nickname,
-            schoolName: element.school_name,
-            city: element.city,
-            stateProv: element.state_prov,
-          } as Team)
+      tbaTeams.forEach((element: TbaTeam) =>
+        teams.push({
+          key: element.key,
+          teamNumber: element.team_number,
+          name: element.name,
+          nickname: element.nickname,
+          schoolName: element.school_name,
+          city: element.city,
+          stateProv: element.state_prov,
+        } as Team)
       );
     })
     .catch((error) => {
       console.error("There was a problem with your Axios request:", error);
     });
 
-  return teams as Record<string, Team>;
+  return teams as Array<Team>;
 };
