@@ -7,6 +7,7 @@ import fetchEvent from "@/helpers/fetchEvent";
 import fetchEventMatches from "@/helpers/fetchEventMatches";
 import fetchEventTeams from "@/helpers/fetchEventTeams";
 import * as SQLite from "expo-sqlite";
+import * as Database from "@/helpers/database";
 
 export default function TBACaches() {
   const db = SQLite.openDatabase("scouting-app.db");
@@ -129,47 +130,14 @@ export default function TBACaches() {
   };
 
   const handleLoadEventData = () => {
-    // Load Event data.
-    db.transaction((tx) => {
-      // Load Event.
-      tx.executeSql(
-        "SELECT * FROM event WHERE key = ?",
-        [eventKey],
-        (txObj, resultSet) => {
-          setEvent(resultSet.rows._array[0]);
-        },
-        (txObj, error) => {
-          console.error(error);
-          return false;
-        }
-      );
+    let event = Database.getEvent(eventKey);
+    if (event !== undefined) setEvent(event);
 
-      // Load Matches.
-      tx.executeSql(
-        "SELECT * FROM event_matches WHERE eventKey = ?",
-        [eventKey],
-        (txObj, resultSet) => {
-          setEventMatches(resultSet.rows._array);
-        },
-        (txObj, error) => {
-          console.error(error);
-          return false;
-        }
-      );
+    let matches = Database.getMatchesForEvent(eventKey);
+    if (matches !== undefined) setEventMatches(matches);
 
-      // Load Teams
-      tx.executeSql(
-        "SELECT * FROM event_teams WHERE eventKey = ?",
-        [eventKey],
-        (txObj, resultSet) => {
-          setEventTeams(resultSet.rows._array);
-        },
-        (txObj, error) => {
-          console.error(error);
-          return false;
-        }
-      );
-    });
+    let teams = Database.getTeamsForEvent(eventKey);
+    if (teams !== undefined) setEventTeams(teams);
   };
 
   return (
