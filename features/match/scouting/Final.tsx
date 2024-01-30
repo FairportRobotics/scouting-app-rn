@@ -12,7 +12,7 @@ export default function Final() {
   // [X] Alliance Result (Win/Lose/Tie)
   // [X] Violations (Red/Yellow/Disabled/Disqualified)
   // [X] Penalties (prompt that the number should be read from the oposing Alliance Scoreboard)
-  // [ ] Notes (text)
+  // [X] Notes (text)
 
   // Support for Total Score
   const [totalScore, setTotalScore] = useState(0);
@@ -68,14 +68,16 @@ export default function Final() {
           options={["Yellow", "Red", "Disabled", "Disqualified"]}
           onChange={handlePenalties}
         />
-
+      </ContainerGroup>
+      <ContainerGroup title="Notes">
         <View>
-          <Text style={themes.labelText}>Notes</Text>
           <TextInput
             multiline
+            numberOfLines={5}
             maxLength={1024}
             value={notes}
             onChangeText={(text) => handleNotes(text)}
+            style={{ height: 100 }}
             placeholder="Make note of anything interesting that happened during the Match that we might want to consider later."
           />
         </View>
