@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { View, ScrollView } from "react-native";
-import themes from "../../../themes/themes";
-import Check from "../../../components/Check";
-import MinusPlusPair from "../../../components/MinusPlusPair";
-import ContainerGroup from "../../../components/ContainerGroup";
-import MatchScoutingHeader from "../../../components/MatchScoutingHeader";
+import Check from "@/components/Check";
+import MinusPlusPair from "@/components/MinusPlusPair";
+import ContainerGroup from "@/components/ContainerGroup";
+import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 
 export default function Auto() {
   // Support for Started with Note
@@ -19,16 +18,10 @@ export default function Auto() {
     setLeftStartArea((prev) => !prev);
   };
 
-  // Support for Speaker Score Non-Amplified
+  // Support for Speaker Score
   const [speakerScore, setSpeakerScore] = useState(0);
   const handleSpeakerScore = (delta: number) => {
     setSpeakerScore((prev) => (prev += delta));
-  };
-
-  // SUpport for Speaker Score Amplified
-  const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState(0);
-  const handleSpeakerScoreAmplified = (delta: number) => {
-    setSpeakerScoreAmplified((prev) => (prev += delta));
   };
 
   // Support for Speaker Miss
@@ -43,7 +36,7 @@ export default function Auto() {
     setAmpScore((prev) => (prev += delta));
   };
 
-  // Support for Amp Score
+  // Support for Amp Miss
   const [ampMiss, setAmpMiss] = useState(0);
   const handleAmpMiss = (delta: number) => {
     setAmpMiss((prev) => (prev += delta));
@@ -77,14 +70,9 @@ export default function Auto() {
 
       <ContainerGroup title="Speaker">
         <MinusPlusPair
-          label="Score: Non-Amplified"
+          label="Score"
           count={speakerScore}
           onChange={handleSpeakerScore}
-        />
-        <MinusPlusPair
-          label="Score: Amplified"
-          count={speakerScoreAmplified}
-          onChange={handleSpeakerScoreAmplified}
         />
         <MinusPlusPair
           label="Miss"

@@ -1,19 +1,43 @@
-import { Text, View, ScrollView } from "react-native";
-
-import themes from "../../../themes/themes";
+import { TextInput, Text, ScrollView } from "react-native";
+import { useState } from "react";
+import type { Team } from "@/helpers/types";
+import storage from "@/helpers/storage";
+import MatchScoutingHeader from "@/components/MatchScoutingHeader";
+import ContainerGroup from "@/components/ContainerGroup";
 
 export default function Setup() {
+  // [ ] Scouter Name (text)
+  // [ ] Team being scouted if it is not the Team scheduled (select)
+  // Support for retrieving Event Matches and Teams.
+  const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
+
+  // Retrieve Teams from the cache.
+  const retrieveEventData = async () => {
+    await storage.load({ key: "event-teams" }).then((ret) => {
+      setEventTeams(ret);
+    });
+  };
+  retrieveEventData();
+
+  // Support for Scouter Name
+  const [scouterName, setScouterName] = useState("");
+
   return (
     <ScrollView style={{ margin: 10 }}>
-      <View>
+      <MatchScoutingHeader />
+      <ContainerGroup title="Scouter Name">
+        <TextInput
+          value={scouterName}
+          onChangeText={(text) => setScouterName(text)}
+          placeholder="My name is..."
+        />
+      </ContainerGroup>
+      <ContainerGroup title="Team Confirmation">
         <Text>
-          This is where we will add the code and UI for setting up the Match
-          they will be scouting.
+          Placeholder for showing the scheduled team and a mechanism to allow
+          the user to override the scheduled team.
         </Text>
-        <Text>We will need record:</Text>
-        <Text>Name (free text)</Text>
-        <Text>Team being scouted if it is not the Team scheduled</Text>
-      </View>
+      </ContainerGroup>
     </ScrollView>
   );
 }

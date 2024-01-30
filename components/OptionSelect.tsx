@@ -3,18 +3,20 @@ import { useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import themes from "@/themes/themes";
 import colors from "@/themes/colors";
-import ContainerGroup from "@/components/ContainerGroup";
+import InputGroup from "@/components/InputGroup";
 
 interface OptionSelectProps {
   label: string;
   options: string[] | [];
   onChange: (option: string) => void;
+  style?: {};
 }
 
 const OptionSelect: React.FC<OptionSelectProps> = ({
   label,
   options,
   onChange,
+  style,
 }) => {
   // Support for Left Start Area
   const [selectedOption, setSelectedOption] = useState("");
@@ -25,36 +27,31 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   };
 
   return (
-    <ContainerGroup title={label}>
+    <InputGroup title={label}>
       <View style={styles.optionsContainer}>
         {options.map((option) => (
           <TouchableOpacity
+            key={option}
             style={[
               styles.option,
               {
                 backgroundColor:
-                  selectedOption === option
-                    ? colors.selected
-                    : colors.unselected,
+                  selectedOption === option ? colors.primary : colors.secondary,
               },
             ]}
             onPress={() => handleSelectOption(option)}
           >
-            <Text>{option}</Text>
+            <Text style={themes.labelText}>{option}</Text>
           </TouchableOpacity>
         ))}
       </View>
-    </ContainerGroup>
+    </InputGroup>
   );
 };
 
 export default OptionSelect;
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
   optionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -62,19 +59,10 @@ const styles = StyleSheet.create({
   },
   option: {
     borderRadius: 8,
-    backgroundColor: "orange",
-    color: "white",
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 15,
     height: 50,
-  },
-  optionSelected: {
-    backgroundColor: "orange",
-  },
-  labelContainer: {},
-  text: {
-    fontSize: 24,
   },
 });

@@ -9,9 +9,10 @@ interface CheckProps {
   label: string;
   checked: boolean | false;
   onToggle: () => void;
+  style?: {};
 }
 
-const Check: React.FC<CheckProps> = ({ label, checked, onToggle }) => {
+const Check: React.FC<CheckProps> = ({ label, checked, onToggle, style }) => {
   const handleToggle = () => {
     onToggle();
   };
@@ -19,11 +20,14 @@ const Check: React.FC<CheckProps> = ({ label, checked, onToggle }) => {
   return (
     <TouchableOpacity
       onPress={handleToggle}
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={[
+        {
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        style,
+      ]}
     >
       <FontAwesomeIcon
         icon={checked ? faSquareCheck : faSquare}

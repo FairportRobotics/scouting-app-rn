@@ -1,7 +1,14 @@
 export default {
-  appBackground: "#F3F3F3",
-  containerBackground: "#FFFFFF",
+  appBackground: "#d9d9d9",
+  containerBackground: "#fff",
 
-  unselected: "#E1E1E1",
-  selected: "orange",
+  primary: "#ff9200",
+  secondary: "#ffe9cc",
+
+  text: "#1a1a19",
+  textSubtle: "#42403e",
+  textDisabled: "#908c89",
+
+  allianceBlue: "#0066cc",
+  allianceRed: "#ff471a",
 };
