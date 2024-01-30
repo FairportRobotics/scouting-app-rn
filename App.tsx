@@ -16,12 +16,13 @@ import Endgame from "./features/match/scouting/Endgame";
 import Final from "./features/match/scouting/Final";
 import SelectMatch from "./features/match/scouting/SelectMatch";
 import Setup from "./features/match/scouting/Setup";
+import Teleop from "./features/match/scouting/Teleop";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <Setup />
+        <Teleop />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>
