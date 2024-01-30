@@ -2,12 +2,14 @@ import type { Event, Match, Team } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
 
-export function initializeDatabase() {
+export function initializeDatabase(dropAndRecreate: boolean = false) {
   db.transaction((tx) => {
-    // Drop existing tables.
-    // tx.executeSql("DROP TABLE IF EXISTS event");
-    // tx.executeSql("DROP TABLE IF EXISTS event_matches");
-    // tx.executeSql("DROP TABLE IF EXISTS event_teams");
+    // Provide a means of dropping and recreating all the tables.
+    if (dropAndRecreate) {
+      tx.executeSql("DROP TABLE IF EXISTS event");
+      tx.executeSql("DROP TABLE IF EXISTS event_matches");
+      tx.executeSql("DROP TABLE IF EXISTS event_teams");
+    }
 
     // Create new tables.
     tx.executeSql(
