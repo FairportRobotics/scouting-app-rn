@@ -17,12 +17,13 @@ import Final from "./features/match/scouting/Final";
 import SelectMatch from "./features/match/scouting/SelectMatch";
 import Setup from "./features/match/scouting/Setup";
 import Teleop from "./features/match/scouting/Teleop";
+import PitScoutSelectTeam from "./features/pit/scouting/PitScoutSelectTeam";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <Teleop />
+        <PitScoutSelectTeam />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>

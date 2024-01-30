@@ -45,9 +45,9 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
           { flexDirection: "column" },
         ]}
       >
-        <Text
-          style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
-        ></Text>
+        <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
+          TBD
+        </Text>
         <Text style={{ color: "white" }}>
           {lookupTeam(alliance, allianceTeam)}
         </Text>

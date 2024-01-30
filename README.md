@@ -73,6 +73,10 @@ Once that was completed, I kicked off a build and publish with:
 eas update
 ```
 
+## Ideas
+
+Use sharing to send JSON results via AirDrop or messages or whatever else we want.
+
 ## Resources and Technologies
 
 **Icons**
@@ -86,3 +90,4 @@ https://axios-http.com/docs/intro
 
 **SQLite Storage**
 https://www.youtube.com/watch?v=1kSLd9oQX7c
+https://stackoverflow.com/questions/46299268/download-and-use-sqlite-database-on-react-native-application
