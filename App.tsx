@@ -2,8 +2,6 @@ import "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-// Import all the Screens here (for debugging).
-
 // Scouting Match Screens.
 import MatchScoutSelectMatch from "./features/match/scouting/SelectMatch";
 import MatchScoutSetup from "./features/match/scouting/Setup";
@@ -12,12 +10,16 @@ import MatchScoutTeleop from "./features/match/scouting/Teleop";
 import MatchScoutEndgame from "./features/match/scouting/Endgame";
 import MatchScoutFinal from "./features/match/scouting/Final";
 
+// Pit Scouting screens.
 import PitScoutSelectTeam from "./features/pit/scouting/PitScoutSelectTeam";
 import PitScoutTeam from "@/features/pit/scouting/PitScoutTeam";
 
-import Settings from "@/features/admin/Settings";
+// Results screens.
 import MatchScoutResults from "./features/match/results/MatchResults";
 import PitScoutResults from "./features/pit/results/PitScoutResults";
+
+// Other screens.
+import Settings from "@/features/admin/Settings";
 
 const Drawer = createDrawerNavigator();
 
