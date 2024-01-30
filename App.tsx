@@ -15,12 +15,13 @@ import Settings from "@/features/admin/Settings";
 import Endgame from "./features/match/scouting/Endgame";
 import Final from "./features/match/scouting/Final";
 import SelectMatch from "./features/match/scouting/SelectMatch";
+import Setup from "./features/match/scouting/Setup";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <SelectMatch />
+        <Setup />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>

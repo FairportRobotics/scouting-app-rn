@@ -83,3 +83,6 @@ Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs
 
 **Axios**
 https://axios-http.com/docs/intro
+
+**SQLite Storage**
+https://www.youtube.com/watch?v=1kSLd9oQX7c

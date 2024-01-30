@@ -13,7 +13,6 @@ export default function SelectMatch() {
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 
   // Retrieve Matches and Teams from the cache.
-  // Support for the Retrieve button.
   const retrieveEventData = async () => {
     await storage.load({ key: "event-matches" }).then((ret) => {
       setEventMatches(ret);
