@@ -1,10 +1,9 @@
+import { useState } from "react";
 import { ScrollView } from "react-native";
 import type { Match, Team } from "@/helpers/types";
 import storage from "@/helpers/storage";
-import themes from "../../../themes/themes";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
-import React, { useState } from "react";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 
 export default function SelectMatch() {

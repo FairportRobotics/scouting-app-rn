@@ -1,18 +1,11 @@
-import { Text, View, ScrollView } from "react-native";
+import { ScrollView } from "react-native";
 import { useState } from "react";
 import type { Team } from "@/helpers/types";
 import storage from "@/helpers/storage";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
-import ContainerGroup from "@/components/ContainerGroup";
 import PitTeamSelect from "@/components/PitTeamSelect";
 
 export default function PitScoutSelectTeam() {
-  // [ ] Retrieve Teams from cache
-  // [ ] Enumerate over Teams and emit a row that provides the following:
-  //     [ ] Team Number
-  //     [ ] Team Nickname
-  //     [ ] Action to Edit (lighter color if already scouted)
-
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 
   // Retrieve Teams from the cache.

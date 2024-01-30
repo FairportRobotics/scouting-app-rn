@@ -1,10 +1,9 @@
+import { useState } from "react";
 import { Text, View, ScrollView, TextInput } from "react-native";
-
 import themes from "../../../themes/themes";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 import MinusPlusPair from "@/components/MinusPlusPair";
-import { useState } from "react";
 import OptionSelect from "@/components/OptionSelect";
 
 export default function Final() {

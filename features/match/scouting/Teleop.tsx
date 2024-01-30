@@ -1,22 +1,10 @@
-import { Text, View, ScrollView } from "react-native";
-
-import themes from "../../../themes/themes";
+import { useState } from "react";
+import { ScrollView } from "react-native";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
-import { useState } from "react";
 import MinusPlusPair from "@/components/MinusPlusPair";
 
 export default function Teleop() {
-  // [ ] Speaker
-  //     [ ] Score: Non-Amplified (-/+)
-  //     [ ] Score: Amplified (-/+)
-  //     [ ] Miss (-/+)
-  // [ ] Amp
-  //     [ ] Score (-/+)
-  //     [ ] Miss (-/+)
-  //     [ ] Cooperition (checkbox)
-  // [ ] Passes (-/+)
-
   // Support for Speaker Score Non-Amplified
   const [speakerScore, setSpeakerScore] = useState(0);
   const handleSpeakerScore = (delta: number) => {

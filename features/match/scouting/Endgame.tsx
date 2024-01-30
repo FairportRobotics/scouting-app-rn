@@ -1,10 +1,8 @@
-import { Text, View, ScrollView } from "react-native";
-
-import themes from "../../../themes/themes";
+import { useState } from "react";
+import { ScrollView } from "react-native";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 import MinusPlusPair from "@/components/MinusPlusPair";
-import { useState } from "react";
 import Check from "@/components/Check";
 import OptionSelect from "@/components/OptionSelect";
 

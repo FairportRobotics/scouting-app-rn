@@ -1,4 +1,3 @@
-import ContainerGroup from "@/components/ContainerGroup";
 import { StyleSheet, ScrollView, Text } from "react-native";
 import FRSettings from "./FRSettings";
 import TBASettings from "./TBASettings";

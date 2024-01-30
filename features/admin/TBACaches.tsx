@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Button, Text, View, TextInput, StyleSheet } from "react-native";
+import { Button, Text, View, TextInput } from "react-native";
+import type { Event, Match, Team } from "@/helpers/types";
 
 import ContainerGroup from "@/components/ContainerGroup";
-import themes from "@/themes/themes";
-import type { Event, Match, Team } from "@/helpers/types";
 import getEvent from "@/helpers/getEvent";
 import getMatches from "@/helpers/getMatchesForEvent";
 import getTeams from "@/helpers/getTeamsForEvent";

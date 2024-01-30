@@ -1,5 +1,5 @@
-import ContainerGroup from "@/components/ContainerGroup";
 import { Text } from "react-native";
+import ContainerGroup from "@/components/ContainerGroup";
 
 export default function TBASettings() {
   return (

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { View, ScrollView } from "react-native";
-import themes from "@/themes/themes";
 import Check from "@/components/Check";
 import MinusPlusPair from "@/components/MinusPlusPair";
 import ContainerGroup from "@/components/ContainerGroup";

@@ -1,8 +1,7 @@
-import { TextInput, Text, View, ScrollView } from "react-native";
-import type { Match, Team } from "@/helpers/types";
-import storage from "@/helpers/storage";
-import themes from "../../../themes/themes";
+import { TextInput, Text, ScrollView } from "react-native";
 import { useState } from "react";
+import type { Team } from "@/helpers/types";
+import storage from "@/helpers/storage";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 
