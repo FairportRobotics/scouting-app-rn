@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { View, ScrollView } from "react-native";
-
 import themes from "../../../themes/themes";
 import Check from "../../../components/Check";
 import MinusPlusPair from "../../../components/MinusPlusPair";
 import ContainerGroup from "../../../components/ContainerGroup";
+import MatchScoutingHeader from "../../../components/MatchScoutingHeader";
 
 export default function Auto() {
   // Support for Started with Note
@@ -51,6 +51,7 @@ export default function Auto() {
 
   return (
     <ScrollView style={{ margin: 10 }}>
+      <MatchScoutingHeader />
       <ContainerGroup title="Start">
         <View
           style={{
