@@ -9,11 +9,11 @@ import Check from "@/components/Check";
 import OptionSelect from "@/components/OptionSelect";
 
 export default function Endgame() {
-  // [ ] Trap Score (-/+)
-  // [ ] Microphone Score (-/+)
-  // [ ] Did Robot Park (cechkbox)
-  // [ ] Did Robot Hang (cechkbox)
-  //     [ ] Harmony Score (0/1/2)
+  // [X] Trap Score (-/+)
+  // [X] Microphone Score (-/+)
+  // [X] Did Robot Park (cechkbox)
+  // [X] Did Robot Hang (cechkbox)
+  //     [X] Harmony Score (0/1/2)
 
   // Support for Trap Score
   const [trapScore, setTrapScore] = useState(0);
@@ -27,7 +27,13 @@ export default function Endgame() {
     setMicrophoneScore((prev) => (prev += delta));
   };
 
-  // Support for Did robot hang?
+  // Support for Did robot Park?
+  const [didRobotPark, setDidRobotPark] = useState(false);
+  const handleDidRobotPark = () => {
+    setDidRobotPark((prev) => !prev);
+  };
+
+  // Support for Did robot Hang?
   const [didRobotHang, setDidRobotHang] = useState(false);
   const handleDidRobotHang = () => {
     setDidRobotHang((prev) => !prev);
@@ -56,7 +62,13 @@ export default function Endgame() {
         />
         <Check
           style={{ marginTop: 18 }}
-          label="Did robot hang?"
+          label="Did robot Park?"
+          checked={didRobotPark}
+          onToggle={handleDidRobotPark}
+        />
+        <Check
+          style={{ marginTop: 18 }}
+          label="Did robot Hang?"
           checked={didRobotHang}
           onToggle={handleDidRobotHang}
         />

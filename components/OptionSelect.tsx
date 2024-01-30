@@ -16,6 +16,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   label,
   options,
   onChange,
+  style,
 }) => {
   // Support for Left Start Area
   const [selectedOption, setSelectedOption] = useState("");
@@ -32,6 +33,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
           <TouchableOpacity
             key={option}
             style={[
+              style,
               styles.option,
               {
                 backgroundColor:

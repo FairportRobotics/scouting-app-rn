@@ -12,9 +12,15 @@ interface MinusPlusProps {
   label: string;
   count: number | 0;
   onChange: (delta: number) => void;
+  style?: {};
 }
 
-const MinusPlus: React.FC<MinusPlusProps> = ({ label, count, onChange }) => {
+const MinusPlus: React.FC<MinusPlusProps> = ({
+  label,
+  count,
+  onChange,
+  style,
+}) => {
   const handleDecrement = () => {
     if (count == 0) onChange(0);
     else onChange(-1);

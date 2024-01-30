@@ -6,16 +6,24 @@ import { Event } from "@/helpers/types";
 
 import storage from "@/helpers/storage";
 
-const MatchScoutingHeader: React.FC = () => {
+interface MatchScoutingHeaderProps {
+  style?: {};
+}
+
+const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({ style }) => {
   const [event, setEvent] = useState<Event>();
 
-  storage
-    .load({
-      key: "event",
-    })
-    .then((ret) => {
-      setEvent(ret);
-    });
+  try {
+    storage
+      .load({
+        key: "event",
+      })
+      .then((ret) => {
+        setEvent(ret);
+      });
+  } catch (error) {
+    console.error("Something may have gone wrong:", error);
+  }
 
   return (
     <View
