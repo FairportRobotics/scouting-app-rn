@@ -3,7 +3,7 @@ import { Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSquare } from "@fortawesome/free-regular-svg-icons/faSquare";
 import { faSquareCheck } from "@fortawesome/free-regular-svg-icons/faSquareCheck";
-import themes from "../themes/themes";
+import themes from "@/themes/themes";
 
 interface CheckProps {
   label: string;

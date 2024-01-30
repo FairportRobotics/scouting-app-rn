@@ -1,10 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import { View, Text } from "react-native";
-import themes from "../themes/themes";
-import { Event } from "../helpers/types";
+import themes from "@/themes/themes";
+import { Event } from "@/helpers/types";
 
-import storage from "../helpers/storage";
+import storage from "@/helpers/storage";
 
 const MatchScoutingHeader: React.FC = () => {
   const [event, setEvent] = useState<Event>();

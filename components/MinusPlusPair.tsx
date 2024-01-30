@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
-import themes from "../themes/themes";
+import themes from "@/themes/themes";
 
-import MetricCount from "./MetricCount";
-import MetricLabel from "./MetricLabel";
+import MetricCount from "@/components/MetricCount";
+import MetricLabel from "@/components/MetricLabel";
 
 interface MinusPlusProps {
   label: string;

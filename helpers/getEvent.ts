@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { TbaEvent } from "./tbaTypes";
-import type { Event } from "./types";
+import type { TbaEvent } from "@/helpers/tbaTypes";
+import type { Event } from "@/helpers/types";
 
 export default async (eventKey: string) => {
   // Initialize the list of Match.
