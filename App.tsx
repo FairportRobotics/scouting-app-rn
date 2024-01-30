@@ -9,14 +9,16 @@ import MatchScoutFinal from "./features/match/scouting/Final";
 import MatchScoutSelectMatch from "./features/match/scouting/SelectMatch";
 import MatchScoutSetup from "./features/match/scouting/Setup";
 import MatchScoutTeleop from "./features/match/scouting/Teleop";
-import CacheEvent from "./features/admin/caches/CacheEvent";
+import CacheEvent from "./features/admin/TBACaches";
 import PitScoutTeam from "@/features/pit/scouting/PitScoutTeam";
+import Settings from "@/features/admin/Settings";
+import Endgame from "./features/match/scouting/Endgame";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <PitScoutTeam></PitScoutTeam>
+        <Endgame />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>

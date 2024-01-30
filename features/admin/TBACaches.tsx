@@ -1,22 +1,16 @@
 import { useState } from "react";
-import {
-  Button,
-  Text,
-  View,
-  ScrollView,
-  TextInput,
-  StyleSheet,
-} from "react-native";
+import { Button, Text, View, TextInput, StyleSheet } from "react-native";
 
-import themes from "../../../themes/themes";
-import type { Event, Match, Team } from "../../../helpers/types";
-import getEvent from "../../../helpers/getEvent";
-import getMatches from "../../../helpers/getMatchesForEvent";
-import getTeams from "../../../helpers/getTeamsForEvent";
+import ContainerGroup from "@/components/ContainerGroup";
+import themes from "@/themes/themes";
+import type { Event, Match, Team } from "@/helpers/types";
+import getEvent from "@/helpers/getEvent";
+import getMatches from "@/helpers/getMatchesForEvent";
+import getTeams from "@/helpers/getTeamsForEvent";
 
-import storage from "../../../helpers/storage";
+import storage from "@/helpers/storage";
 
-export default function CacheEvent() {
+export default function TBACaches() {
   // Support for the Cache button.
   const cacheEventData = () => {
     fetchEvent();
@@ -94,13 +88,11 @@ export default function CacheEvent() {
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
+    <ContainerGroup title="The Blue Alliance Caches">
       <View>
         <Text style={{ marginBottom: 8 }}>
-          Placeholder for the UI and logic to cache a specific The Blue Alliance
-          Event. For now, we'll provide a means for a user to enter an Event Key
-          and we'll call out to The Blue Alliance for the Event details, the
-          list of Matches and the list of Teams, then cache them all.
+          Enter The Blue Alliance Event key below and Fill Cache. Use Retrieve
+          Cache to confirm that the data has been stored successfully.
         </Text>
         <Text style={{ marginBottom: 8 }}>
           2023nyrr for 2023 Ra Cha Cha Ruckus
@@ -109,7 +101,6 @@ export default function CacheEvent() {
           2024paca for 2024 Greater Pittsburgh Regional
         </Text>
         <TextInput
-          style={styles.input}
           onChangeText={handleChangeKey}
           value={eventKey}
           placeholder="Event Key..."
@@ -124,14 +115,6 @@ export default function CacheEvent() {
         <Text>Matches Count: {Object.keys(eventMatches).length}</Text>
         <Text>Teams Count: {Object.keys(eventTeams).length}</Text>
       </View>
-    </ScrollView>
+    </ContainerGroup>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    borderWidth: 1,
-    padding: 10,
-  },
-});
