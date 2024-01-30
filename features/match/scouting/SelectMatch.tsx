@@ -1,27 +1,53 @@
-import { Text, View, ScrollView } from "react-native";
-
+import { ScrollView } from "react-native";
+import type { Match, Team } from "@/helpers/types";
+import storage from "@/helpers/storage";
 import themes from "../../../themes/themes";
+import MatchScoutingHeader from "@/components/MatchScoutingHeader";
+import ContainerGroup from "@/components/ContainerGroup";
+import React, { useState } from "react";
+import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 
 export default function SelectMatch() {
-  // [ ] List of Matches with
-  //     [ ] Match Number
-  //     [ ] Scheduled time
-  //     [ ] Action to select Blue 1 / Team Number
-  //     [ ] Action to select Blue 2 / Team Number
-  //     [ ] Action to select Blue 3 / Team Number
-  //     [ ] Action to select Red 1 / Team Number
-  //     [ ] Action to select Red 2 / Team Number
-  //     [ ] Action to select Red 3 / Team Number
-  // (Actions should use lighter shade if Match/Team has already been scouted.)
+  // Support for retrieving Event Matches and Teams.
+  const [eventMatches, setEventMatches] = useState<Record<string, Match>>({});
+  const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
+
+  // Retrieve Matches and Teams from the cache.
+  // Support for the Retrieve button.
+  const retrieveEventData = async () => {
+    await storage.load({ key: "event-matches" }).then((ret) => {
+      setEventMatches(ret);
+    });
+
+    await storage.load({ key: "event-teams" }).then((ret) => {
+      setEventTeams(ret);
+    });
+  };
+  retrieveEventData();
+
+  const handleMatchSelect = (
+    matchKey: string,
+    alliance: string,
+    allianceTeam: number
+  ) => {
+    console.log("SelectMatch:", matchKey, alliance, allianceTeam);
+  };
 
   return (
     <ScrollView style={{ margin: 10 }}>
-      <View>
-        <Text>
-          This is where we will add the code and UI for selecting which
-          Match/Team to scout.
-        </Text>
-      </View>
+      <MatchScoutingHeader />
+      <ContainerGroup title="Select Match and Team">
+        {Object.values(eventMatches).map((match) => (
+          <ScoutingMatchSelect
+            key={match.key}
+            match={match}
+            teamsLookup={eventTeams}
+            onSelect={(matchKey, alliance, allianceNumber) =>
+              handleMatchSelect(matchKey, alliance, allianceNumber)
+            }
+          />
+        ))}
+      </ContainerGroup>
     </ScrollView>
   );
 }

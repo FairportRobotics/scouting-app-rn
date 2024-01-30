@@ -14,12 +14,13 @@ import PitScoutTeam from "@/features/pit/scouting/PitScoutTeam";
 import Settings from "@/features/admin/Settings";
 import Endgame from "./features/match/scouting/Endgame";
 import Final from "./features/match/scouting/Final";
+import SelectMatch from "./features/match/scouting/SelectMatch";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <Final />
+        <SelectMatch />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>

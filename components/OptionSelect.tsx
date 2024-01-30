@@ -36,9 +36,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
               styles.option,
               {
                 backgroundColor:
-                  selectedOption === option
-                    ? colors.selected
-                    : colors.unselected,
+                  selectedOption === option ? colors.primary : colors.secondary,
               },
             ]}
             onPress={() => handleSelectOption(option)}
@@ -61,15 +59,10 @@ const styles = StyleSheet.create({
   },
   option: {
     borderRadius: 8,
-    backgroundColor: "orange",
-    color: "white",
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 15,
     height: 50,
-  },
-  optionSelected: {
-    // backgroundColor: "orange",
   },
 });
