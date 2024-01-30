@@ -37,4 +37,7 @@ export default StyleSheet.create({
     width: "20%",
     height: 50,
   },
+  labelText: {
+    fontSize: 20,
+  },
 });

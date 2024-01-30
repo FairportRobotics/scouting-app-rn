@@ -10,7 +10,7 @@ interface InputGroupProps {
 const InputGroup: React.FC<InputGroupProps> = ({ title, children, style }) => {
   return (
     <View style={themes.inputGroup}>
-      <Text style={themes.containerGroupTitle}>{title}</Text>
+      <Text style={themes.labelText}>{title}</Text>
       {children}
     </View>
   );

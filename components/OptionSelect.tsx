@@ -33,7 +33,6 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
           <TouchableOpacity
             key={option}
             style={[
-              style,
               styles.option,
               {
                 backgroundColor:
@@ -44,7 +43,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             ]}
             onPress={() => handleSelectOption(option)}
           >
-            <Text style={styles.text}>{option}</Text>
+            <Text style={themes.labelText}>{option}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -72,9 +71,5 @@ const styles = StyleSheet.create({
   },
   optionSelected: {
     // backgroundColor: "orange",
-  },
-  labelContainer: {},
-  text: {
-    fontSize: 24,
   },
 });

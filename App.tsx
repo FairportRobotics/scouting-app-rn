@@ -13,12 +13,13 @@ import CacheEvent from "./features/admin/TBACaches";
 import PitScoutTeam from "@/features/pit/scouting/PitScoutTeam";
 import Settings from "@/features/admin/Settings";
 import Endgame from "./features/match/scouting/Endgame";
+import Final from "./features/match/scouting/Final";
 
 export default function App() {
   return (
     <SafeAreaView style={themes.app}>
       <View>
-        <Endgame />
+        <Final />
         <StatusBar style="auto" hidden />
       </View>
     </SafeAreaView>
