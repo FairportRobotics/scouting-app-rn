@@ -46,7 +46,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
         ]}
       >
         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
-          TBD
+          {allianceTeam}
         </Text>
         <Text style={{ color: "white" }}>
           {lookupTeam(alliance, allianceTeam)}
