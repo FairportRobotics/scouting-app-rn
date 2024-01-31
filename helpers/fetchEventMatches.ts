@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { TbaMatch } from "@/helpers/tbaTypes";
 
-export default async (eventKey: string) => {
+export default (eventKey: string) => {
   // Initialize the list of Match.
   let matches: Array<TbaMatch> = [];
 
@@ -19,17 +19,17 @@ export default async (eventKey: string) => {
     "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs";
 
   // Make a GET request with custom headers
-  const response = await axios(url, {
-    headers: { "X-TBA-Auth-Key": tbaKey },
-    responseType: "text",
-  });
-
-  const rawResponse = await response.data;
-  console.log("fetchEventMatches rawResponse:", rawResponse);
-  const jsonResponse = JSON.parse(rawResponse) as Array<TbaMatch>;
-  console.log("fetchEventMatches jsonResponse:", jsonResponse);
-
-  matches = [...jsonResponse];
+  axios
+    .get(url, {
+      headers: { "X-TBA-Auth-Key": tbaKey, accept: "application/json" },
+    })
+    .then(async (response) => {
+      let tbaMatches = await response.data;
+      console.log("fetchEventMatches axios tbaMatches:", tbaMatches);
+    })
+    .catch((error) => {
+      console.error("There was a problem with your Axios request:", error);
+    });
 
   return matches as Array<TbaMatch>;
 };
