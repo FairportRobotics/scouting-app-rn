@@ -132,3 +132,18 @@ export class Team {
     });
   }
 }
+
+export class MatchScoutingSession {
+  // Root properties.
+  eventKey?: string;
+  matchKey?: string;
+  alliance?: string; // Blue/Red
+  allianceTeam?: number; // 1, 2, 3
+  scheduledTeam?: string;
+  scoutedTeam?: string;
+  scouterName?: string;
+
+  get key(): string {
+    return `${this.eventKey}__${this.matchKey}__${this.alliance}__${this.allianceTeam}`;
+  }
+}

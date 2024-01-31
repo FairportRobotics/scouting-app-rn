@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import themes from "@/themes/themes";
 import type { Match, Team } from "@/helpers/types";
+import { Alliance, AllianceTeam } from "@/helpers/constants";
 import MatchTeamSelect from "./MatchTeamSelect";
 
 interface ScoutingMatchSelectProps {
@@ -45,44 +46,56 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Blue"}
-          allianceTeam={1}
-          onPress={() => handleOnPress(match.key, "Blue", 1)}
+          alliance={Alliance.Blue}
+          allianceTeam={AllianceTeam.One}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Blue, AllianceTeam.One)
+          }
         />
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Blue"}
-          allianceTeam={2}
-          onPress={() => handleOnPress(match.key, "Blue", 2)}
+          alliance={Alliance.Blue}
+          allianceTeam={AllianceTeam.Two}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Blue, AllianceTeam.Two)
+          }
         />
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Blue"}
-          allianceTeam={3}
-          onPress={() => handleOnPress(match.key, "Blue", 3)}
+          alliance={Alliance.Blue}
+          allianceTeam={AllianceTeam.Three}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Blue, AllianceTeam.Three)
+          }
         />
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Red"}
-          allianceTeam={1}
-          onPress={() => handleOnPress(match.key, "Red", 1)}
+          alliance={Alliance.Red}
+          allianceTeam={AllianceTeam.One}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Red, AllianceTeam.One)
+          }
         />
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Red"}
-          allianceTeam={2}
-          onPress={() => handleOnPress(match.key, "Red", 2)}
+          alliance={Alliance.Red}
+          allianceTeam={AllianceTeam.Two}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Red, AllianceTeam.Two)
+          }
         />
         <MatchTeamSelect
           match={match}
           teamsLookup={teamsLookup}
-          alliance={"Red"}
-          allianceTeam={3}
-          onPress={() => handleOnPress(match.key, "Red", 3)}
+          alliance={Alliance.Red}
+          allianceTeam={AllianceTeam.Three}
+          onPress={() =>
+            handleOnPress(match.key, Alliance.Red, AllianceTeam.Three)
+          }
         />
       </View>
     </View>

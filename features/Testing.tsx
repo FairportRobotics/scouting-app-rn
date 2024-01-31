@@ -1,4 +1,4 @@
-import { Button, Text, View, TextInput } from "react-native";
+import { Button, View } from "react-native";
 import ContainerGroup from "@/components/ContainerGroup";
 import fetchEvent from "@/helpers/fetchEvent";
 import fetchEventMatches from "@/helpers/fetchEventMatches";
@@ -27,12 +27,22 @@ export default function Testing() {
     });
   };
 
+  const handleLoadMatchScoutingSessions = async () => {
+    console.log("handleLoadMatchScoutingSessions...");
+    const dtos = await Database.getMatchScoutingSessions();
+    console.log("handleLoadMatchScoutingSessions dtos:", dtos);
+  };
+
   return (
     <ContainerGroup title="The Blue Alliance API">
       <View>
         <Button title="Fetch Event" onPress={handleFetchEvent} />
         <Button title="Fetch Matches" onPress={handleFetchMatches} />
         <Button title="Load Matches" onPress={handleLoadMatches} />
+        <Button
+          title="Load Match Scouting Sessions"
+          onPress={handleLoadMatchScoutingSessions}
+        />
       </View>
     </ContainerGroup>
   );

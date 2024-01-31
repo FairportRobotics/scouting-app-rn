@@ -20,7 +20,8 @@ import PitScoutResults from "./features/pit/results/PitScoutResults";
 
 // Other screens.
 import Settings from "@/features/admin/Settings";
-import Testing from "./features/Testing";
+import Testing from "@/features/Testing";
+import ShareDB from "@/components/ShareDB";
 
 const Drawer = createDrawerNavigator();
 
@@ -28,7 +29,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator>
-        {/* <Drawer.Screen name="Testing" component={Testing} /> */}
         <Drawer.Screen name="Scout Match" component={MatchScoutSelectMatch} />
         <Drawer.Screen name="   Setup" component={MatchScoutSetup} />
         <Drawer.Screen name="   Auto" component={MatchScoutAuto} />
@@ -39,6 +39,8 @@ export default function App() {
         <Drawer.Screen name="Scout Pit" component={PitScoutSelectTeam} />
         <Drawer.Screen name="   Team" component={PitScoutTeam} />
         <Drawer.Screen name="Settings" component={Settings} />
+        <Drawer.Screen name="   Testing" component={Testing} />
+        <Drawer.Screen name="   Share DB" component={ShareDB} />
 
         <Drawer.Screen
           name="Results of Match Scouting"
