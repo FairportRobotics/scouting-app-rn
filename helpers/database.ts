@@ -6,16 +6,23 @@ const db = SQLite.openDatabase("scouting-app.db");
 
 /*
 
-events
-event_matches
-event_teams
+events:
+Stores the Events which have been cached. During actual competitons, there will be only 1. We will
+likely have more than one during development.
+
+event_matches:
+Stores all the Matches associated with all the Events. This table should only include Qualifying
+matches. All other Match types will be filted out when fetching from TBA.
+
+event_teams:
+Stores all the Teams associated with all the Events.
+
+match_scouting_sessions:
+
 
 current_event
 current_match_scouting_session
-
-match_scouting_sessions
 pit_scouting_sessions
-
 */
 
 const executeSql = (query: string, params: Array<any> = []) => {
@@ -41,6 +48,7 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
       tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
+      tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
     }
 
     // Create new tables.
@@ -54,6 +62,10 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS event_teams (key TEXT PRIMARY KEY, eventKey TEXT, teamNumber INTEGER, nickname TEXT)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS match_scouting_sessions (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, alliance TEXT, allianceTeam INTEGER)"
     );
   });
 }
@@ -166,7 +178,7 @@ export const getEvent = async (eventKey: string) => {
 
 export const getEvents = async () => {
   try {
-    const query = "SELECT * FROM events";
+    const query = "SELECT * FROM events ORDER BY key";
     const dtos = (await executeSql(query, [])) as Array<EventDto>;
     return Event.fromDtos(dtos) as Array<Event>;
   } catch (error) {
@@ -194,6 +206,42 @@ export const getTeamsForEvent = async (eventKey: string) => {
     const params = [eventKey];
     const dtos = (await executeSql(query, params)) as Array<TeamDto>;
     return Team.fromDtos(dtos) as Array<Team>;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};
+
+export const initializeMatchScoutingSession = async (
+  eventKey: string,
+  matchKey: string,
+  alliance: string,
+  allianceTeam: number
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions(key, eventKey, matchKey, alliance, allianceTeam) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      [
+        `${eventKey}__${matchKey}__${alliance}__${allianceTeam}`,
+        eventKey,
+        matchKey,
+        alliance,
+        allianceTeam,
+      ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const getMatchScoutingSessions = async () => {
+  try {
+    const query = "SELECT * FROM match_scouting_sessions";
+    const dtos = await executeSql(query, []);
+    return dtos;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];

@@ -78,6 +78,10 @@ export default function TBACaches() {
     if (teams !== undefined) setEventTeams(teams);
   };
 
+  const handleInitializeDatabase = async () => {
+    await Database.initializeDatabase(true);
+  };
+
   return (
     <ContainerGroup title="The Blue Alliance Caches">
       <View>
@@ -99,6 +103,10 @@ export default function TBACaches() {
           keyboardType="default"
         />
         <View style={{ flexDirection: "row", justifyContent: "center" }}>
+          <Button
+            title="Initialize Database"
+            onPress={handleInitializeDatabase}
+          />
           <Button title="Fill Cache" onPress={handleFetchEventData} />
           <Button title="Retrieve Cache" onPress={handleLoadEventData} />
         </View>

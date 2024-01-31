@@ -32,12 +32,18 @@ export default function SelectMatch() {
     return () => {};
   }, []);
 
-  const handleMatchSelect = (
+  const handleMatchSelect = async (
     matchKey: string,
     alliance: string,
     allianceTeam: number
   ) => {
     console.log("SelectMatch:", matchKey, alliance, allianceTeam);
+    await Database.initializeMatchScoutingSession(
+      eventKey,
+      matchKey,
+      alliance,
+      allianceTeam
+    );
   };
 
   return (
