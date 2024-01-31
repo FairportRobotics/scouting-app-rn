@@ -1,7 +1,6 @@
 import { TextInput, Text, ScrollView } from "react-native";
 import { useState } from "react";
 import type { Team } from "@/helpers/types";
-import storage from "@/helpers/storage";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 
@@ -10,14 +9,6 @@ export default function Setup() {
   // [ ] Team being scouted if it is not the Team scheduled (select)
   // Support for retrieving Event Matches and Teams.
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
-
-  // Retrieve Teams from the cache.
-  const retrieveEventData = async () => {
-    await storage.load({ key: "event-teams" }).then((ret) => {
-      setEventTeams(ret);
-    });
-  };
-  retrieveEventData();
 
   // Support for Scouter Name
   const [scouterName, setScouterName] = useState("");

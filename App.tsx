@@ -20,6 +20,7 @@ import PitScoutResults from "./features/pit/results/PitScoutResults";
 
 // Other screens.
 import Settings from "@/features/admin/Settings";
+import Testing from "./features/Testing";
 
 const Drawer = createDrawerNavigator();
 

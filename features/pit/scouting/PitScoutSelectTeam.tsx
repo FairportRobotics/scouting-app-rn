@@ -1,20 +1,30 @@
 import { ScrollView } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Team } from "@/helpers/types";
-import storage from "@/helpers/storage";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import PitTeamSelect from "@/components/PitTeamSelect";
+import * as Database from "@/helpers/database";
 
 export default function PitScoutSelectTeam() {
+  const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 
-  // Retrieve Teams from the cache.
-  const retrieveEventData = async () => {
-    await storage.load({ key: "event-teams" }).then((ret) => {
-      setEventTeams(ret);
-    });
-  };
-  retrieveEventData();
+  useEffect(() => {
+    const fetchData = async () => {
+      const teams = await Database.getTeamsForEvent(eventKey);
+      let teamsDictionary: Record<string, Team> = {};
+      teams.forEach((team) => {
+        teamsDictionary[team.key] = team;
+      });
+
+      setEventTeams(teamsDictionary);
+    };
+
+    fetchData();
+
+    // Cleanup function.
+    return () => {};
+  }, []);
 
   const handleTeamSelect = (teamKey: string) => {
     console.log("handleTeamSelect teamKey:", teamKey);

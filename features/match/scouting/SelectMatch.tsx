@@ -1,27 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import type { Match, Team } from "@/helpers/types";
-import storage from "@/helpers/storage";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
+import * as Database from "@/helpers/database";
 
 export default function SelectMatch() {
   // Support for retrieving Event Matches and Teams.
-  const [eventMatches, setEventMatches] = useState<Record<string, Match>>({});
+  const [eventKey, setEventKey] = useState<string>("2023nyrr");
+  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 
-  // Retrieve Matches and Teams from the cache.
-  const retrieveEventData = async () => {
-    await storage.load({ key: "event-matches" }).then((ret) => {
-      setEventMatches(ret);
-    });
+  useEffect(() => {
+    const fetchData = async () => {
+      setEventMatches(await Database.getMatchesForEvent(eventKey));
 
-    await storage.load({ key: "event-teams" }).then((ret) => {
-      setEventTeams(ret);
-    });
-  };
-  retrieveEventData();
+      const teams = await Database.getTeamsForEvent(eventKey);
+
+      let teamsDictionary: Record<string, Team> = {};
+      teams.forEach((team) => {
+        teamsDictionary[team.key] = team;
+      });
+
+      setEventTeams(teamsDictionary);
+    };
+
+    fetchData();
+
+    // Cleanup function.
+    return () => {};
+  }, []);
 
   const handleMatchSelect = (
     matchKey: string,
