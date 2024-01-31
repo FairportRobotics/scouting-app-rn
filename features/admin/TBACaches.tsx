@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button, Text, View, TextInput } from "react-native";
-import type { Event, Match, Team } from "@/helpers/types";
+import type { TbaEvent, TbaMatch, TbaTeam } from "@/helpers/tbaTypes";
+import type { Match, Team } from "@/helpers/types";
+import { Event } from "@/helpers/types";
 
 import ContainerGroup from "@/components/ContainerGroup";
 import fetchEvent from "@/helpers/fetchEvent";
@@ -9,49 +11,63 @@ import fetchEventTeams from "@/helpers/fetchEventTeams";
 import * as Database from "@/helpers/database";
 
 export default function TBACaches() {
+  // Declare the various states that we want to manage.
+  const [eventKey, setEventKey] = useState("2023nyrr");
+  const [event, setEvent] = useState<Event>();
+  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
+  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
+
   useEffect(() => {
     Database.initializeDatabase();
   });
 
   // Support for editing the Event Key
-  const [eventKey, setEventKey] = useState("2023nyrr");
   const handleChangeKey = (key: string) => {
     setEventKey(key);
   };
 
+  const handleFetchEventData = async () => {
+    //handleFetchEvent();
+    handleFetchEventMatches();
+    //handleFetchEventTeams();
+  };
+
   // Support for retrieving Event
-  const [event, setEvent] = useState<Event>();
   const handleFetchEvent = async () => {
-    let event: Event = await fetchEvent(eventKey);
-    setEvent(event);
-    Database.saveEvent(event);
+    // Fetch the Event from TBA and save to the DB.
+    let tbaEvent: TbaEvent = await fetchEvent(eventKey);
+    Database.saveEvent(tbaEvent);
+
+    // Retrieve the Event from the DB and save to state.
+    let event = await Database.getEvent(eventKey);
+    if (event !== null) {
+      setEvent(event);
+    }
   };
 
   // Support for retrieving Event Matches
-  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const handleFetchEventMatches = async () => {
-    let matches: Array<Match> = await fetchEventMatches(eventKey);
+    console.log("handleFetchEventMatches");
+    // Fetch the Matches from TBA and save to the DB.
+    let tbaMatches: Array<TbaMatch> = await fetchEventMatches(eventKey);
+    Database.saveEventMatches(eventKey, tbaMatches);
 
+    // Retrieve the Matches from the DB and save to state.
+    let matches = await Database.getMatchesForEvent(eventKey);
     setEventMatches(matches);
-    Database.saveEventMatches(eventKey, matches);
+    //console.log("handleFetchEventMatches matches:", matches);
+    //console.log("handleFetchEventMatches eventMatches:", eventMatches);
   };
 
   // Support for retrieving Event Teams
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
   const handleFetchEventTeams = async () => {
-    let teams: Array<Team> = await fetchEventTeams(eventKey);
+    // Fetch the Matches from TBA and save to the DB.
+    let tbaTeams: Array<TbaTeam> = await fetchEventTeams(eventKey);
+    Database.saveEventTeams(eventKey, tbaTeams);
 
+    // Retrieve the Matches from the DB and save to state.
+    let teams = await Database.getTeamsForEvent(eventKey);
     setEventTeams(teams);
-    Database.saveEventTeams(eventKey, teams);
-  };
-
-  const handleFetchEventData = async () => {
-    handleFetchEvent();
-    handleFetchEventMatches();
-    handleFetchEventTeams();
-
-    let allEvents = await Database.getEvents();
-    console.log("allEvents:", allEvents);
   };
 
   const handleLoadEventData = async () => {

@@ -1,19 +1,8 @@
-import type { Event, Match, Team } from "@/helpers/types";
+import type { TbaEvent, TbaMatch, TbaTeam } from "@/helpers/tbaTypes";
+import type { EventDto, MatchDto, TeamDto } from "@/helpers/types";
+import { Event, Match, Team } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
-
-/*
-events
-event_tatches
-event_teams
-
-event_current
-match_scouting_results
-match_scouting_current
-
-pit_scouting_results
-pit_scouting_current
-*/
 
 const executeSql = (query: string, params: Array<any> = []) => {
   return new Promise((resolve, reject) => {
@@ -55,16 +44,16 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
   });
 }
 
-export function saveEvent(event: Event) {
+export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO events(key, name, shortName, startDate, endDate) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
       [
         event.key,
         event.name,
-        event.shortName,
-        event.startDate.toISOString(),
-        event.endDate.toISOString(),
+        event.short_name,
+        event.start_date,
+        event.end_date,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -75,7 +64,7 @@ export function saveEvent(event: Event) {
   });
 }
 
-export function saveEventMatches(eventKey: string, matches: Array<Match>) {
+export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
   db.transaction((tx) => {
     matches.forEach((match) => {
       tx.executeSql(
@@ -83,10 +72,10 @@ export function saveEventMatches(eventKey: string, matches: Array<Match>) {
         [
           match.key,
           eventKey,
-          match.matchNumber,
-          match.predictedTime.toISOString(),
-          JSON.stringify(match.blueTeams),
-          JSON.stringify(match.redTeams),
+          match.match_number,
+          new Date(match.predicted_time).toISOString(),
+          JSON.stringify(match.alliances.blue.team_keys),
+          JSON.stringify(match.alliances.red.team_keys),
         ],
         (txObj, resultSet) => {
           // Do nothing.
@@ -100,12 +89,12 @@ export function saveEventMatches(eventKey: string, matches: Array<Match>) {
   });
 }
 
-export function saveEventTeams(eventKey: string, teams: Array<Team>) {
+export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
   db.transaction((tx) => {
     teams.forEach((team) => {
       tx.executeSql(
         "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) VALUES(?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
-        [team.key, eventKey, team.teamNumber, team.nickname],
+        [team.key, eventKey, team.team_number, team.nickname],
         (txObj, resultSet) => {
           // Do nothing.
         },
@@ -122,8 +111,8 @@ export const getEvent = async (eventKey: string) => {
   try {
     const query = "SELECT * FROM events WHERE key = ?";
     const params = [eventKey];
-    const results = await executeSql(query, params);
-    return results as Event;
+    const dtos = (await executeSql(query, params)) as Array<EventDto>;
+    if (dtos.length > 0) return Event.fromDto(dtos[0]) as Event;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return null;
@@ -133,8 +122,8 @@ export const getEvent = async (eventKey: string) => {
 export const getEvents = async () => {
   try {
     const query = "SELECT * FROM events";
-    const results = await executeSql(query, []);
-    return results as Array<Event> | [];
+    const dtos = (await executeSql(query, [])) as Array<EventDto>;
+    return Event.fromDtos(dtos) as Array<Event>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
@@ -145,11 +134,8 @@ export const getMatchesForEvent = async (eventKey: string) => {
   try {
     const query = "SELECT * FROM event_matches WHERE eventKey = ?";
     const params = [eventKey];
-    const results = await executeSql(query, params);
-
-    console.log("getMatchesForEvent results:", results);
-
-    return results as Array<Match> | [];
+    const dtos = (await executeSql(query, params)) as Array<MatchDto>;
+    return Match.fromDtos(dtos) as Array<Match>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
@@ -160,8 +146,8 @@ export const getTeamsForEvent = async (eventKey: string) => {
   try {
     const query = "SELECT * FROM event_teams WHERE eventKey = ?";
     const params = [eventKey];
-    const results = await executeSql(query, params);
-    return results as Array<Team> | [];
+    const dtos = (await executeSql(query, params)) as Array<TeamDto>;
+    return Team.fromDtos(dtos) as Array<Team>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];

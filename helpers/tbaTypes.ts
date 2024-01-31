@@ -7,8 +7,6 @@ export interface TbaEvent {
   short_name: string;
   start_date: string;
   end_date: string;
-  city: string;
-  state_prov: string;
 }
 
 export interface TbaMatch {
@@ -18,11 +16,9 @@ export interface TbaMatch {
   predicted_time: number;
   alliances: {
     blue: {
-      surrogate_team_keys: [string];
       team_keys: [string];
     };
     red: {
-      surrogate_team_keys: [string];
       team_keys: [string];
     };
   };
@@ -33,7 +29,4 @@ export interface TbaTeam {
   team_number: string;
   name: string;
   nickname: string;
-  school_name: string;
-  city: string;
-  state_prov: string;
 }
