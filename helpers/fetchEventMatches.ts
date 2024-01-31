@@ -13,5 +13,7 @@ export default async (eventKey: string) => {
     responseType: "text",
   });
 
-  return JSON.parse(await response.data) as Array<TbaMatch>;
+  let matches = JSON.parse(await response.data) as Array<TbaMatch>;
+  let filteredMatches = matches.filter((match) => match.comp_level === "qm");
+  return filteredMatches;
 };

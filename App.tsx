@@ -28,6 +28,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Drawer.Navigator>
+        {/* <Drawer.Screen name="Testing" component={Testing} /> */}
         <Drawer.Screen name="Scout Match" component={MatchScoutSelectMatch} />
         <Drawer.Screen name="   Setup" component={MatchScoutSetup} />
         <Drawer.Screen name="   Auto" component={MatchScoutAuto} />
