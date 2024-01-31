@@ -5,12 +5,15 @@ import ContainerGroup from "@/components/ContainerGroup";
 import * as Database from "@/helpers/database";
 
 export default function Setup() {
-  // [ ] Scouter Name (text)
-  // [ ] Team being scouted if it is not the Team scheduled (select)
-  // Support for retrieving Event Matches and Teams.
+  // These will ultimately be initialized with values, if any, from the database.
+  // That is not wired up yet as I'm still learing about navigation/routing.
   const [scouterName, setScouterName] = useState("");
   const [scoutedTeam, setScoutedTeam] = useState("");
 
+  // Option A: Respond to each changed value and persist immediately. This will
+  // result in a call to the DB on each keystroke for TextInput and once for each
+  // -/+ for counters and check/uncheck for checkboxes. This seems excessive but
+  // we're also dealing with a single-user DB so it might not be a big deal.
   useEffect(() => {
     let sessionKey = "2023nyrr__2023nyrr_qm3__Blue__1";
     Database.saveScoutingMatchSessionSetup(
@@ -19,6 +22,19 @@ export default function Setup() {
       scoutedTeam
     );
   }, [scouterName, scoutedTeam]);
+
+  // Option B: Respond only when component comes into scope or goes out of scope.
+  // For example, when navigation is implemented, this would be called once
+  // as we navigate away from this screen and so we will make a single call to
+  // update the database.
+  // useEffect(() => {
+  //   let sessionKey = "2023nyrr__2023nyrr_qm3__Blue__1";
+  //   Database.saveScoutingMatchSessionSetup(
+  //     sessionKey,
+  //     scouterName,
+  //     scoutedTeam
+  //   );
+  // }, []);
 
   return (
     <ScrollView style={{ margin: 10 }}>
