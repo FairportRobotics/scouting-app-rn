@@ -177,19 +177,20 @@ export const getEvents = async () => {
 
 export const getMatchesForEvent = async (eventKey: string) => {
   try {
-    const query = "SELECT * FROM event_matches WHERE eventKey = ?";
+    const query =
+      "SELECT * FROM event_matches WHERE eventKey = ? ORDER BY matchNumber";
     const params = [eventKey];
     const dtos = (await executeSql(query, params)) as Array<MatchDto>;
     return Match.fromDtos(dtos) as Array<Match>;
   } catch (error) {
-    console.error("Error fetching user data:", error);
     return [];
   }
 };
 
 export const getTeamsForEvent = async (eventKey: string) => {
   try {
-    const query = "SELECT * FROM event_teams WHERE eventKey = ?";
+    const query =
+      "SELECT * FROM event_teams WHERE eventKey = ? ORDER BY teamNumber";
     const params = [eventKey];
     const dtos = (await executeSql(query, params)) as Array<TeamDto>;
     return Team.fromDtos(dtos) as Array<Team>;
