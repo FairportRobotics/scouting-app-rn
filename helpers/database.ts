@@ -4,6 +4,20 @@ import { Event, Match, Team } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
 
+/*
+
+events
+event_matches
+event_teams
+
+current_event
+current_match_scouting_session
+
+match_scouting_sessions
+pit_scouting_sessions
+
+*/
+
 const executeSql = (query: string, params: Array<any> = []) => {
   return new Promise((resolve, reject) => {
     db.transaction(
@@ -66,6 +80,25 @@ export function saveEvent(event: TbaEvent) {
 
 export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
   db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, blueTeams, redTeams) VALUES(?, ?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      [
+        "practice",
+        eventKey,
+        0,
+        new Date(0).toISOString(),
+        "[0,0,0]",
+        "[0,0,0]",
+      ],
+      (txObj, resultSet) => {
+        // Do nothing.
+      },
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+
     matches.forEach((match) => {
       tx.executeSql(
         "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, blueTeams, redTeams) VALUES(?, ?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
@@ -91,6 +124,18 @@ export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
 
 export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
   db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) VALUES(?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      ["practice", eventKey, 0, "Practice Team"],
+      (txObj, resultSet) => {
+        // Do nothing.
+      },
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+
     teams.forEach((team) => {
       tx.executeSql(
         "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) VALUES(?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",

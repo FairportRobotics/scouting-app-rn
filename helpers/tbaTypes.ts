@@ -11,8 +11,8 @@ export interface TbaEvent {
 
 export interface TbaMatch {
   key: string;
-  match_number: number;
   comp_level: string;
+  match_number: number;
   predicted_time: number;
   alliances: {
     blue: {

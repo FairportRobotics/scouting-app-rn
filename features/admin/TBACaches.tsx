@@ -18,7 +18,7 @@ export default function TBACaches() {
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
 
   useEffect(() => {
-    Database.initializeDatabase();
+    Database.initializeDatabase(false);
   });
 
   // Support for editing the Event Key
@@ -27,9 +27,9 @@ export default function TBACaches() {
   };
 
   const handleFetchEventData = async () => {
-    //handleFetchEvent();
+    handleFetchEvent();
     handleFetchEventMatches();
-    //handleFetchEventTeams();
+    handleFetchEventTeams();
   };
 
   // Support for retrieving Event
@@ -47,7 +47,6 @@ export default function TBACaches() {
 
   // Support for retrieving Event Matches
   const handleFetchEventMatches = async () => {
-    console.log("handleFetchEventMatches");
     // Fetch the Matches from TBA and save to the DB.
     let tbaMatches: Array<TbaMatch> = await fetchEventMatches(eventKey);
     Database.saveEventMatches(eventKey, tbaMatches);
@@ -55,8 +54,6 @@ export default function TBACaches() {
     // Retrieve the Matches from the DB and save to state.
     let matches = await Database.getMatchesForEvent(eventKey);
     setEventMatches(matches);
-    //console.log("handleFetchEventMatches matches:", matches);
-    //console.log("handleFetchEventMatches eventMatches:", eventMatches);
   };
 
   // Support for retrieving Event Teams

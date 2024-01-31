@@ -14,25 +14,22 @@ export default function SelectMatch() {
 
   useEffect(() => {
     const fetchData = async () => {
-      // Retrieve Matches.
-      let matches = await Database.getMatchesForEvent(eventKey);
-      setEventMatches(matches);
+      setEventMatches(await Database.getMatchesForEvent(eventKey));
 
-      // Retrieve Teams and convert to a Dictionary.
-      let teamsDict: Record<string, Team> = {};
-      let teamsArray: Array<Team> = await Database.getTeamsForEvent(eventKey);
-      teamsArray.forEach((team) => {
-        teamsDict[team.key] = team;
+      const teams = await Database.getTeamsForEvent(eventKey);
+
+      let teamsDictionary: Record<string, Team> = {};
+      teams.forEach((team) => {
+        teamsDictionary[team.key] = team;
       });
-      setEventTeams(teamsDict);
+
+      setEventTeams(teamsDictionary);
     };
 
     fetchData();
 
     // Cleanup function.
-    return () => {
-      console.log();
-    };
+    return () => {};
   }, []);
 
   const handleMatchSelect = (

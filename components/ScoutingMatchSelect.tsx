@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text } from "react-native";
 import themes from "@/themes/themes";
 import type { Match, Team } from "@/helpers/types";
 import MatchTeamSelect from "./MatchTeamSelect";
@@ -28,8 +28,18 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
   return (
     <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
       <View style={{ marginRight: 20, width: 100 }}>
-        <Text>Match {match.matchNumber}</Text>
-        <Text>{new Date(match.predictedTime).toLocaleTimeString()}</Text>
+        {match.matchNumber === 0 && (
+          <View>
+            <Text>Practice</Text>
+            <Text>Anytime</Text>
+          </View>
+        )}
+        {match.matchNumber !== 0 && (
+          <View>
+            <Text>Match {match.matchNumber}</Text>
+            <Text>{new Date(match.predictedTime).toLocaleTimeString()}</Text>
+          </View>
+        )}
       </View>
       <View style={{ flexDirection: "row", gap: 4 }}>
         <MatchTeamSelect
