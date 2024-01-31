@@ -1,29 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { View, Text } from "react-native";
 import { Event } from "@/helpers/types";
-import storage from "@/helpers/storage";
 import colors from "@/themes/colors";
 import themes from "@/themes/themes";
+import * as Database from "@/helpers/database";
 
 interface MatchScoutingHeaderProps {
   style?: {};
 }
 
 const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({ style }) => {
+  const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [event, setEvent] = useState<Event>();
 
-  try {
-    storage
-      .load({
-        key: "event",
-      })
-      .then((ret) => {
-        setEvent(ret);
-      });
-  } catch (error) {
-    console.error("Something may have gone wrong:", error);
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await Database.getEvent(eventKey);
+      if (result !== null) setEvent(result);
+    };
+
+    fetchData();
+
+    // Cleanup function.
+    return () => {};
+  }, []);
 
   return (
     <View
