@@ -133,15 +133,59 @@ export class Team {
   }
 }
 
-export class MatchScoutingSession {
+export interface MatchScoutingSessionInterface {
   // Root properties.
   eventKey?: string;
   matchKey?: string;
-  alliance?: string; // Blue/Red
-  allianceTeam?: number; // 1, 2, 3
-  scheduledTeam?: string;
-  scoutedTeam?: string;
+  alliance?: string;
+  allianceTeam?: number;
+  scheduledTeamKey?: string;
+  scoutedTeamKey?: string;
   scouterName?: string;
+}
+
+export class MatchScoutingSession implements MatchScoutingSessionInterface {
+  // Root properties.
+  eventKey: string = "";
+  matchKey: string = "";
+  alliance: string = "";
+  allianceTeam: number = 0;
+  scheduledTeamKey: string = "";
+  scoutedTeamKey: string = "";
+
+  // Setup Properties
+  scouterName: string = "";
+
+  // Auto
+  autoStartedWithNote: boolean = false;
+  autoLeftStartArea: boolean = false;
+  autoSpeakerScore: number = 0;
+  autoSpeakerScoreAmplified: number = 0;
+  autoSpeakerMiss: number = 0;
+  autoAmpScore: number = 0;
+  autoAmpMiss: number = 0;
+
+  // Teleop
+  teleopSpeakerScore: number = 0;
+  teleopSpeakerScoreAmplified: number = 0;
+  teleopSpeakerMiss: number = 0;
+  teleopAmpScore: number = 0;
+  teleopAmpMiss: number = 0;
+  teleopRelayPass: number = 0;
+
+  // Endgame
+  endgameTrapScore: number = 0;
+  endgameMicrophoneScore: number = 0;
+  endgameDidRobotPark: boolean = false;
+  endgameDidRobotHang: boolean = false;
+  endgameHarmony: string = "";
+
+  // Final
+  finalAllianceScore: number = 0;
+  finalRankingPoints: number = 0;
+  finalAllianceResult: string = "";
+  finalPenalties: number = 0;
+  finalNotes: string = "";
 
   get key(): string {
     return `${this.eventKey}__${this.matchKey}__${this.alliance}__${this.allianceTeam}`;

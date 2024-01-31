@@ -65,7 +65,7 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS match_scouting_sessions (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, alliance TEXT, allianceTeam INTEGER)"
+      "CREATE TABLE IF NOT EXISTS match_scouting_sessions (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalPenalties INTEGER, finalNotes TEXT)"
     );
   });
 }
@@ -246,4 +246,22 @@ export const getMatchScoutingSessions = async () => {
     console.error("Error fetching user data:", error);
     return [];
   }
+};
+
+export const saveScoutingMatchSessionSetup = async (
+  sessionKey: string,
+  scouterName: string,
+  scoutedTeamKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE match_scouting_sessions SET scouterName = ?, scoutedTeamKey = ? WHERE key = ?",
+      [scouterName, scoutedTeamKey, sessionKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
 };
