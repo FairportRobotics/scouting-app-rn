@@ -2,18 +2,47 @@ import type { Event, Match, Team } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
 
+/*
+events
+event_tatches
+event_teams
+
+event_current
+match_scouting_results
+match_scouting_current
+
+pit_scouting_results
+pit_scouting_current
+*/
+
+const executeSql = (query: string, params: Array<any> = []) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          query,
+          params,
+          (_, { rows }) => resolve(rows._array),
+          (_, error) => false
+        );
+      },
+      (error) => reject(error)
+    );
+  });
+};
+
 export function initializeDatabase(dropAndRecreate: boolean = false) {
   db.transaction((tx) => {
     // Provide a means of dropping and recreating all the tables.
     if (dropAndRecreate) {
-      tx.executeSql("DROP TABLE IF EXISTS event");
+      tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
     }
 
     // Create new tables.
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS event (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
+      "CREATE TABLE IF NOT EXISTS events (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
     );
 
     tx.executeSql(
@@ -29,7 +58,7 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
 export function saveEvent(event: Event) {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO event(key, name, shortName, startDate, endDate) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO events(key, name, shortName, startDate, endDate) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
       [
         event.key,
         event.name,
@@ -37,9 +66,7 @@ export function saveEvent(event: Event) {
         event.startDate.toISOString(),
         event.endDate.toISOString(),
       ],
-      (txObj, resultSet) => {
-        // Do nothing.
-      },
+      (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
         return false;
@@ -91,50 +118,52 @@ export function saveEventTeams(eventKey: string, teams: Array<Team>) {
   });
 }
 
-export function getEvent(eventKey: string) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "SELECT * FROM event WHERE key = ?",
-      [eventKey],
-      (txObj, resultSet) => {
-        return resultSet.rows._array[0] as Event | undefined;
-      },
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
+export const getEvent = async (eventKey: string) => {
+  try {
+    const query = "SELECT * FROM events WHERE key = ?";
+    const params = [eventKey];
+    const results = await executeSql(query, params);
+    return results as Event;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+};
 
-export function getMatchesForEvent(eventKey: string) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "SELECT * FROM event_matches WHERE eventKey = ?",
-      [eventKey],
-      (txObj, resultSet) => {
-        return resultSet.rows._array as Array<Match> | undefined;
-      },
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
+export const getEvents = async () => {
+  try {
+    const query = "SELECT * FROM events";
+    const results = await executeSql(query, []);
+    return results as Array<Event> | [];
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};
 
-export function getTeamsForEvent(eventKey: string) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "SELECT * FROM event_teams WHERE eventKey = ?",
-      [eventKey],
-      (txObj, resultSet) => {
-        return resultSet.rows._array as Array<Team> | undefined;
-      },
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
+export const getMatchesForEvent = async (eventKey: string) => {
+  try {
+    const query = "SELECT * FROM event_matches WHERE eventKey = ?";
+    const params = [eventKey];
+    const results = await executeSql(query, params);
+
+    console.log("getMatchesForEvent results:", results);
+
+    return results as Array<Match> | [];
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};
+
+export const getTeamsForEvent = async (eventKey: string) => {
+  try {
+    const query = "SELECT * FROM event_teams WHERE eventKey = ?";
+    const params = [eventKey];
+    const results = await executeSql(query, params);
+    return results as Array<Team> | [];
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};

@@ -6,12 +6,9 @@ import ContainerGroup from "@/components/ContainerGroup";
 import fetchEvent from "@/helpers/fetchEvent";
 import fetchEventMatches from "@/helpers/fetchEventMatches";
 import fetchEventTeams from "@/helpers/fetchEventTeams";
-import * as SQLite from "expo-sqlite";
 import * as Database from "@/helpers/database";
 
 export default function TBACaches() {
-  const db = SQLite.openDatabase("scouting-app.db");
-
   useEffect(() => {
     Database.initializeDatabase();
   });
@@ -48,20 +45,23 @@ export default function TBACaches() {
     Database.saveEventTeams(eventKey, teams);
   };
 
-  const handleFetchEventData = () => {
+  const handleFetchEventData = async () => {
     handleFetchEvent();
     handleFetchEventMatches();
     handleFetchEventTeams();
+
+    let allEvents = await Database.getEvents();
+    console.log("allEvents:", allEvents);
   };
 
-  const handleLoadEventData = () => {
-    let event = Database.getEvent(eventKey);
-    if (event !== undefined) setEvent(event);
+  const handleLoadEventData = async () => {
+    let event = await Database.getEvent(eventKey);
+    if (event !== null) setEvent(event);
 
-    let matches = Database.getMatchesForEvent(eventKey);
+    let matches = await Database.getMatchesForEvent(eventKey);
     if (matches !== undefined) setEventMatches(matches);
 
-    let teams = Database.getTeamsForEvent(eventKey);
+    let teams = await Database.getTeamsForEvent(eventKey);
     if (teams !== undefined) setEventTeams(teams);
   };
 

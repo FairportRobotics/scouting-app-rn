@@ -20,7 +20,6 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   onPress,
   style,
 }) => {
-  // Respond to the team being selected and pass to the parent.
   const handleOnPress = () => {
     onPress();
   };
@@ -30,6 +29,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
       alliance === "Blue"
         ? match.blueTeams[allianceTeam - 1]
         : match.redTeams[allianceTeam - 1];
+
     let team: Team = teamsLookup[teamKey];
     if (team === undefined) return "?";
     else return team.teamNumber;
