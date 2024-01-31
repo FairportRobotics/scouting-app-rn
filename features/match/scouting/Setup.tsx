@@ -15,6 +15,7 @@ export default function Setup() {
   // -/+ for counters and check/uncheck for checkboxes. This seems excessive but
   // we're also dealing with a single-user DB so it might not be a big deal.
   useEffect(() => {
+    // Hard-code the session key for now.
     let sessionKey = "2023nyrr__2023nyrr_qm3__Blue__1";
     Database.saveScoutingMatchSessionSetup(
       sessionKey,
