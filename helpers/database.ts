@@ -196,19 +196,26 @@ export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
   });
 }
 
-export const getEvent = async (eventKey: string) => {
+export const getEvent = async (
+  eventKey: string
+): Promise<Event | undefined> => {
   try {
     const query = "SELECT * FROM events WHERE key = ?";
     const params = [eventKey];
-    const dtos = (await executeSql(query, params)) as Array<Event>;
-    if (dtos.length > 0) dtos[0] as Event;
+    const results = (await executeSql(query, params)) as Event[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    return null;
+    console.error("Error fetching match scouting session:", error);
+    return undefined;
   }
 };
 
-export const getEvents = async () => {
+export const getEvents = async (): Promise<Array<Event>> => {
   try {
     const query = "SELECT * FROM events ORDER BY key";
     return (await executeSql(query, [])) as Array<Event>;
@@ -229,7 +236,9 @@ export const getMatchesForEvent = async (eventKey: string) => {
   }
 };
 
-export const getTeamsForEvent = async (eventKey: string) => {
+export const getTeamsForEvent = async (
+  eventKey: string
+): Promise<Array<Team>> => {
   try {
     const query =
       "SELECT * FROM event_teams WHERE eventKey = ? ORDER BY teamNumber";
@@ -245,12 +254,13 @@ export const initializeMatchScoutingSession = async (
   eventKey: string,
   matchKey: string,
   alliance: string,
-  allianceTeam: number
+  allianceTeam: number,
+  teamKey: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO match_scouting_sessions(key, eventKey, matchKey, alliance, allianceTeam) \
-      VALUES(?, ?, ?, ?, ?) \
+      "INSERT INTO match_scouting_sessions(key, eventKey, matchKey, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
+      VALUES(?, ?, ?, ?, ?, ?, ?) \
       ON CONFLICT (key) DO NOTHING",
       [
         `${eventKey}__${matchKey}__${alliance}__${allianceTeam}`,
@@ -258,6 +268,8 @@ export const initializeMatchScoutingSession = async (
         matchKey,
         alliance,
         allianceTeam,
+        teamKey,
+        teamKey,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -268,7 +280,9 @@ export const initializeMatchScoutingSession = async (
   });
 };
 
-export const getMatchScoutingSessions = async () => {
+export const getMatchScoutingSessions = async (): Promise<
+  Array<MatchScoutingSession>
+> => {
   try {
     const query = "SELECT * FROM match_scouting_sessions";
     return (await executeSql(query, [])) as Array<MatchScoutingSession>;
@@ -278,22 +292,26 @@ export const getMatchScoutingSessions = async () => {
   }
 };
 
-export const getMatchScoutingSession = async (sessionKey: string) => {
+export const getMatchScoutingSession = async (
+  sessionKey: string
+): Promise<MatchScoutingSession | undefined> => {
   try {
     const query = "SELECT * FROM match_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
-    const results = (await executeSql(
-      query,
-      []
-    )) as Array<MatchScoutingSession>;
-    return results[0];
+    const results = (await executeSql(query, params)) as MatchScoutingSession[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    return [];
+    console.error("Error fetching match scouting session:", error);
+    return undefined;
   }
 };
 
-export const saveScoutingMatchSessionSetup = async (
+export const updateScoutingMatchSessionSetup = async (
   sessionKey: string,
   scouterName: string,
   scoutedTeamKey: string

@@ -1,5 +1,5 @@
 export default {
-  appBackground: "#d9d9d9",
+  appBackground: "#f2f2f2",
   containerBackground: "#fff",
 
   primary: "#ff9200",

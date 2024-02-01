@@ -5,8 +5,12 @@ import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 import * as Database from "@/helpers/database";
+import { useNavigation } from "@react-navigation/native";
+import MatchSetup from "@/features/match/scouting/Setup";
 
 export default function SelectMatch() {
+  const navigation = useNavigation();
+
   // Support for retrieving Event Matches and Teams.
   const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
@@ -35,14 +39,15 @@ export default function SelectMatch() {
   const handleMatchSelect = async (
     matchKey: string,
     alliance: string,
-    allianceTeam: number
+    allianceTeam: number,
+    teamKey: string
   ) => {
-    console.log("SelectMatch:", matchKey, alliance, allianceTeam);
     await Database.initializeMatchScoutingSession(
       eventKey,
       matchKey,
       alliance,
-      allianceTeam
+      allianceTeam,
+      teamKey
     );
   };
 
@@ -55,8 +60,8 @@ export default function SelectMatch() {
             key={match.key}
             match={match}
             teamsLookup={eventTeams}
-            onSelect={(matchKey, alliance, allianceNumber) =>
-              handleMatchSelect(matchKey, alliance, allianceNumber)
+            onSelect={(matchKey, alliance, allianceNumber, teamKey) =>
+              handleMatchSelect(matchKey, alliance, allianceNumber, teamKey)
             }
           />
         ))}
