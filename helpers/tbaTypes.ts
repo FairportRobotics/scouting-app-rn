@@ -16,10 +16,10 @@ export interface TbaMatch {
   predicted_time: number;
   alliances: {
     blue: {
-      team_keys: [string];
+      team_keys: Array<string>;
     };
     red: {
-      team_keys: [string];
+      team_keys: Array<string>;
     };
   };
 }

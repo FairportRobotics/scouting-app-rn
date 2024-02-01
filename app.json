@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "react-scouting",
+    "name": "Scouter",
     "slug": "scouting-app-rn",
-    "version": "1.0.0",
+    "version": "2024.02.011115",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

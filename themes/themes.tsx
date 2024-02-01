@@ -66,4 +66,12 @@ export default StyleSheet.create({
     width: 50,
     height: 50,
   },
+  textInput: {
+    width: "100%",
+    fontSize: 20,
+    padding: 8,
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: "darkgray",
+  },
 });

@@ -78,8 +78,8 @@ export default function TBACaches() {
     if (teams !== undefined) setEventTeams(teams);
   };
 
-  const handleInitializeDatabase = async () => {
-    await Database.initializeDatabase(true);
+  const handleInitializeDatabase = () => {
+    Database.initializeDatabase(true);
   };
 
   return (

@@ -38,6 +38,7 @@ export default function App() {
 
         <Drawer.Screen name="Scout Pit" component={PitScoutSelectTeam} />
         <Drawer.Screen name="   Team" component={PitScoutTeam} />
+
         <Drawer.Screen name="Settings" component={Settings} />
         <Drawer.Screen name="   Testing" component={Testing} />
         <Drawer.Screen name="   Share DB" component={ShareDB} />

@@ -1,6 +1,5 @@
 import type { TbaEvent, TbaMatch, TbaTeam } from "@/helpers/tbaTypes";
-import type { EventDto, MatchDto, TeamDto } from "@/helpers/types";
-import { Event, Match, Team } from "@/helpers/types";
+import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
 
@@ -18,7 +17,7 @@ event_teams:
 Stores all the Teams associated with all the Events.
 
 match_scouting_sessions:
-
+We will keep track of all the scouting sessions here.
 
 current_event
 current_match_scouting_session
@@ -53,19 +52,29 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
 
     // Create new tables.
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS events (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
+      "CREATE TABLE IF NOT EXISTS events \
+      (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS event_matches (key TEXT PRIMARY KEY, eventKey TEXT, matchNumber INTEGER, predictedTime TEXT, blueTeams TEXT, redTeams TEXT)"
+      "CREATE TABLE IF NOT EXISTS event_matches \
+      (key TEXT PRIMARY KEY, eventKey TEXT, matchNumber INTEGER, predictedTime TEXT, \
+        blue1TeamKey TEXT, blue2TeamKey TEXT, blue3TeamKey TEXT, \
+        red1TeamKey TEXT, red2TeamKey TEXT, red3TeamKey TEXT)"
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS event_teams (key TEXT PRIMARY KEY, eventKey TEXT, teamNumber INTEGER, nickname TEXT)"
+      "CREATE TABLE IF NOT EXISTS event_teams \
+      (key TEXT PRIMARY KEY, eventKey TEXT, teamNumber INTEGER, nickname TEXT)"
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS match_scouting_sessions (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, alliance TEXT, allianceTeam INTEGER)"
+      "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
+      (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
+        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, \
+        teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
+        endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
+        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalPenalties INTEGER, finalNotes TEXT)"
     );
   });
 }
@@ -73,7 +82,9 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
 export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO events(key, name, shortName, startDate, endDate) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO events(key, name, shortName, startDate, endDate) \
+      VALUES(?, ?, ?, ?, ?) \
+      ON CONFLICT (key) DO NOTHING",
       [
         event.key,
         event.name,
@@ -93,14 +104,21 @@ export function saveEvent(event: TbaEvent) {
 export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, blueTeams, redTeams) VALUES(?, ?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, \
+        blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON \
+      CONFLICT (key) DO NOTHING",
       [
         "practice",
         eventKey,
         0,
         new Date(0).toISOString(),
-        "[0,0,0]",
-        "[0,0,0]",
+        "frc00000",
+        "frc00000",
+        "frc00000",
+        "frc00000",
+        "frc00000",
+        "frc00000",
       ],
       (txObj, resultSet) => {
         // Do nothing.
@@ -113,14 +131,21 @@ export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
 
     matches.forEach((match) => {
       tx.executeSql(
-        "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, blueTeams, redTeams) VALUES(?, ?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO event_matches(key, eventKey, matchNumber, predictedTime, \
+          blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON \
+        CONFLICT (key) DO NOTHING",
         [
           match.key,
           eventKey,
           match.match_number,
-          new Date(match.predicted_time).toISOString(),
-          JSON.stringify(match.alliances.blue.team_keys),
-          JSON.stringify(match.alliances.red.team_keys),
+          new Date(1000 * match.predicted_time).toISOString(),
+          match.alliances.blue.team_keys[0],
+          match.alliances.blue.team_keys[1],
+          match.alliances.blue.team_keys[2],
+          match.alliances.red.team_keys[0],
+          match.alliances.red.team_keys[1],
+          match.alliances.red.team_keys[2],
         ],
         (txObj, resultSet) => {
           // Do nothing.
@@ -136,8 +161,11 @@ export function saveEventMatches(eventKey: string, matches: Array<TbaMatch>) {
 
 export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
   db.transaction((tx) => {
+    // Insert a Practice Match placeholder.
     tx.executeSql(
-      "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) VALUES(?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) \
+      VALUES(?, ?, ?, ?) \
+      ON CONFLICT (key) DO NOTHING",
       ["practice", eventKey, 0, "Practice Team"],
       (txObj, resultSet) => {
         // Do nothing.
@@ -148,9 +176,13 @@ export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
       }
     );
 
+    // Insert a Practice Match placeholder.
+    // TBD: UPSERT this so if match schedules change, we can update the application.
     teams.forEach((team) => {
       tx.executeSql(
-        "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) VALUES(?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+        "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) \
+        VALUES(?, ?, ?, ?) \
+        ON CONFLICT (key) DO NOTHING",
         [team.key, eventKey, team.team_number, team.nickname],
         (txObj, resultSet) => {
           // Do nothing.
@@ -164,23 +196,29 @@ export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
   });
 }
 
-export const getEvent = async (eventKey: string) => {
+export const getEvent = async (
+  eventKey: string
+): Promise<Event | undefined> => {
   try {
     const query = "SELECT * FROM events WHERE key = ?";
     const params = [eventKey];
-    const dtos = (await executeSql(query, params)) as Array<EventDto>;
-    if (dtos.length > 0) return Event.fromDto(dtos[0]) as Event;
+    const results = (await executeSql(query, params)) as Event[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
   } catch (error) {
-    console.error("Error fetching user data:", error);
-    return null;
+    console.error("Error fetching match scouting session:", error);
+    return undefined;
   }
 };
 
-export const getEvents = async () => {
+export const getEvents = async (): Promise<Array<Event>> => {
   try {
     const query = "SELECT * FROM events ORDER BY key";
-    const dtos = (await executeSql(query, [])) as Array<EventDto>;
-    return Event.fromDtos(dtos) as Array<Event>;
+    return (await executeSql(query, [])) as Array<Event>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
@@ -192,20 +230,20 @@ export const getMatchesForEvent = async (eventKey: string) => {
     const query =
       "SELECT * FROM event_matches WHERE eventKey = ? ORDER BY matchNumber";
     const params = [eventKey];
-    const dtos = (await executeSql(query, params)) as Array<MatchDto>;
-    return Match.fromDtos(dtos) as Array<Match>;
+    return (await executeSql(query, params)) as Array<Match>;
   } catch (error) {
     return [];
   }
 };
 
-export const getTeamsForEvent = async (eventKey: string) => {
+export const getTeamsForEvent = async (
+  eventKey: string
+): Promise<Array<Team>> => {
   try {
     const query =
       "SELECT * FROM event_teams WHERE eventKey = ? ORDER BY teamNumber";
     const params = [eventKey];
-    const dtos = (await executeSql(query, params)) as Array<TeamDto>;
-    return Team.fromDtos(dtos) as Array<Team>;
+    return (await executeSql(query, params)) as Array<Team>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
@@ -216,17 +254,22 @@ export const initializeMatchScoutingSession = async (
   eventKey: string,
   matchKey: string,
   alliance: string,
-  allianceTeam: number
+  allianceTeam: number,
+  teamKey: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO match_scouting_sessions(key, eventKey, matchKey, alliance, allianceTeam) VALUES(?, ?, ?, ?, ?) ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO match_scouting_sessions(key, eventKey, matchKey, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
+      VALUES(?, ?, ?, ?, ?, ?, ?) \
+      ON CONFLICT (key) DO NOTHING",
       [
         `${eventKey}__${matchKey}__${alliance}__${allianceTeam}`,
         eventKey,
         matchKey,
         alliance,
         allianceTeam,
+        teamKey,
+        teamKey,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -237,13 +280,51 @@ export const initializeMatchScoutingSession = async (
   });
 };
 
-export const getMatchScoutingSessions = async () => {
+export const getMatchScoutingSessions = async (): Promise<
+  Array<MatchScoutingSession>
+> => {
   try {
     const query = "SELECT * FROM match_scouting_sessions";
-    const dtos = await executeSql(query, []);
-    return dtos;
+    return (await executeSql(query, [])) as Array<MatchScoutingSession>;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
   }
+};
+
+export const getMatchScoutingSession = async (
+  sessionKey: string
+): Promise<MatchScoutingSession | undefined> => {
+  try {
+    const query = "SELECT * FROM match_scouting_sessions WHERE key = ? LIMIT 1";
+    const params = [sessionKey];
+    const results = (await executeSql(query, params)) as MatchScoutingSession[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error fetching match scouting session:", error);
+    return undefined;
+  }
+};
+
+export const updateScoutingMatchSessionSetup = async (
+  sessionKey: string,
+  scouterName: string,
+  scoutedTeamKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE match_scouting_sessions SET scouterName = ?, scoutedTeamKey = ? WHERE key = ?",
+      [scouterName, scoutedTeamKey, sessionKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
 };
