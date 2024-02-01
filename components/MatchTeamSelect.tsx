@@ -28,16 +28,36 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   const lookupTeam = (alliance: string, allianceTeam: number) => {
     // Using the Alliance and the AllianceTeam, retrieve the teamKey
     // from the dictionary for the Alliance color.
-    let teamKey: string;
-    switch (alliance) {
-      case Alliance.Blue:
-        teamKey = match.blueTeams[allianceTeam];
-        break;
-      case Alliance.Red:
-        teamKey = match.redTeams[allianceTeam];
-        break;
-      default:
-        teamKey = "";
+    let teamKey: string = "";
+
+    if (alliance === Alliance.Blue) {
+      switch (allianceTeam) {
+        case AllianceTeam.One:
+          teamKey = match.blue1TeamKey;
+          break;
+        case AllianceTeam.Two:
+          teamKey = match.blue2TeamKey;
+          break;
+        case AllianceTeam.Three:
+          teamKey = match.blue3TeamKey;
+          break;
+        default:
+          teamKey = "";
+      }
+    } else if (alliance === Alliance.Red) {
+      switch (allianceTeam) {
+        case AllianceTeam.One:
+          teamKey = match.red1TeamKey;
+          break;
+        case AllianceTeam.Two:
+          teamKey = match.red2TeamKey;
+          break;
+        case AllianceTeam.Three:
+          teamKey = match.red3TeamKey;
+          break;
+        default:
+          teamKey = "";
+      }
     }
 
     // Lookup the actual Team based on the teamKey.
