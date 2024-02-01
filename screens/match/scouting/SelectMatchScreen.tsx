@@ -8,7 +8,7 @@ import * as Database from "@/helpers/database";
 
 const eventKey = "2023nyrr";
 
-export default function SelectMatch() {
+export default function SelectMatchScreen() {
   // Support for retrieving Event Matches and Teams.
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});

@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
-import ContainerGroup from "@/components/ContainerGroup";
+import { View, ScrollView } from "react-native";
+import Check from "@/components/Check";
 import MinusPlusPair from "@/components/MinusPlusPair";
+import ContainerGroup from "@/components/ContainerGroup";
+import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 
-export default function Teleop() {
-  // Support for Speaker Score Non-Amplified
+export default function AutoScreen() {
+  // Support for Started with Note
+  const [startedWithNote, setStartedWithNote] = useState(false);
+  const handleToggleStartedWithNote = () => {
+    setStartedWithNote((prev) => !prev);
+  };
+
+  // Support for Left Start Area
+  const [leftStartArea, setLeftStartArea] = useState(false);
+  const handleToggleLeftStartArea = () => {
+    setLeftStartArea((prev) => !prev);
+  };
+
+  // Support for Speaker Score
   const [speakerScore, setSpeakerScore] = useState(0);
   const handleSpeakerScore = (delta: number) => {
     setSpeakerScore((prev) => (prev += delta));
-  };
-
-  // SUpport for Speaker Score Amplified
-  const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState(0);
-  const handleSpeakerScoreAmplified = (delta: number) => {
-    setSpeakerScoreAmplified((prev) => (prev += delta));
   };
 
   // Support for Speaker Miss
@@ -35,36 +42,48 @@ export default function Teleop() {
     setAmpMiss((prev) => (prev += delta));
   };
 
-  // Support for Pass
-  const [pass, setPass] = useState(0);
-  const handlePass = (delta: number) => {
-    setPass((prev) => (prev += delta));
-  };
-
   useEffect(() => {
-    console.log("Teleop: Update the session");
+    console.log("Auto: Update the session");
   }, [
+    startedWithNote,
+    leftStartArea,
     speakerScore,
-    speakerScoreAmplified,
     speakerMiss,
     ampScore,
     ampMiss,
-    pass,
   ]);
 
   return (
     <ScrollView style={{ margin: 10 }}>
       <MatchScoutingHeader />
+      <ContainerGroup title="Start">
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            rowGap: 3,
+            width: "100%",
+          }}
+        >
+          <Check
+            label="Started with Note"
+            checked={startedWithNote}
+            onToggle={handleToggleStartedWithNote}
+          />
+          <Check
+            label="Left Start Area"
+            checked={leftStartArea}
+            onToggle={handleToggleLeftStartArea}
+          />
+        </View>
+      </ContainerGroup>
+
       <ContainerGroup title="Speaker">
         <MinusPlusPair
-          label="Score: Non-Amplified"
+          label="Score"
           count={speakerScore}
           onChange={handleSpeakerScore}
-        />
-        <MinusPlusPair
-          label="Score: Amplified"
-          count={speakerScoreAmplified}
-          onChange={handleSpeakerScoreAmplified}
         />
         <MinusPlusPair
           label="Miss"
@@ -72,6 +91,7 @@ export default function Teleop() {
           onChange={handleSpeakerMiss}
         />
       </ContainerGroup>
+
       <ContainerGroup title="Amp">
         <MinusPlusPair
           label="Score"
@@ -79,9 +99,6 @@ export default function Teleop() {
           onChange={handleAmpScore}
         />
         <MinusPlusPair label="Miss" count={ampMiss} onChange={handleAmpMiss} />
-      </ContainerGroup>
-      <ContainerGroup title="Relay">
-        <MinusPlusPair label="Passes" count={pass} onChange={handlePass} />
       </ContainerGroup>
     </ScrollView>
   );

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { View, ScrollView, TextInput } from "react-native";
+import { ScrollView, TextInput } from "react-native";
 import themes from "../../../themes/themes";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
 import MinusPlusPair from "@/components/MinusPlusPair";
 import OptionSelect from "@/components/OptionSelect";
 
-export default function Final() {
+export default function FinalScreen() {
   // [X] Total Score (-/+)
   // [X] Ranking Points (-/+)
   // [X] Alliance Result (Win/Lose/Tie)
