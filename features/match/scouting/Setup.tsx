@@ -124,7 +124,7 @@ const Setup = () => {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <ContainerGroup title="WTF">
+      <ContainerGroup title="Session">
         <Text>{JSON.stringify(currentSession)}</Text>
       </ContainerGroup>
     </ScrollView>
