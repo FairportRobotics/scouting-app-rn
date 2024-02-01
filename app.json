@@ -2,7 +2,7 @@
   "expo": {
     "name": "Scouter",
     "slug": "scouting-app-rn",
-    "version": "2024.02.011115",
+    "version": "2024020.11457.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
