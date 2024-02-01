@@ -1,6 +1,6 @@
 import { Text, View, ScrollView } from "react-native";
 
-export default function PitScoutResults() {
+export default function PitResultsScreen() {
   // [ ] List of Teams with:
   //    [ ] Team Number
   //    [ ] Team Nickname

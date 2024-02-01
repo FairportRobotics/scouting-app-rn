@@ -26,7 +26,7 @@ might name the variable and data properties.
 
 */
 
-export default function PitScoutTeam() {
+export default function ScoutTeam() {
   const onChangeHelloWorld = (option: string) => {
     console.log("onChangeHelloWorld option:", option);
   };

@@ -1,11 +1,11 @@
 import { ScrollView } from "react-native";
 import { useEffect, useState } from "react";
-import type { Team } from "@/helpers/types";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import PitTeamSelect from "@/components/PitTeamSelect";
+import type { Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
 
-export default function PitScoutSelectTeam() {
+export default function SelectTeamScreen() {
   const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 

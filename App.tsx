@@ -3,24 +3,22 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 // Scouting Match Screens.
-import MatchScoutSelectMatch from "./features/match/scouting/SelectMatch";
-import MatchScoutSetup from "./features/match/scouting/Setup";
-import MatchScoutAuto from "./features/match/scouting/Auto";
-import MatchScoutTeleop from "./features/match/scouting/Teleop";
-import MatchScoutEndgame from "./features/match/scouting/Endgame";
-import MatchScoutFinal from "./features/match/scouting/Final";
+import MatchScoutSelectMatch from "@/screens/match/scouting/SelectMatchScreen";
+import MatchScoutSetup from "@/screens/match/scouting/SetupScreen";
+import MatchScoutAuto from "@/screens/match/scouting/AutoScreen";
+import MatchScoutTeleop from "@/screens/match/scouting/TeleopScreen";
+import MatchScoutEndgame from "@/screens/match/scouting/EndgameScreen";
+import MatchScoutFinal from "@/screens/match/scouting/FinalScreen";
+import MatchScoutResults from "@/screens/match/results/MatchResultsScreen";
 
 // Pit Scouting screens.
-import PitScoutSelectTeam from "./features/pit/scouting/PitScoutSelectTeam";
-import PitScoutTeam from "@/features/pit/scouting/PitScoutTeam";
-
-// Results screens.
-import MatchScoutResults from "./features/match/results/MatchResults";
-import PitScoutResults from "./features/pit/results/PitScoutResults";
+import SelectTeamScreen from "@/screens/pit/scouting/SelectTeamScreen";
+import ScoutTeam from "@/screens/pit/scouting/ScoutTeam";
+import PitResultsScreen from "@/screens/pit/results/PitResultsScreen";
 
 // Other screens.
-import Settings from "@/features/admin/Settings";
-import Testing from "@/features/Testing";
+import SettingsScreen from "@/screens/admin/SettingsScreen";
+import Testing from "@/screens/Testing";
 import ShareDB from "@/components/ShareDB";
 
 const Drawer = createDrawerNavigator();
@@ -36,10 +34,10 @@ export default function App() {
         <Drawer.Screen name="   Endgame" component={MatchScoutEndgame} />
         <Drawer.Screen name="   Final" component={MatchScoutFinal} />
 
-        <Drawer.Screen name="Scout Pit" component={PitScoutSelectTeam} />
-        <Drawer.Screen name="   Team" component={PitScoutTeam} />
+        <Drawer.Screen name="Scout Pit" component={SelectTeamScreen} />
+        <Drawer.Screen name="   Team" component={ScoutTeam} />
 
-        <Drawer.Screen name="Settings" component={Settings} />
+        <Drawer.Screen name="Settings" component={SettingsScreen} />
         <Drawer.Screen name="   Testing" component={Testing} />
         <Drawer.Screen name="   Share DB" component={ShareDB} />
 
@@ -49,7 +47,7 @@ export default function App() {
         />
         <Drawer.Screen
           name="Results of Pit Scouting"
-          component={PitScoutResults}
+          component={PitResultsScreen}
         />
       </Drawer.Navigator>
     </NavigationContainer>

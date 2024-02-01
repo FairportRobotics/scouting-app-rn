@@ -1,6 +1,6 @@
 import { Text, View, ScrollView } from "react-native";
 
-export default function MatchScoutResults() {
+export default function MatchResultsScreen() {
   // [ ] List of Matches (Match Number/Team) with:
   //    [ ] Team Number
   //    [ ] Team Nickname

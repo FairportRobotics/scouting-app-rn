@@ -1,9 +1,9 @@
-import { StyleSheet, ScrollView, Text } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import FRSettings from "./FRSettings";
 import TBASettings from "./TBASettings";
 import TBACaches from "./TBACaches";
 
-const Settings = () => {
+export default function SettingsScreen() {
   return (
     <ScrollView style={{ margin: 10 }}>
       <FRSettings />
@@ -11,9 +11,7 @@ const Settings = () => {
       <TBACaches />
     </ScrollView>
   );
-};
-
-export default Settings;
+}
 
 const styles = StyleSheet.create({
   container: {

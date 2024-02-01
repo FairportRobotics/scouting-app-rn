@@ -11,7 +11,7 @@ import { MatchScoutingSession, Team } from "@/helpers/types";
 // That is not wired up yet as I'm still learing about navigation/routing.
 const sessionKey = "2023nyrr__2023nyrr_qm1__Blue__1";
 
-const Setup = () => {
+export default function SetupScreen() {
   // Support for state.
   const [currentSession, setSession] = useState<MatchScoutingSession>();
   const [scouterName, setScouterName] = useState<string>("");
@@ -129,6 +129,4 @@ const Setup = () => {
       </ContainerGroup>
     </ScrollView>
   );
-};
-
-export default Setup;
+}

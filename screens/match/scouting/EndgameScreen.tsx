@@ -6,7 +6,7 @@ import MinusPlusPair from "@/components/MinusPlusPair";
 import Check from "@/components/Check";
 import OptionSelect from "@/components/OptionSelect";
 
-export default function Endgame() {
+export default function EndgameScreen() {
   // [X] Trap Score (-/+)
   // [X] Microphone Score (-/+)
   // [X] Did Robot Park (cechkbox)
