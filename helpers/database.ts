@@ -278,6 +278,21 @@ export const getMatchScoutingSessions = async () => {
   }
 };
 
+export const getMatchScoutingSession = async (sessionKey: string) => {
+  try {
+    const query = "SELECT * FROM match_scouting_sessions WHERE key = ? LIMIT 1";
+    const params = [sessionKey];
+    const results = (await executeSql(
+      query,
+      []
+    )) as Array<MatchScoutingSession>;
+    return results[0];
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};
+
 export const saveScoutingMatchSessionSetup = async (
   sessionKey: string,
   scouterName: string,
