@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
@@ -43,6 +43,10 @@ export default function Endgame() {
   const handleHarmonyScore = (option: string) => {
     setHarmonyScore(option);
   };
+
+  useEffect(() => {
+    console.log("Auto: Update the session");
+  }, [trapScore, microphoneScore, didRobotPark, didRobotHang, harmonyScore]);
 
   return (
     <ScrollView style={{ margin: 10 }}>

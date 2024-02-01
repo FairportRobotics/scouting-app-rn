@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
@@ -40,6 +40,17 @@ export default function Teleop() {
   const handlePass = (delta: number) => {
     setPass((prev) => (prev += delta));
   };
+
+  useEffect(() => {
+    console.log("Teleop: Update the session");
+  }, [
+    speakerScore,
+    speakerScoreAmplified,
+    speakerMiss,
+    ampScore,
+    ampMiss,
+    pass,
+  ]);
 
   return (
     <ScrollView style={{ margin: 10 }}>
