@@ -30,7 +30,6 @@ export default function SetupScreen() {
       try {
         // Load the session associated with the key.
         const session = await Database.getMatchScoutingSession(sessionKey);
-        console.log("session:", session);
         if (session === undefined) return;
         setSession(session);
 
