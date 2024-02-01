@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import Check from "@/components/Check";
 import MinusPlusPair from "@/components/MinusPlusPair";
@@ -41,6 +41,17 @@ export default function Auto() {
   const handleAmpMiss = (delta: number) => {
     setAmpMiss((prev) => (prev += delta));
   };
+
+  useEffect(() => {
+    console.log("Auto: Update the session");
+  }, [
+    startedWithNote,
+    leftStartArea,
+    speakerScore,
+    speakerMiss,
+    ampScore,
+    ampMiss,
+  ]);
 
   return (
     <ScrollView style={{ margin: 10 }}>

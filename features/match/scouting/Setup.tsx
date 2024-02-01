@@ -125,7 +125,7 @@ const Setup = () => {
         ))}
       </ContainerGroup>
       <ContainerGroup title="Session">
-        <Text>{JSON.stringify(currentSession)}</Text>
+        <Text>{JSON.stringify(currentSession, null, 2)}</Text>
       </ContainerGroup>
     </ScrollView>
   );

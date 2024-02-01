@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Text, View, ScrollView, TextInput } from "react-native";
+import { useEffect, useState } from "react";
+import { View, ScrollView, TextInput } from "react-native";
 import themes from "../../../themes/themes";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
@@ -44,6 +44,10 @@ export default function Final() {
     setNotes(note);
   };
 
+  useEffect(() => {
+    console.log("Final: Update the session");
+  }, [totalScore, rankingPoints, allianceResult, penalties, notes]);
+
   return (
     <ScrollView style={{ margin: 10 }}>
       <MatchScoutingHeader />
@@ -70,17 +74,15 @@ export default function Final() {
         />
       </ContainerGroup>
       <ContainerGroup title="Notes">
-        <View>
-          <TextInput
-            multiline
-            numberOfLines={5}
-            maxLength={1024}
-            value={notes}
-            onChangeText={(text) => handleNotes(text)}
-            style={{ height: 100 }}
-            placeholder="Make note of anything interesting that happened during the Match that we might want to consider later."
-          />
-        </View>
+        <TextInput
+          multiline
+          maxLength={1024}
+          numberOfLines={5}
+          style={[themes.textInput, { height: 200 }]}
+          value={notes}
+          onChangeText={(text) => handleNotes(text)}
+          placeholder="Anything interesting happen?"
+        />
       </ContainerGroup>
     </ScrollView>
   );

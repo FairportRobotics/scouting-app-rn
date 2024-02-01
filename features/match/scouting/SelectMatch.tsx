@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import { ScrollView } from "react-native";
-import type { Match, Team } from "@/helpers/types";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ContainerGroup from "@/components/ContainerGroup";
+import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
+import type { Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
-import { useNavigation } from "@react-navigation/native";
-import MatchSetup from "@/features/match/scouting/Setup";
+
+const eventKey = "2023nyrr";
 
 export default function SelectMatch() {
-  const navigation = useNavigation();
-
   // Support for retrieving Event Matches and Teams.
-  const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
 
