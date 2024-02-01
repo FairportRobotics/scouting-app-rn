@@ -7,11 +7,11 @@ import themes from "@/themes/themes";
 import colors from "@/themes/colors";
 import { MatchScoutingSession, Team } from "@/helpers/types";
 
-const Setup = () => {
-  // These will ultimately be initialized with values, if any, from the database.
-  // That is not wired up yet as I'm still learing about navigation/routing.
-  const sessionKey = "2023nyrr__2023nyrr_qm1__Blue__1";
+// These will ultimately be initialized with values, if any, from the database.
+// That is not wired up yet as I'm still learing about navigation/routing.
+const sessionKey = "2023nyrr__2023nyrr_qm1__Blue__1";
 
+const Setup = () => {
   // Support for state.
   const [currentSession, setSession] = useState<MatchScoutingSession>();
   const [scouterName, setScouterName] = useState<string>("");
