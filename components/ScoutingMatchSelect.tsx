@@ -13,14 +13,12 @@ interface ScoutingMatchSelectProps {
     allianceTeam: number,
     teamKey: string
   ) => void;
-  style?: {};
 }
 
 const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
   match,
   eventTeams,
   onSelect,
-  style,
 }) => {
   const handleOnSelect = (
     matchKey: string,

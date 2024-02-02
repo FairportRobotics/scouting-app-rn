@@ -115,7 +115,6 @@ export default function IndexScreen() {
         <View style={{ flex: 1 }}>
           {mode === Mode.Select && (
             <SelectMatchScreen
-              event={currentEvent}
               eventMatches={eventMatches}
               eventTeams={eventTeams}
               onSelect={(matchKey, alliance, allianceNumber, teamKey) =>

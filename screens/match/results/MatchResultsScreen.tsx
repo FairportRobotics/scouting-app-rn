@@ -1,9 +1,8 @@
 import { Text, RefreshControl, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import { Match, Team, MatchScoutingSession } from "@/helpers/types";
+import { Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
 import ContainerGroup from "@/components/ContainerGroup";
-import ScoutTeam from "@/screens/pit/scouting/ScoutTeam";
 
 export type MatchResultModel = {
   sessionKey: string;

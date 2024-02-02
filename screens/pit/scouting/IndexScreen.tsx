@@ -1,16 +1,20 @@
-import { ScrollView } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { useEffect, useState } from "react";
 import type { Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
-import SelectTeamRow from "./SelectTeamRow";
+import SelectTeamScreen from "./SelectTeamScreen";
 
-interface SelectTeamScreenProps {
-  onSelect: (teamKey: string) => void;
-}
+const Mode = {
+  Select: { previousMode: "Select", nextMode: "Scout" },
+  Scout: { previousMode: "Select", nextMode: "Select" },
+};
 
-const SelectTeamScreen: React.FC<SelectTeamScreenProps> = ({ onSelect }) => {
+export default function IndexScreen() {
   const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
+
+  // Current mode.
+  const [mode, setMode] = useState(Mode.Select);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,20 +29,16 @@ const SelectTeamScreen: React.FC<SelectTeamScreenProps> = ({ onSelect }) => {
   }, []);
 
   const handleOnSelect = (teamKey: string) => {
-    onSelect(teamKey);
+    console.log("IndexScreen handleTeamSelect teamKey:", teamKey);
   };
 
   return (
     <ScrollView>
-      {eventTeams.map((team: Team) => (
-        <SelectTeamRow
-          key={team.key}
-          team={team}
-          onSelect={() => handleOnSelect(team.key)}
-        />
-      ))}
+      <View>
+        {mode === Mode.Select && (
+          <SelectTeamScreen onSelect={(teamKey) => handleOnSelect(teamKey)} />
+        )}
+      </View>
     </ScrollView>
   );
-};
-
-export default SelectTeamScreen;
+}

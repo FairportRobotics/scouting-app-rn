@@ -34,6 +34,15 @@ export default StyleSheet.create({
     fontSize: 24,
     marginBottom: 8,
   },
+  baseButton: {
+    borderRadius: 8,
+    backgroundColor: colors.primary,
+    color: "white",
+    fontWeight: "900",
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+  },
   minusPlusButton: {
     borderRadius: 8,
     backgroundColor: colors.primary,
@@ -47,7 +56,6 @@ export default StyleSheet.create({
   labelText: {
     fontSize: 20,
   },
-
   allianceBlueButton: {
     borderRadius: 8,
     backgroundColor: colors.allianceBlue,

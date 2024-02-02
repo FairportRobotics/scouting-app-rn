@@ -1,10 +1,9 @@
 import React from "react";
-import type { Event, Match, Team } from "@/helpers/types";
+import type { Match, Team } from "@/helpers/types";
 import ContainerGroup from "@/components/ContainerGroup";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 
 interface SelectMatchScreenProps {
-  event: Event;
   eventMatches: Array<Match>;
   eventTeams: Array<Team>;
   onSelect: (
@@ -13,15 +12,12 @@ interface SelectMatchScreenProps {
     allianceTeam: number,
     teamKey: string
   ) => void;
-  style?: {};
 }
 
 const SelectMatchScreen: React.FC<SelectMatchScreenProps> = ({
-  event,
   eventMatches,
   eventTeams,
   onSelect,
-  style,
 }) => {
   const handleOnSelect = (
     matchKey: string,

@@ -166,7 +166,7 @@ export function saveEventTeams(eventKey: string, teams: Array<TbaTeam>) {
       "INSERT INTO event_teams(key, eventKey, teamNumber, nickname) \
       VALUES(?, ?, ?, ?) \
       ON CONFLICT (key) DO NOTHING",
-      ["practice", eventKey, 0, "Practice Team"],
+      ["frc00000", eventKey, 0, "Practice Team"],
       (txObj, resultSet) => {
         // Do nothing.
       },
