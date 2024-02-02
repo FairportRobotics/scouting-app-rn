@@ -31,17 +31,145 @@ export default function ScoutTeam() {
     console.log("onChangeHelloWorld option:", option);
   };
 
+  const handleCanPickUpNoteFromGround = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const cangetfromsource = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canscoreamp = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canscorespeaker = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canscoretrap = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canpark = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const cangetonstage = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canachieveharmony = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const teamexperiance = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const isbotready = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canbotrecover = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const botdimenions = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canfitonstage = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canfitunderstage = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const automethids = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const climbingplan = (value: string) => {
+    console.log("Changed to", value)
+  }
+  const canscoretrap2 = (value: string) => {
+    console.log("Changed to", value)
+  }
+
+
   return (
     <ScrollView style={{ margin: 10 }}>
       <OptionSelect
         label="Can your robot pick up Notes from the ground?"
         options={["Yes", "No"]}
-        onChange={onChangeHelloWorld}
+        onChange={handleCanPickUpNoteFromGround}
       />
       <OptionSelect
         label="Can your robot receive Notes from the Source?"
         options={["Yes", "No"]}
-        onChange={onChangeHelloWorld}
+        onChange={cangetfromsource}
+      />
+      <OptionSelect
+        label="Can you score in the Amp?"
+        options={["Yes", "No"]}
+        onChange={canscoreamp}
+      />
+      <OptionSelect
+        label="Can you score in the Speaker?"
+        options={["Yes", "No"]}
+        onChange={canscorespeaker}
+      />
+      <OptionSelect
+        label="Can you score in the trap?"
+        options={["Yes", "No"]}
+        onChange={canscoretrap}
+      />
+      <OptionSelect
+        label="Can you park?"
+        options={["Yes", "No"]}
+        onChange={canpark}
+      />
+      <OptionSelect
+        label="Can you get Onstage?"
+        options={["Yes", "No"]}
+        onChange={cangetonstage}
+      />
+      <OptionSelect
+        label="Can you achieve Harmony?"
+        options={["Yes", "No"]}
+        onChange={canachieveharmony}
+      />
+      <OptionSelect
+        label="What experiance does your Drive Team have?"
+        options={["New","Mixed", "Veterans"]}
+        onChange={teamexperiance}
+      />
+      <OptionSelect
+        label="Is your robot ready now?"
+        options={["Yes", "No"]}
+        onChange={isbotready}
+      />
+      <OptionSelect
+        label="Can your Robot recover from a Note improperly attached to it?"
+        options={["Yes", "No"]}
+        onChange={canbotrecover}
+      />
+      <OptionSelect
+        label="What are the dimentions of your Robot?"
+        options={["Do Later"]}
+        onChange={botdimenions}
+      />
+      <OptionSelect
+        label="How many can fit onstage at the same time?"
+        options={["1", "2", "3"]}
+        onChange={canfitonstage}
+      />
+      <OptionSelect
+        label="Can your Robot fit under the Stage?"
+        options={["Yes", "No"]}
+        onChange={canfitunderstage}
+      />
+      <OptionSelect
+        label="How many Auto methods do you have?"
+        options={["1", "2", "3+"]}
+        onChange={automethids}
+      />
+      <OptionSelect
+        label="Do you plan on climbing?"
+        options={["Yes", "No"]}
+        onChange={climbingplan}
+      />
+      <OptionSelect
+        label="Do you plan on scoring in the Trap?"
+        options={["Yes", "No"]}
+        onChange={canscoretrap2}
       />
     </ScrollView>
   );
