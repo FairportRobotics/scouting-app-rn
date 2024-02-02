@@ -7,7 +7,7 @@ import ContainerGroup from "@/components/ContainerGroup";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 
 import SelectMatchScreen from "@/screens/match/scouting/SelectMatchScreen";
-import ConfirmScreen from "@/screens/match/scouting/ConfirmScreen";
+import ConfirmScreen from "@/screens/match/scouting/SetupScreen";
 import AutoScreen from "@/screens/match/scouting/AutoScreen";
 import TeleopScreen from "@/screens/match/scouting/TeleopScreen";
 import EndgameScreen from "@/screens/match/scouting/EndgameScreen";
@@ -23,7 +23,7 @@ const Mode = {
 };
 
 export default function IndexScreen() {
-  const [currentEvent, setCurrentEvent] = useState<Event>();
+  const [currentEvent, setCurrentEvent] = useState<Event>({} as Event);
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
   const [mode, setMode] = useState(Mode.Select);
@@ -79,12 +79,37 @@ export default function IndexScreen() {
     }
   };
 
+  const handleStartScouting = (
+    matchKey: string,
+    alliance: string,
+    allianceTeam: number,
+    teamKey: string
+  ) => {
+    console.log(
+      "Begin scouting",
+      currentEvent.key,
+      matchKey,
+      alliance,
+      allianceTeam,
+      teamKey
+    );
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <MatchScoutingHeader />
       <ScrollView>
         <View style={{ flex: 1 }}>
-          {mode === Mode.Select && <SelectMatchScreen />}
+          {mode === Mode.Select && (
+            <SelectMatchScreen
+              event={currentEvent}
+              eventMatches={eventMatches}
+              eventTeams={eventTeams}
+              onSelect={(matchKey, alliance, allianceNumber, teamKey) =>
+                handleStartScouting(matchKey, alliance, allianceNumber, teamKey)
+              }
+            />
+          )}
           {mode === Mode.Confirm && <ConfirmScreen />}
           {mode === Mode.Auto && <AutoScreen />}
           {mode === Mode.Teleop && <TeleopScreen />}

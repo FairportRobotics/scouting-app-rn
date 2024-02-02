@@ -1,13 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
-import themes from "@/themes/themes";
 import type { Match, Team } from "@/helpers/types";
 import { Alliance, AllianceTeam } from "@/helpers/constants";
 import MatchTeamSelect from "./MatchTeamSelect";
 
 interface ScoutingMatchSelectProps {
   match: Match;
-  teamsLookup: Record<string, Team>;
+  eventTeams: Array<Team>;
   onSelect: (
     matchKey: string,
     alliance: string,
@@ -19,11 +18,11 @@ interface ScoutingMatchSelectProps {
 
 const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
   match,
-  teamsLookup,
+  eventTeams,
   onSelect,
   style,
 }) => {
-  const handleOnPress = (
+  const handleOnSelect = (
     matchKey: string,
     alliance: string,
     allianceTeam: number,
@@ -51,11 +50,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
       <View style={{ flexDirection: "row", gap: 4 }}>
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.One}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Blue,
               AllianceTeam.One,
@@ -65,11 +64,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         />
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.Two}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Blue,
               AllianceTeam.Two,
@@ -79,11 +78,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         />
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.Three}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Blue,
               AllianceTeam.Three,
@@ -93,11 +92,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         />
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.One}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Red,
               AllianceTeam.One,
@@ -107,11 +106,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         />
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.Two}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Red,
               AllianceTeam.Two,
@@ -121,11 +120,11 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         />
         <MatchTeamSelect
           match={match}
-          teamsLookup={teamsLookup}
+          eventTeams={eventTeams}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.Three}
-          onPress={() =>
-            handleOnPress(
+          onSelect={() =>
+            handleOnSelect(
               match.key,
               Alliance.Red,
               AllianceTeam.Three,

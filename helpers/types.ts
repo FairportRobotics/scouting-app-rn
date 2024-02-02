@@ -1,4 +1,5 @@
 export type Event = {
+  key: string;
   name: string;
   shortName: string;
   startDate: Date;
