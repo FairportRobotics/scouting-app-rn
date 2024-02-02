@@ -251,11 +251,7 @@ export const getTeamsForEvent = async (
 };
 
 export const initializeMatchScoutingSession = async (
-  eventKey: string,
-  matchKey: string,
-  alliance: string,
-  allianceTeam: number,
-  teamKey: string
+  session: MatchScoutingSession
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
@@ -263,13 +259,13 @@ export const initializeMatchScoutingSession = async (
       VALUES(?, ?, ?, ?, ?, ?, ?) \
       ON CONFLICT (key) DO NOTHING",
       [
-        `${eventKey}__${matchKey}__${alliance}__${allianceTeam}`,
-        eventKey,
-        matchKey,
-        alliance,
-        allianceTeam,
-        teamKey,
-        teamKey,
+        session.key,
+        session.eventKey,
+        session.matchKey,
+        session.alliance,
+        session.allianceTeam,
+        session.scheduledTeamKey,
+        session.scoutedTeamKey,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {

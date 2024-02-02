@@ -1,6 +1,6 @@
 import { Text, ScrollView, View, Button } from "react-native";
 import { useEffect, useState } from "react";
-import type { Event, Match, Team } from "@/helpers/types";
+import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
 import * as Database from "@/helpers/database";
 
 import ContainerGroup from "@/components/ContainerGroup";
@@ -12,6 +12,7 @@ import AutoScreen from "@/screens/match/scouting/AutoScreen";
 import TeleopScreen from "@/screens/match/scouting/TeleopScreen";
 import EndgameScreen from "@/screens/match/scouting/EndgameScreen";
 import FinalScreen from "@/screens/match/scouting/FinalScreen";
+import { all } from "axios";
 
 const Mode = {
   Select: { previousMode: "Select", nextMode: "Confirm" },
@@ -23,10 +24,15 @@ const Mode = {
 };
 
 export default function IndexScreen() {
+  // State related to the Event.
   const [currentEvent, setCurrentEvent] = useState<Event>({} as Event);
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
+
+  // Current mode.
   const [mode, setMode] = useState(Mode.Select);
+
+  // State set once a Match and Team is selected.
 
   useEffect(() => {
     console.log("useEffect start...");
@@ -79,12 +85,26 @@ export default function IndexScreen() {
     }
   };
 
-  const handleStartScouting = (
+  const handleStartScouting = async (
     matchKey: string,
     alliance: string,
     allianceTeam: number,
     teamKey: string
   ) => {
+    // Initialize the Match Scouting Session properties.
+    let session: MatchScoutingSession = {
+      key: `${currentEvent.key}__${matchKey}__${alliance}__${allianceTeam}`,
+      eventKey: currentEvent.key,
+      matchKey: matchKey,
+      alliance: alliance,
+      allianceTeam: allianceTeam,
+      scheduledTeamKey: teamKey,
+      scoutedTeamKey: teamKey,
+    } as MatchScoutingSession;
+
+    // Persist the Session.
+    await Database.initializeMatchScoutingSession(session);
+
     console.log(
       "Begin scouting",
       currentEvent.key,

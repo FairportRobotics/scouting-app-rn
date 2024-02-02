@@ -27,6 +27,7 @@ export type Team = {
 
 export type MatchScoutingSession = {
   // Root properties.
+  key: string;
   eventKey: string;
   matchKey: string;
   alliance: string;
