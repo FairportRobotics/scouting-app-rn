@@ -1,4 +1,4 @@
-import { Text, ScrollView, View, Button } from "react-native";
+import { ScrollView, View, Button } from "react-native";
 import { useEffect, useState } from "react";
 import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
 import * as Database from "@/helpers/database";
@@ -12,7 +12,6 @@ import AutoScreen from "@/screens/match/scouting/AutoScreen";
 import TeleopScreen from "@/screens/match/scouting/TeleopScreen";
 import EndgameScreen from "@/screens/match/scouting/EndgameScreen";
 import FinalScreen from "@/screens/match/scouting/FinalScreen";
-import { all } from "axios";
 
 const Mode = {
   Select: { previousMode: "Select", nextMode: "Confirm" },

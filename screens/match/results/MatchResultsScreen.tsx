@@ -1,26 +1,75 @@
-import { Text, View, ScrollView, RefreshControl, FlatList } from "react-native";
+import { Text, RefreshControl, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import { MatchScoutingSession } from "@/helpers/types";
+import { Match, Team, MatchScoutingSession } from "@/helpers/types";
 import * as Database from "@/helpers/database";
+import ContainerGroup from "@/components/ContainerGroup";
+import ScoutTeam from "@/screens/pit/scouting/ScoutTeam";
+
+export type MatchResultModel = {
+  sessionKey: string;
+  matchNumber: number;
+  alliance: string;
+  allianceTeam: number;
+  teamNumber: string;
+  teamNickname: string;
+};
 
 export default function MatchResultsScreen() {
+  const eventKey = "2023nyrr";
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
-  const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
+  const [sessions, setSessions] = useState<Array<MatchResultModel>>([]);
+  const [matchesLookup, setMatchesLookup] = useState<Record<string, Match>>({});
+  const [teamsLookup, setTeamsLookup] = useState<Record<string, Team>>({});
 
-  const onRefresh = () => {
-    const loadData = async () => {
-      const dtoSessions = await Database.getMatchScoutingSessions();
-      setSessions(dtoSessions);
-      setIsRefreshing(false);
-    };
-    loadData();
+  const loadData = async () => {
+    // Retrieve Matches and produce a Dictionary.
+    let matchesDictionary: Record<string, Match> = {};
+    const matches = await Database.getMatchesForEvent(eventKey);
+    matches.forEach((match) => {
+      matchesDictionary[match.key] = match;
+    });
+    setMatchesLookup(matchesDictionary);
+
+    // Retrieve Teams and produce a Dictionary.
+    let teamsDictionary: Record<string, Team> = {};
+    const teams = await Database.getTeamsForEvent(eventKey);
+    teams.forEach((team) => {
+      teamsDictionary[team.key] = team;
+    });
+    setTeamsLookup(teamsDictionary);
+
+    // Retrieve sessions and convert to the model.
+    const dtoSessions = await Database.getMatchScoutingSessions();
+
+    const models = dtoSessions.map((session) => {
+      const match = matchesDictionary[session.matchKey];
+      const scheduledTeam = teamsLookup[session.scheduledTeamKey];
+      const scoutedTeam = teamsLookup[session.scoutedTeamKey];
+
+      const model = {
+        sessionKey: session.key,
+        matchNumber: match.matchNumber,
+        alliance: session.alliance,
+        allianceTeam: session.allianceTeam,
+        teamNumber:
+          scheduledTeam !== undefined
+            ? scoutedTeam.teamNumber
+            : session.scheduledTeamKey,
+        teamNickname:
+          scheduledTeam !== undefined
+            ? scoutedTeam.nickname
+            : session.scheduledTeamKey,
+      } as MatchResultModel;
+
+      return model;
+    });
+
+    setSessions(models);
+
+    setIsRefreshing(false);
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      const dtoSessions = await Database.getMatchScoutingSessions();
-      setSessions(dtoSessions);
-    };
     loadData();
   }, []);
 
@@ -28,23 +77,19 @@ export default function MatchResultsScreen() {
     <FlatList
       data={sessions}
       renderItem={(session) => (
-        <View key={session.item.key}>
+        <ContainerGroup title="" key={session.item.sessionKey}>
           <Text>
-            {session.item.eventKey} - {session.item.matchKey} -{" "}
-            {session.item.alliance} - {session.item.allianceTeam}
+            Match {session.item.matchNumber}: {session.item.alliance}{" "}
+            {session.item.allianceTeam}
           </Text>
           <Text>
-            {session.item.scheduledTeamKey} - {session.item.scoutedTeamKey}
+            {session.item.teamNumber} - {session.item.teamNickname}
           </Text>
-        </View>
+        </ContainerGroup>
       )}
-      keyExtractor={(session) => session.key}
+      keyExtractor={(session) => session.sessionKey}
       refreshControl={
-        <RefreshControl
-          refreshing={isRefeshing}
-          onRefresh={onRefresh}
-          colors={["plum", "red"]}
-        />
+        <RefreshControl refreshing={isRefeshing} onRefresh={loadData} />
       }
     />
   );
