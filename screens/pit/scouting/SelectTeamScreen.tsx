@@ -7,17 +7,12 @@ import * as Database from "@/helpers/database";
 
 export default function SelectTeamScreen() {
   const [eventKey, setEventKey] = useState<string>("2023nyrr");
-  const [eventTeams, setEventTeams] = useState<Record<string, Team>>({});
+  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const teams = await Database.getTeamsForEvent(eventKey);
-      let teamsDictionary: Record<string, Team> = {};
-      teams.forEach((team) => {
-        teamsDictionary[team.key] = team;
-      });
-
-      setEventTeams(teamsDictionary);
+      setEventTeams(teams);
     };
 
     fetchData();
@@ -33,17 +28,13 @@ export default function SelectTeamScreen() {
   return (
     <ScrollView style={{ margin: 10 }}>
       <MatchScoutingHeader />
-      {Object.values(eventTeams)
-        .sort(
-          (a: Team, b: Team) => parseInt(a.teamNumber) - parseInt(b.teamNumber)
-        )
-        .map((team) => (
-          <PitTeamSelect
-            key={team.key}
-            team={team}
-            onPress={() => handleTeamSelect(team.key)}
-          />
-        ))}
+      {eventTeams.map((team) => (
+        <PitTeamSelect
+          key={team.key}
+          team={team}
+          onPress={() => handleTeamSelect(team.key)}
+        />
+      ))}
     </ScrollView>
   );
 }

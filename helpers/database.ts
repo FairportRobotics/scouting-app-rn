@@ -225,6 +225,15 @@ export const getEvents = async (): Promise<Array<Event>> => {
   }
 };
 
+export const getMatches = async () => {
+  try {
+    const query = "SELECT * FROM event_matches";
+    return (await executeSql(query, [])) as Array<Match>;
+  } catch (error) {
+    return [];
+  }
+};
+
 export const getMatchesForEvent = async (eventKey: string) => {
   try {
     const query =
@@ -232,6 +241,16 @@ export const getMatchesForEvent = async (eventKey: string) => {
     const params = [eventKey];
     return (await executeSql(query, params)) as Array<Match>;
   } catch (error) {
+    return [];
+  }
+};
+
+export const getTeams = async (): Promise<Array<Team>> => {
+  try {
+    const query = "SELECT * FROM event_teams";
+    return (await executeSql(query, [])) as Array<Team>;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
     return [];
   }
 };
@@ -251,11 +270,7 @@ export const getTeamsForEvent = async (
 };
 
 export const initializeMatchScoutingSession = async (
-  eventKey: string,
-  matchKey: string,
-  alliance: string,
-  allianceTeam: number,
-  teamKey: string
+  session: MatchScoutingSession
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
@@ -263,13 +278,13 @@ export const initializeMatchScoutingSession = async (
       VALUES(?, ?, ?, ?, ?, ?, ?) \
       ON CONFLICT (key) DO NOTHING",
       [
-        `${eventKey}__${matchKey}__${alliance}__${allianceTeam}`,
-        eventKey,
-        matchKey,
-        alliance,
-        allianceTeam,
-        teamKey,
-        teamKey,
+        session.key,
+        session.eventKey,
+        session.matchKey,
+        session.alliance,
+        session.allianceTeam,
+        session.scheduledTeamKey,
+        session.scoutedTeamKey,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -317,8 +332,11 @@ export const updateScoutingMatchSessionSetup = async (
   scoutedTeamKey: string
 ) => {
   db.transaction((tx) => {
+    console.log("updateScoutingMatchSessionSetup...");
     tx.executeSql(
-      "UPDATE match_scouting_sessions SET scouterName = ?, scoutedTeamKey = ? WHERE key = ?",
+      "UPDATE match_scouting_sessions \
+      SET scouterName = ?, scoutedTeamKey = ? \
+      WHERE key = ?",
       [scouterName, scoutedTeamKey, sessionKey],
       (txObj, resultSet) => {},
       (txObj, error) => {
