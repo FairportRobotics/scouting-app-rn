@@ -6,30 +6,28 @@ import { Alliance, AllianceTeam } from "@/helpers/constants";
 
 interface MatchTeamSelectProps {
   match: Match;
-  teamsLookup: Record<string, Team>;
+  eventTeams: Array<Team>;
   alliance: string;
   allianceTeam: number;
-  onPress: () => void;
+  onSelect: () => void;
   style?: {};
 }
 
 const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   match,
-  teamsLookup,
+  eventTeams,
   alliance,
   allianceTeam,
-  onPress,
+  onSelect,
   style,
 }) => {
   const handleOnPress = () => {
-    onPress();
+    onSelect();
   };
 
   const lookupTeam = (alliance: string, allianceTeam: number) => {
-    // Using the Alliance and the AllianceTeam, retrieve the teamKey
-    // from the dictionary for the Alliance color.
+    // Obtain the Team key.
     let teamKey: string = "";
-
     if (alliance === Alliance.Blue) {
       switch (allianceTeam) {
         case AllianceTeam.One:
@@ -61,7 +59,9 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
     }
 
     // Lookup the actual Team based on the teamKey.
-    let team: Team = teamsLookup[teamKey];
+    let team: Team | undefined = eventTeams.find(
+      (team: Team) => team.key === teamKey
+    );
     if (team === undefined) return "?";
     else return team.teamNumber;
   };

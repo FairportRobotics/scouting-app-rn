@@ -1,4 +1,5 @@
 export type Event = {
+  key: string;
   name: string;
   shortName: string;
   startDate: Date;
@@ -26,6 +27,7 @@ export type Team = {
 
 export type MatchScoutingSession = {
   // Root properties.
+  key: string;
   eventKey: string;
   matchKey: string;
   alliance: string;

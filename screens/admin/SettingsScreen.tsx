@@ -1,27 +1,18 @@
-import { StyleSheet, ScrollView } from "react-native";
+import { ScrollView, View } from "react-native";
 import FRSettings from "./FRSettings";
 import TBASettings from "./TBASettings";
 import TBACaches from "./TBACaches";
+import DatabaseSettings from "./DatabaseSettings";
 
 export default function SettingsScreen() {
   return (
-    <ScrollView style={{ margin: 10 }}>
-      <FRSettings />
-      <TBASettings />
-      <TBACaches />
+    <ScrollView>
+      <View style={{ flex: 1 }}>
+        <DatabaseSettings />
+        <FRSettings />
+        <TBASettings />
+        <TBACaches />
+      </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-});
