@@ -332,8 +332,11 @@ export const updateScoutingMatchSessionSetup = async (
   scoutedTeamKey: string
 ) => {
   db.transaction((tx) => {
+    console.log("updateScoutingMatchSessionSetup...");
     tx.executeSql(
-      "UPDATE match_scouting_sessions SET scouterName = ?, scoutedTeamKey = ? WHERE key = ?",
+      "UPDATE match_scouting_sessions \
+      SET scouterName = ?, scoutedTeamKey = ? \
+      WHERE key = ?",
       [scouterName, scoutedTeamKey, sessionKey],
       (txObj, resultSet) => {},
       (txObj, error) => {

@@ -6,6 +6,7 @@ import ContainerGroup from "@/components/ContainerGroup";
 import fetchEvent from "@/helpers/fetchEvent";
 import fetchEventMatches from "@/helpers/fetchEventMatches";
 import fetchEventTeams from "@/helpers/fetchEventTeams";
+import backfillMissingTeams from "@/helpers/backfillMissingTeams";
 import * as Database from "@/helpers/database";
 
 export default function TBACaches() {
@@ -28,6 +29,7 @@ export default function TBACaches() {
     handleFetchEvent();
     handleFetchEventMatches();
     handleFetchEventTeams();
+    backfillMissingTeams(eventKey);
   };
 
   // Support for retrieving Event

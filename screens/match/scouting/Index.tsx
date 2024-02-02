@@ -7,7 +7,7 @@ import ContainerGroup from "@/components/ContainerGroup";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 
 import SelectMatchScreen from "@/screens/match/scouting/SelectMatchScreen";
-import ConfirmScreen from "@/screens/match/scouting/SetupScreen";
+import ConfirmScreen from "@/screens/match/scouting/ConfirmScreen";
 import AutoScreen from "@/screens/match/scouting/AutoScreen";
 import TeleopScreen from "@/screens/match/scouting/TeleopScreen";
 import EndgameScreen from "@/screens/match/scouting/EndgameScreen";
@@ -32,9 +32,9 @@ export default function IndexScreen() {
   const [mode, setMode] = useState(Mode.Select);
 
   // State set once a Match and Team is selected.
+  const [session, setSession] = useState<MatchScoutingSession>();
 
   useEffect(() => {
-    console.log("useEffect start...");
     const loadData = async () => {
       // Load data from the DB. Hard-code for ease of development experience.
       let eventKey: string = "2023nyrr";
@@ -43,19 +43,11 @@ export default function IndexScreen() {
       const dtoTeams = await Database.getTeamsForEvent(eventKey);
 
       // Assign to state.
-      setCurrentEvent(dtoEvent);
+      if (dtoEvent !== undefined) setCurrentEvent(dtoEvent);
       setEventMatches(dtoMatches);
       setEventTeams(dtoTeams);
-
-      // Sanity check.
-      console.log("Loaded Event:", currentEvent);
-      console.log("Loaded Matches:", eventMatches.length);
-      console.log("Loaded Teams:", eventTeams.length);
-
-      console.log("useEffect loadData end.");
     };
     loadData();
-    console.log("useEffect end.");
   }, []);
 
   const handleChangeMode = (newMode: string) => {
@@ -103,15 +95,17 @@ export default function IndexScreen() {
 
     // Persist the Session.
     await Database.initializeMatchScoutingSession(session);
+    setSession(session);
 
-    console.log(
-      "Begin scouting",
-      currentEvent.key,
-      matchKey,
-      alliance,
-      allianceTeam,
-      teamKey
-    );
+    setMode(Mode.Confirm);
+  };
+
+  const handleNavigatePrevious = () => {
+    console.log("Previous");
+  };
+
+  const handleNavigateNext = () => {
+    console.log("Next");
   };
 
   return (
@@ -129,7 +123,14 @@ export default function IndexScreen() {
               }
             />
           )}
-          {mode === Mode.Confirm && <ConfirmScreen />}
+          {mode === Mode.Confirm && (
+            <ConfirmScreen
+              session={session!}
+              eventTeams={eventTeams}
+              onPrevious={handleNavigatePrevious}
+              onNext={handleNavigateNext}
+            />
+          )}
           {mode === Mode.Auto && <AutoScreen />}
           {mode === Mode.Teleop && <TeleopScreen />}
           {mode === Mode.Endgame && <EndgameScreen />}

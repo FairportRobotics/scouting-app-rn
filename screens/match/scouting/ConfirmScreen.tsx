@@ -1,63 +1,36 @@
-import { TextInput, Text, ScrollView, TouchableOpacity } from "react-native";
+import { TextInput, Text, View, TouchableOpacity } from "react-native";
 import { useEffect, useState } from "react";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
+import { MatchScoutingSession, Team } from "@/helpers/types";
 import ContainerGroup from "@/components/ContainerGroup";
-import * as Database from "@/helpers/database";
 import themes from "@/themes/themes";
 import colors from "@/themes/colors";
-import { MatchScoutingSession, Team } from "@/helpers/types";
+import * as Database from "@/helpers/database";
 
-// These will ultimately be initialized with values, if any, from the database.
-// That is not wired up yet as I'm still learing about navigation/routing.
-const sessionKey = "2023nyrr__2023nyrr_qm1__Blue__1";
+interface ConfirmScreenProps {
+  session: MatchScoutingSession;
+  eventTeams: Array<Team>;
+  onPrevious: () => void;
+  onNext: () => void;
+  style?: {};
+}
 
-export default function ConfirmScreen() {
+const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
+  session,
+  eventTeams,
+  onPrevious,
+  onNext,
+  style,
+}) => {
   // Support for state.
-  const [currentSession, setSession] = useState<MatchScoutingSession>();
-  const [scouterName, setScouterName] = useState<string>("");
+  const [currentSession, setCurrentSession] =
+    useState<MatchScoutingSession>(session);
+
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
 
   // Support for filtering.
   const [filterText, setFilterText] = useState("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
-
-  // Upon initialization of the screen.
-  useEffect(() => {
-    // Define an async function we can call.
-    const fetchData = async () => {
-      try {
-        // Load the session associated with the key.
-        const session = await Database.getMatchScoutingSession(sessionKey);
-        if (session === undefined) return;
-        setSession(session);
-
-        // Persist state.
-        setScouterName(session.scouterName);
-        setEventTeams(await Database.getTeamsForEvent(session.eventKey));
-        setScheduledTeam(
-          eventTeams.find((team) => team.key === session.scheduledTeamKey)
-        );
-        setScoutedTeam(
-          eventTeams.find((team) => team.key === session.scoutedTeamKey)
-        );
-      } catch (error) {}
-    };
-
-    // Call the async function.
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (scoutedTeam === undefined) return;
-
-    Database.updateScoutingMatchSessionSetup(
-      sessionKey,
-      scouterName,
-      scoutedTeam!.key
-    );
-  }, [scouterName, scoutedTeam]);
 
   // Upon changing the filter text.
   useEffect(() => {
@@ -72,19 +45,28 @@ export default function ConfirmScreen() {
     setFilteredTeams(filtered);
   }, [filterText]);
 
+  const handleSetScouterName = (name: string) => {
+    setCurrentSession((previous) => {
+      return {
+        ...previous,
+        scouterName: name,
+      };
+    });
+  };
+
   const handleSelectNewTeam = (teamKey: string) => {
-    setScoutedTeam(eventTeams.find((team) => team.key === teamKey));
+    const newTeam = eventTeams.find((team) => team.key === teamKey);
+    if (newTeam !== undefined) setScoutedTeam(newTeam);
     setFilterText("");
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
-      <MatchScoutingHeader />
+    <View>
       <ContainerGroup title="Scouter Name">
         <TextInput
           style={themes.textInput}
-          value={scouterName}
-          onChangeText={(text) => setScouterName(text)}
+          value={currentSession.scouterName}
+          onChangeText={(text) => handleSetScouterName(text)}
           placeholder="My name is..."
         />
       </ContainerGroup>
@@ -123,9 +105,8 @@ export default function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <ContainerGroup title="Session">
-        <Text>{JSON.stringify(currentSession, null, 2)}</Text>
-      </ContainerGroup>
-    </ScrollView>
+    </View>
   );
-}
+};
+
+export default ConfirmScreen;
