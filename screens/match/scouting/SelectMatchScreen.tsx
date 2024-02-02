@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
 import ContainerGroup from "@/components/ContainerGroup";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 import type { Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
@@ -49,20 +47,17 @@ export default function SelectMatchScreen() {
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
-      <MatchScoutingHeader />
-      <ContainerGroup title="Select Match and Team">
-        {Object.values(eventMatches).map((match) => (
-          <ScoutingMatchSelect
-            key={match.key}
-            match={match}
-            teamsLookup={eventTeams}
-            onSelect={(matchKey, alliance, allianceNumber, teamKey) =>
-              handleMatchSelect(matchKey, alliance, allianceNumber, teamKey)
-            }
-          />
-        ))}
-      </ContainerGroup>
-    </ScrollView>
+    <ContainerGroup title="Select Match and Team">
+      {Object.values(eventMatches).map((match) => (
+        <ScoutingMatchSelect
+          key={match.key}
+          match={match}
+          teamsLookup={eventTeams}
+          onSelect={(matchKey, alliance, allianceNumber, teamKey) =>
+            handleMatchSelect(matchKey, alliance, allianceNumber, teamKey)
+          }
+        />
+      ))}
+    </ContainerGroup>
   );
 }

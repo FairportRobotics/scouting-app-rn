@@ -1,4 +1,4 @@
-import { Text, ScrollView, View } from "react-native";
+import { Text, ScrollView, View, Button } from "react-native";
 import { useEffect, useState } from "react";
 import type { Event, Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
@@ -6,21 +6,27 @@ import * as Database from "@/helpers/database";
 import ContainerGroup from "@/components/ContainerGroup";
 import MatchScoutingHeader from "@/components/MatchScoutingHeader";
 
-// const MatchScoutingMode = {
-//   SelectMatch: { previous: "", next: "" },
-//   Confirm: { previous: "", next: "" },
-//   Auto: { previous: "", next: "" },
-//   Teleop: { previous: "", next: "" },
-//   Endgame: { previous: "", next: "" },
-//   Final: { previous: "", next: "" },
-// };
+import SelectMatchScreen from "@/screens/match/scouting/SelectMatchScreen";
+import ConfirmScreen from "@/screens/match/scouting/ConfirmScreen";
+import AutoScreen from "@/screens/match/scouting/AutoScreen";
+import TeleopScreen from "@/screens/match/scouting/TeleopScreen";
+import EndgameScreen from "@/screens/match/scouting/EndgameScreen";
+import FinalScreen from "@/screens/match/scouting/FinalScreen";
+
+const Mode = {
+  Select: { previousMode: "Select", nextMode: "Confirm" },
+  Confirm: { previousMode: "Select", nextMode: "Auto" },
+  Auto: { previousMode: "Confirm", nextMode: "Teleop" },
+  Teleop: { previousMode: "Auto", nextMode: "Endgame" },
+  Endgame: { previousMode: "Teleop", nextMode: "Final" },
+  Final: { previousMode: "Endgame", nextMode: "Select" },
+};
 
 export default function IndexScreen() {
   const [currentEvent, setCurrentEvent] = useState<Event>();
-  const [eventMatches, setEventMatches] = useState<Array<Match>>(
-    new Array<Match>()
-  );
-  const [eventTeams, setEventTeams] = useState<Array<Team>>(new Array<Team>());
+  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
+  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
+  const [mode, setMode] = useState(Mode.Select);
 
   useEffect(() => {
     console.log("useEffect start...");
@@ -47,15 +53,65 @@ export default function IndexScreen() {
     console.log("useEffect end.");
   }, []);
 
+  const handleChangeMode = (newMode: string) => {
+    switch (newMode) {
+      case "Select":
+        setMode(Mode.Select);
+        break;
+      case "Confirm":
+        setMode(Mode.Confirm);
+        break;
+      case "Auto":
+        setMode(Mode.Auto);
+        break;
+      case "Teleop":
+        setMode(Mode.Teleop);
+        break;
+      case "Endgame":
+        setMode(Mode.Endgame);
+        break;
+      case "Final":
+        setMode(Mode.Final);
+        break;
+      default:
+        setMode(Mode.Select);
+        break;
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <MatchScoutingHeader />
-      <View style={{ flex: 1, backgroundColor: "plum" }}>
-        <Text>Content here...</Text>
-      </View>
-      <ContainerGroup title="" style={{}}>
-        <Text>Buttons here...</Text>
-      </ContainerGroup>
+      <ScrollView>
+        <View style={{ flex: 1 }}>
+          {mode === Mode.Select && <SelectMatchScreen />}
+          {mode === Mode.Confirm && <ConfirmScreen />}
+          {mode === Mode.Auto && <AutoScreen />}
+          {mode === Mode.Teleop && <TeleopScreen />}
+          {mode === Mode.Endgame && <EndgameScreen />}
+          {mode === Mode.Final && <FinalScreen />}
+        </View>
+        {mode !== Mode.Select && (
+          <ContainerGroup title="">
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 100,
+                alignSelf: "center",
+              }}
+            >
+              <Button
+                title={mode.previousMode}
+                onPress={() => handleChangeMode(mode.previousMode)}
+              />
+              <Button
+                title={mode.nextMode}
+                onPress={() => handleChangeMode(mode.nextMode)}
+              />
+            </View>
+          </ContainerGroup>
+        )}
+      </ScrollView>
     </View>
   );
 }
