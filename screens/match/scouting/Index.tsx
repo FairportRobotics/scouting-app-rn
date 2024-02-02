@@ -93,9 +93,9 @@ export default function IndexScreen() {
       scoutedTeamKey: teamKey,
     } as MatchScoutingSession;
 
-    // Persist the Session.
+    // Initialize and retrieve the Session.
     await Database.initializeMatchScoutingSession(session);
-    setSession(session);
+    setSession(await Database.getMatchScoutingSession(session.key));
 
     setMode(Mode.Confirm);
   };
@@ -115,7 +115,6 @@ export default function IndexScreen() {
         <View style={{ flex: 1 }}>
           {mode === Mode.Select && (
             <SelectMatchScreen
-              event={currentEvent}
               eventMatches={eventMatches}
               eventTeams={eventTeams}
               onSelect={(matchKey, alliance, allianceNumber, teamKey) =>

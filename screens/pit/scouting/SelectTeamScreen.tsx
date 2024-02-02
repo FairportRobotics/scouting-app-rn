@@ -1,11 +1,14 @@
 import { ScrollView } from "react-native";
 import { useEffect, useState } from "react";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
-import PitTeamSelect from "@/components/PitTeamSelect";
 import type { Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
+import SelectTeamRow from "./SelectTeamRow";
 
-export default function SelectTeamScreen() {
+interface SelectTeamScreenProps {
+  onSelect: (teamKey: string) => void;
+}
+
+const SelectTeamScreen: React.FC<SelectTeamScreenProps> = ({ onSelect }) => {
   const [eventKey, setEventKey] = useState<string>("2023nyrr");
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
 
@@ -21,20 +24,21 @@ export default function SelectTeamScreen() {
     return () => {};
   }, []);
 
-  const handleTeamSelect = (teamKey: string) => {
-    console.log("handleTeamSelect teamKey:", teamKey);
+  const handleOnSelect = (teamKey: string) => {
+    onSelect(teamKey);
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
-      <MatchScoutingHeader />
-      {eventTeams.map((team) => (
-        <PitTeamSelect
+    <ScrollView>
+      {eventTeams.map((team: Team) => (
+        <SelectTeamRow
           key={team.key}
           team={team}
-          onPress={() => handleTeamSelect(team.key)}
+          onSelect={() => handleOnSelect(team.key)}
         />
       ))}
     </ScrollView>
   );
-}
+};
+
+export default SelectTeamScreen;

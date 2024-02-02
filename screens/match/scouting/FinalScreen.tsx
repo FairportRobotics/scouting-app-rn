@@ -65,11 +65,13 @@ export default function FinalScreen() {
         <OptionSelect
           label="Alliance Result"
           options={["Win", "Lose", "Tie"]}
+          value={allianceResult}
           onChange={handleAllianceResult}
         />
         <OptionSelect
           label="Penalties (Record from opposing Alliance Scoreboard)"
           options={["Yellow", "Red", "Disabled", "Disqualified"]}
+          value={penalties}
           onChange={handlePenalties}
         />
       </ContainerGroup>

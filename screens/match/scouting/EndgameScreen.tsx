@@ -78,6 +78,7 @@ export default function EndgameScreen() {
           <OptionSelect
             label="Harmony"
             options={["0", "1", "2"]}
+            value={harmonyScore}
             onChange={handleHarmonyScore}
           />
         )}
