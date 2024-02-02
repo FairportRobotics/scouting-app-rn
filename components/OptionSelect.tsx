@@ -7,19 +7,19 @@ import InputGroup from "@/components/InputGroup";
 
 interface OptionSelectProps {
   label: string;
+  value: string;
   options: string[] | [];
   onChange: (option: string) => void;
-  style?: {};
 }
 
 const OptionSelect: React.FC<OptionSelectProps> = ({
   label,
+  value,
   options,
   onChange,
-  style,
 }) => {
   // Support for Left Start Area
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState(value);
   const handleSelectOption = (option: string) => {
     let newOption = option === selectedOption ? "" : option;
     setSelectedOption(newOption);

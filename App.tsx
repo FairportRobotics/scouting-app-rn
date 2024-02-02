@@ -26,7 +26,11 @@ export default function App() {
           }}
         >
           <Tab.Screen name="Scout Match" component={MatchScoutingIndexScreen} />
-          <Tab.Screen name="Scout Pit" component={PitScoutingIndexScreen} />
+          <Tab.Screen
+            name="Scout Pit"
+            component={PitScoutingIndexScreen}
+            initialParams={{ mode: "Select" }}
+          />
           <Tab.Screen name="Match Results" component={MatchScoutResults} />
           <Tab.Screen name="Pit Results" component={PitResultsScreen} />
           <Tab.Screen name="Settings" component={SettingsScreen} />

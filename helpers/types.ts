@@ -69,3 +69,27 @@ export type MatchScoutingSession = {
   finalPenalties: number;
   finalNotes: string;
 };
+
+export type PitScoutingSession = {
+  // Root properties.
+  key: string;
+  eventKey: string;
+  teamKey: string;
+  canAchieveHarmony: string;
+  canFitOnStage: string;
+  canFitUnderStage: string;
+  canGetFromSource: string;
+  canGetOnStage: string;
+  canPark: string;
+  canPickUpNoteFromGround: string;
+  canRobotRecover: string;
+  canScoreAmp: string;
+  canScoreSpeaker: string;
+  canScoreTrap: string;
+  isRobotReady: string;
+  numberOfAutoMethods: string;
+  planOnClimbing: string;
+  planOnScoringTrap: string;
+  robotDimenions: string;
+  teamExperiance: string;
+};

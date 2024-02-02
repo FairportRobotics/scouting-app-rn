@@ -1,5 +1,11 @@
 import type { TbaEvent, TbaMatch, TbaTeam } from "@/helpers/tbaTypes";
-import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
+import type {
+  Event,
+  Match,
+  Team,
+  MatchScoutingSession,
+  PitScoutingSession,
+} from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
 
@@ -48,6 +54,7 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
+      tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
     }
 
     // Create new tables.
@@ -75,6 +82,14 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
         teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
         endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
         finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalPenalties INTEGER, finalNotes TEXT)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
+      (key TEXT PRIMARY KEY, eventKey TEXT, teamKey TEXT, canAchieveHarmony TEXT, \
+        canFitOnStage TEXT, canFitUnderStage TEXT, canGetFromSource TEXT, canGetOnStage TEXT, canPark TEXT, canPickUpNoteFromGround TEXT, \
+        canRobotRecover TEXT, canScoreAmp TEXT, canScoreSpeaker TEXT, canScoreTrap TEXT, isRobotReady TEXT, numberOfAutoMethods TEXT, planOnClimbing TEXT, \
+        planOnScoringTrap TEXT, robotDimenions TEXT, teamExperiance TEXT)"
     );
   });
 }
@@ -332,12 +347,112 @@ export const updateScoutingMatchSessionSetup = async (
   scoutedTeamKey: string
 ) => {
   db.transaction((tx) => {
-    console.log("updateScoutingMatchSessionSetup...");
     tx.executeSql(
       "UPDATE match_scouting_sessions \
       SET scouterName = ?, scoutedTeamKey = ? \
       WHERE key = ?",
       [scouterName, scoutedTeamKey, sessionKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const initializePitScoutingSession = async (
+  session: PitScoutingSession
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_sessions(key, eventKey, teamKey) \
+      VALUES(?, ?, ?) \
+      ON CONFLICT (key) DO NOTHING",
+      [session.key, session.eventKey, session.teamKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const getPitScoutingSessions = async (): Promise<
+  Array<PitScoutingSession>
+> => {
+  try {
+    const query = "SELECT * FROM pit_scouting_sessions";
+    return (await executeSql(query, [])) as Array<PitScoutingSession>;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
+};
+
+export const getPitScoutingSession = async (
+  sessionKey: string
+): Promise<PitScoutingSession | undefined> => {
+  try {
+    const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
+    const params = [sessionKey];
+    const results = (await executeSql(query, params)) as PitScoutingSession[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error fetching match scouting session:", error);
+    return undefined;
+  }
+};
+
+export const updatePitScoutingSession = async (session: PitScoutingSession) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE pit_scouting_sessions \
+      SET \
+        canAchieveHarmony = ?, \
+        canFitOnStage = ?, \
+        canFitUnderStage = ?, \
+        canGetFromSource = ?, \
+        canGetOnStage = ?, \
+        canPark = ?, \
+        canPickUpNoteFromGround = ?, \
+        canRobotRecover = ?, \
+        canScoreAmp = ?, \
+        canScoreSpeaker = ?, \
+        canScoreTrap = ?, \
+        isRobotReady = ?, \
+        numberOfAutoMethods = ?, \
+        planOnClimbing = ?, \
+        planOnScoringTrap = ?, \
+        robotDimenions = ?, \
+        teamExperiance = ? \
+      WHERE key = ?",
+      [
+        session.canAchieveHarmony,
+        session.canFitOnStage,
+        session.canFitUnderStage,
+        session.canGetFromSource,
+        session.canGetOnStage,
+        session.canPark,
+        session.canPickUpNoteFromGround,
+        session.canRobotRecover,
+        session.canScoreAmp,
+        session.canScoreSpeaker,
+        session.canScoreTrap,
+        session.isRobotReady,
+        session.numberOfAutoMethods,
+        session.planOnClimbing,
+        session.planOnScoringTrap,
+        session.robotDimenions,
+        session.teamExperiance,
+        session.key,
+      ],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);

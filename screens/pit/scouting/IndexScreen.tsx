@@ -1,8 +1,10 @@
-import { ScrollView, View, Text } from "react-native";
-import { useEffect, useState } from "react";
-import type { Team } from "@/helpers/types";
-import * as Database from "@/helpers/database";
+import { ScrollView, View, Button } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import type { PitScoutingSession } from "@/helpers/types";
 import SelectTeamScreen from "./SelectTeamScreen";
+import ScoutTeamScreen from "./ScoutTeamScreen";
+import * as Constants from "@/constants/constants";
+import * as Database from "@/helpers/database";
 
 const Mode = {
   Select: { previousMode: "Select", nextMode: "Scout" },
@@ -10,34 +12,52 @@ const Mode = {
 };
 
 export default function IndexScreen() {
-  const [eventKey, setEventKey] = useState<string>("2023nyrr");
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
-
   // Current mode.
+  const [eventKey, setEventKey] = useState(Constants.eventKey);
   const [mode, setMode] = useState(Mode.Select);
+  const [teamKey, setTeamKey] = useState("");
+  const [session, setSession] = useState<PitScoutingSession>();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const teams = await Database.getTeamsForEvent(eventKey);
-      setEventTeams(teams);
-    };
-
-    fetchData();
-
-    // Cleanup function.
+    scrollViewRef.current?.scrollTo({ x: 0, y: 0, animated: true });
     return () => {};
-  }, []);
+  }, [mode]);
 
-  const handleOnSelect = (teamKey: string) => {
-    console.log("IndexScreen handleTeamSelect teamKey:", teamKey);
+  const handleSelectTeam = async (teamKey: string) => {
+    // Initialize Session in DB.
+    let session = {
+      key: `${eventKey}__${teamKey}`,
+      eventKey: eventKey,
+      teamKey: teamKey,
+    } as PitScoutingSession;
+
+    // Initialize and retrieve the Session.
+    await Database.initializePitScoutingSession(session);
+    setSession(await Database.getPitScoutingSession(session.key));
+
+    setMode(Mode.Scout);
+    setTeamKey(teamKey);
+  };
+
+  const handleOnComplete = () => {
+    setSession(undefined);
+    setMode(Mode.Select);
   };
 
   return (
-    <ScrollView>
+    <ScrollView ref={scrollViewRef}>
       <View>
         {mode === Mode.Select && (
-          <SelectTeamScreen onSelect={(teamKey) => handleOnSelect(teamKey)} />
+          <SelectTeamScreen onSelect={(teamKey) => handleSelectTeam(teamKey)} />
         )}
+        {mode === Mode.Scout && (
+          <ScoutTeamScreen
+            session={session!}
+            onComplete={() => handleOnComplete()}
+          />
+        )}
+        <Button title="Return to Select" onPress={() => setMode(Mode.Select)} />
       </View>
     </ScrollView>
   );
