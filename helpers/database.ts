@@ -5,6 +5,7 @@ import type {
   Team,
   MatchScoutingSession,
   PitScoutingSession,
+  AppSettings,
 } from "@/helpers/types";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("scouting-app.db");
@@ -50,6 +51,7 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
   db.transaction((tx) => {
     // Provide a means of dropping and recreating all the tables.
     if (dropAndRecreate) {
+      tx.executeSql("DROP TABLE IF EXISTS settings");
       tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
@@ -58,6 +60,11 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
     }
 
     // Create new tables.
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS settings \
+      (key TEXT PRIMARY KEY, tbaKey TEXT, saveUri)"
+    );
+
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS events \
       (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
@@ -93,6 +100,41 @@ export function initializeDatabase(dropAndRecreate: boolean = false) {
     );
   });
 }
+
+export function saveSettings(settings: AppSettings) {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO settings(key, tbaKey, saveUri) \
+      VALUES(?, ?, ?) \
+      ON CONFLICT (key) DO NOTHING",
+      [settings.key, settings.tbaKey, settings.saveUri],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+}
+
+export const getSettings = async (
+  key: string
+): Promise<AppSettings | undefined> => {
+  try {
+    const query = "SELECT * FROM settings WHERE key = ?";
+    const params = [key];
+    const results = (await executeSql(query, params)) as AppSettings[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error fetching AppSettings:", error);
+    return undefined;
+  }
+};
 
 export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {

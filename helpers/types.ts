@@ -93,3 +93,9 @@ export type PitScoutingSession = {
   robotDimenions: string;
   teamExperiance: string;
 };
+
+export type AppSettings = {
+  key: string;
+  tbaKey: string;
+  saveUri: string;
+};
