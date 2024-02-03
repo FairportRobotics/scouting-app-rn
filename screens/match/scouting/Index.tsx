@@ -1,4 +1,4 @@
-import { ScrollView, View, Button } from "react-native";
+import { ScrollView, View, Button, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
@@ -121,7 +121,12 @@ export default function IndexScreen() {
               }
             />
           )}
-          {mode === Mode.Confirm && (
+          {sessionKey === undefined && mode === Mode.Confirm && (
+            <View>
+              <Text>Error with Session.</Text>
+            </View>
+          )}
+          {sessionKey !== undefined && mode === Mode.Confirm && (
             <ConfirmScreen
               sessionKey={sessionKey}
               eventTeams={eventTeams}
