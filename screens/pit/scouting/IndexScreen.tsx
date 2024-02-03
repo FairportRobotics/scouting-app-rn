@@ -14,7 +14,6 @@ export default function IndexScreen() {
   // Current mode.
   const [mode, setMode] = useState(Mode.Select);
   const [teamKey, setTeamKey] = useState("");
-  const [session, setSession] = useState<PitScoutingSession>();
   const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -30,14 +29,12 @@ export default function IndexScreen() {
 
     // Initialize and retrieve the Session.
     await Database.initializePitScoutingSession(session);
-    setSession(await Database.getPitScoutingSession(session.key));
 
     setMode(Mode.Scout);
     setTeamKey(teamKey);
   };
 
   const handleOnComplete = () => {
-    setSession(undefined);
     setMode(Mode.Select);
   };
 
@@ -49,7 +46,7 @@ export default function IndexScreen() {
         )}
         {mode === Mode.Scout && (
           <ScoutTeamScreen
-            session={session!}
+            sessionKey={teamKey}
             onComplete={() => handleOnComplete()}
           />
         )}

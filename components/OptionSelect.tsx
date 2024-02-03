@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import themes from "@/themes/themes";
@@ -18,8 +18,12 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   options,
   onChange,
 }) => {
-  // Support for Left Start Area
-  const [selectedOption, setSelectedOption] = useState(value);
+  useEffect(() => {
+    setSelectedOption(value);
+  });
+
+  const [selectedOption, setSelectedOption] = useState<string>(value);
+
   const handleSelectOption = (option: string) => {
     let newOption = option === selectedOption ? "" : option;
     setSelectedOption(newOption);

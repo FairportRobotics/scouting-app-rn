@@ -375,10 +375,11 @@ export const updateScoutingMatchSessionSetup = async (
 export const initializePitScoutingSession = async (
   session: PitScoutingSession
 ) => {
+  console.log("initializePitScoutingSession session:", session);
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions(key) \
-      VALUES(?, ?, ?) \
+      VALUES(?) \
       ON CONFLICT (key) DO NOTHING",
       [session.key],
       (txObj, resultSet) => {},
@@ -406,6 +407,7 @@ export const getPitScoutingSession = async (
   sessionKey: string
 ): Promise<PitScoutingSession | undefined> => {
   try {
+    console.log("getPitScoutingSession sessionKey:", sessionKey);
     const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
     const results = (await executeSql(query, params)) as PitScoutingSession[];
