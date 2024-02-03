@@ -1,4 +1,5 @@
 import { TextInput, Text, View, TouchableOpacity } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { MatchScoutingSession, Team } from "@/helpers/types";
 import ContainerGroup from "@/components/ContainerGroup";
@@ -7,30 +8,51 @@ import colors from "@/themes/colors";
 import * as Database from "@/helpers/database";
 
 interface ConfirmScreenProps {
-  session: MatchScoutingSession;
+  sessionKey: string;
   eventTeams: Array<Team>;
   onPrevious: () => void;
   onNext: () => void;
-  style?: {};
 }
 
 const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
-  session,
+  sessionKey,
   eventTeams,
   onPrevious,
   onNext,
-  style,
 }) => {
-  // Support for state.
-  const [currentSession, setCurrentSession] =
-    useState<MatchScoutingSession>(session);
+  const isFocused = useIsFocused();
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [currentSession, setCurrentSession] = useState<MatchScoutingSession>(
+    {} as MatchScoutingSession
+  );
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
-
-  // Support for filtering.
   const [filterText, setFilterText] = useState("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Attempt to load the Session.
+        const session = await Database.getMatchScoutingSession(sessionKey);
+        if (session === undefined) return;
+        setCurrentSession(session);
+
+        // Attempt to map the scheduled and scouted teams.
+
+        setIsLoading(false);
+      } catch (eror) {
+        console.error();
+        setIsLoading(false);
+      }
+    };
+
+    if (isFocused) {
+      loadData();
+    }
+  }, [isFocused]);
 
   // Upon changing the filter text.
   useEffect(() => {
@@ -59,6 +81,14 @@ const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
     if (newTeam !== undefined) setScoutedTeam(newTeam);
     setFilterText("");
   };
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View>

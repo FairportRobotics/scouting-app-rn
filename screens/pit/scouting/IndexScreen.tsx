@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import type { PitScoutingSession } from "@/helpers/types";
 import SelectTeamScreen from "./SelectTeamScreen";
 import ScoutTeamScreen from "./ScoutTeamScreen";
-import * as Constants from "@/constants/constants";
 import * as Database from "@/helpers/database";
 
 const Mode = {
@@ -13,7 +12,6 @@ const Mode = {
 
 export default function IndexScreen() {
   // Current mode.
-  const [eventKey, setEventKey] = useState(Constants.eventKey);
   const [mode, setMode] = useState(Mode.Select);
   const [teamKey, setTeamKey] = useState("");
   const [session, setSession] = useState<PitScoutingSession>();
@@ -27,9 +25,7 @@ export default function IndexScreen() {
   const handleSelectTeam = async (teamKey: string) => {
     // Initialize Session in DB.
     let session = {
-      key: `${eventKey}__${teamKey}`,
-      eventKey: eventKey,
-      teamKey: teamKey,
+      key: teamKey,
     } as PitScoutingSession;
 
     // Initialize and retrieve the Session.

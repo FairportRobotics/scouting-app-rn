@@ -28,13 +28,13 @@ export type Team = {
 export type MatchScoutingSession = {
   // Root properties.
   key: string;
-  eventKey: string;
   matchKey: string;
+  matchNumber: number;
   alliance: string;
   allianceTeam: number;
   scheduledTeamKey: string;
 
-  // Setup Properties
+  // Confirm
   scouterName: string;
   scoutedTeamKey: string;
 
@@ -73,8 +73,6 @@ export type MatchScoutingSession = {
 export type PitScoutingSession = {
   // Root properties.
   key: string;
-  eventKey: string;
-  teamKey: string;
   canAchieveHarmony: string;
   canFitOnStage: string;
   canFitUnderStage: string;

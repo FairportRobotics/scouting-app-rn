@@ -14,7 +14,7 @@ const SelectTeamScreen: React.FC<SelectTeamScreenProps> = ({ onSelect }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const teams = await Database.getTeamsForEvent(eventKey);
+      const teams = await Database.getTeams();
       setEventTeams(teams);
     };
 

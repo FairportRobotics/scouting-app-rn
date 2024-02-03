@@ -25,7 +25,7 @@ const exportDatabase = async () => {
   }
 };
 
-const handleInitialize = () => {
+const handleDeleteAndInitialize = () => {
   Alert.alert("Warning", "This will delete all data. Are you sure?", [
     {
       text: "Cancel",
@@ -35,14 +35,30 @@ const handleInitialize = () => {
     {
       text: "Delete",
       onPress: () => {
-        deleteDatabase();
+        Database.initializeDatabase(false, true);
       },
     },
   ]);
 };
 
-const deleteDatabase = () => {
-  Database.initializeDatabase(true);
+const handleDropAndInitialize = () => {
+  Alert.alert(
+    "Warning",
+    "This will drop and recreate all tables. Are you sure?",
+    [
+      {
+        text: "Cancel",
+        onPress: () => {},
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          Database.initializeDatabase(true, true);
+        },
+      },
+    ]
+  );
 };
 
 // Function to handle sharing via AirDrop
@@ -64,7 +80,14 @@ export default function DatabaseSettings() {
     <ContainerGroup title="Database">
       <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
         <Button title="Share" onPress={handleShare} />
-        <Button title="Delete Data and Initialize" onPress={handleInitialize} />
+        <Button
+          title="Delete data and initialize"
+          onPress={handleDeleteAndInitialize}
+        />
+        <Button
+          title="Drop tables and initialize"
+          onPress={handleDropAndInitialize}
+        />
       </View>
     </ContainerGroup>
   );

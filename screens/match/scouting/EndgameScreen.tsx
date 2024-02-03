@@ -7,12 +7,6 @@ import Check from "@/components/Check";
 import OptionSelect from "@/components/OptionSelect";
 
 export default function EndgameScreen() {
-  // [X] Trap Score (-/+)
-  // [X] Microphone Score (-/+)
-  // [X] Did Robot Park (cechkbox)
-  // [X] Did Robot Hang (cechkbox)
-  //     [X] Harmony Score (0/1/2)
-
   // Support for Trap Score
   const [trapScore, setTrapScore] = useState(0);
   const handleTrapScore = (delta: number) => {

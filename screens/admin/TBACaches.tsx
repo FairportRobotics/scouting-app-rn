@@ -29,7 +29,7 @@ export default function TBACaches() {
     handleFetchEvent();
     handleFetchEventMatches();
     handleFetchEventTeams();
-    backfillMissingTeams(eventKey);
+    backfillMissingTeams();
   };
 
   // Support for retrieving Event
@@ -43,20 +43,20 @@ export default function TBACaches() {
   const handleFetchEventMatches = async () => {
     // Fetch the Matches from TBA and save to the DB.
     let tbaMatches: Array<TbaMatch> = await fetchEventMatches(eventKey);
-    Database.saveEventMatches(eventKey, tbaMatches);
+    Database.saveMatches(tbaMatches);
   };
 
   // Support for retrieving Event Teams
   const handleFetchEventTeams = async () => {
     // Fetch the Matches from TBA and save to the DB.
     let tbaTeams: Array<TbaTeam> = await fetchEventTeams(eventKey);
-    Database.saveEventTeams(eventKey, tbaTeams);
+    Database.saveTeams(tbaTeams);
   };
 
   const handleShowCaheData = async () => {
-    setEvent(await Database.getEvent(eventKey));
-    setEventMatches(await Database.getMatchesForEvent(eventKey));
-    setEventTeams(await Database.getTeamsForEvent(eventKey));
+    setEvent(await Database.getEvent());
+    setEventMatches(await Database.getMatches());
+    setEventTeams(await Database.getTeams());
   };
 
   return (
