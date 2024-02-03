@@ -2,7 +2,6 @@ import { Text, RefreshControl, FlatList, View } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Match, Team } from "@/helpers/types";
-import { EventKey } from "@/helpers/constants";
 import * as Database from "@/helpers/database";
 import ContainerGroup from "@/components/ContainerGroup";
 
