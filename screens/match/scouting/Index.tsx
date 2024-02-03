@@ -1,5 +1,6 @@
 import { ScrollView, View, Button } from "react-native";
 import { useEffect, useState } from "react";
+import { useIsFocused } from "@react-navigation/native";
 import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
 import * as Database from "@/helpers/database";
 
@@ -23,32 +24,25 @@ const Mode = {
 };
 
 export default function IndexScreen() {
+  const isFocused = useIsFocused();
+
   // State related to the Event.
-  const [currentEvent, setCurrentEvent] = useState<Event>({} as Event);
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
-
-  // Current mode.
   const [mode, setMode] = useState(Mode.Select);
-
-  // State set once a Match and Team is selected.
-  const [session, setSession] = useState<MatchScoutingSession>();
+  const [sessionKey, setSessionKey] = useState<string>();
 
   useEffect(() => {
     const loadData = async () => {
-      // Load data from the DB. Hard-code for ease of development experience.
-      let eventKey: string = "2023nyrr";
-      const dtoEvent = await Database.getEvent(eventKey);
-      const dtoMatches = await Database.getMatchesForEvent(eventKey);
-      const dtoTeams = await Database.getTeamsForEvent(eventKey);
+      const dtoMatches = await Database.getMatches();
+      const dtoTeams = await Database.getTeams();
 
       // Assign to state.
-      if (dtoEvent !== undefined) setCurrentEvent(dtoEvent);
       setEventMatches(dtoMatches);
       setEventTeams(dtoTeams);
     };
     loadData();
-  }, []);
+  }, [isFocused]);
 
   const handleChangeMode = (newMode: string) => {
     switch (newMode) {
@@ -82,11 +76,15 @@ export default function IndexScreen() {
     allianceTeam: number,
     teamKey: string
   ) => {
+    console.log("handleStartScouting");
+    const selectedMatch = eventMatches.find((match) => match.key === matchKey);
+    if (selectedMatch === undefined) return;
+
     // Initialize the Match Scouting Session properties.
     let session: MatchScoutingSession = {
-      key: `${currentEvent.key}__${matchKey}__${alliance}__${allianceTeam}`,
-      eventKey: currentEvent.key,
+      key: `${matchKey}__${alliance}__${allianceTeam}`,
       matchKey: matchKey,
+      matchNumber: selectedMatch.matchNumber,
       alliance: alliance,
       allianceTeam: allianceTeam,
       scheduledTeamKey: teamKey,
@@ -95,7 +93,8 @@ export default function IndexScreen() {
 
     // Initialize and retrieve the Session.
     await Database.initializeMatchScoutingSession(session);
-    setSession(await Database.getMatchScoutingSession(session.key));
+    setSessionKey(session.key);
+    console.log("handleStartScouting session:", session.key);
 
     setMode(Mode.Confirm);
   };
@@ -124,7 +123,7 @@ export default function IndexScreen() {
           )}
           {mode === Mode.Confirm && (
             <ConfirmScreen
-              session={session!}
+              sessionKey={sessionKey}
               eventTeams={eventTeams}
               onPrevious={handleNavigatePrevious}
               onNext={handleNavigateNext}

@@ -1,4 +1,5 @@
-import { Text, RefreshControl, FlatList } from "react-native";
+import { Text, RefreshControl, FlatList, View } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
@@ -14,7 +15,7 @@ export type MatchResultModel = {
 };
 
 export default function MatchResultsScreen() {
-  const eventKey = "2023nyrr";
+  const isFocused = useIsFocused();
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [sessions, setSessions] = useState<Array<MatchResultModel>>([]);
   const [matchesLookup, setMatchesLookup] = useState<Record<string, Match>>({});
@@ -23,7 +24,7 @@ export default function MatchResultsScreen() {
   const loadData = async () => {
     // Retrieve Matches and produce a Dictionary.
     let matchesDictionary: Record<string, Match> = {};
-    const matches = await Database.getMatchesForEvent(eventKey);
+    const matches = await Database.getMatches();
     matches.forEach((match) => {
       matchesDictionary[match.key] = match;
     });
@@ -31,7 +32,7 @@ export default function MatchResultsScreen() {
 
     // Retrieve Teams and produce a Dictionary.
     let teamsDictionary: Record<string, Team> = {};
-    const teams = await Database.getTeamsForEvent(eventKey);
+    const teams = await Database.getTeams();
     teams.forEach((team) => {
       teamsDictionary[team.key] = team;
     });
@@ -73,23 +74,25 @@ export default function MatchResultsScreen() {
   }, []);
 
   return (
-    <FlatList
-      data={sessions}
-      renderItem={(session) => (
-        <ContainerGroup title="" key={session.item.sessionKey}>
-          <Text>
-            Match {session.item.matchNumber}: {session.item.alliance}{" "}
-            {session.item.allianceTeam}
-          </Text>
-          <Text>
-            {session.item.teamNumber} - {session.item.teamNickname}
-          </Text>
-        </ContainerGroup>
-      )}
-      keyExtractor={(session) => session.sessionKey}
-      refreshControl={
-        <RefreshControl refreshing={isRefeshing} onRefresh={loadData} />
-      }
-    />
+    <View>
+      <FlatList
+        data={sessions}
+        renderItem={(session) => (
+          <ContainerGroup title="" key={session.item.sessionKey}>
+            <Text>
+              Match {session.item.matchNumber}: {session.item.alliance}{" "}
+              {session.item.allianceTeam}
+            </Text>
+            <Text>
+              {session.item.teamNumber} - {session.item.teamNickname}
+            </Text>
+          </ContainerGroup>
+        )}
+        keyExtractor={(session) => session.sessionKey}
+        refreshControl={
+          <RefreshControl refreshing={isRefeshing} onRefresh={loadData} />
+        }
+      />
+    </View>
   );
 }

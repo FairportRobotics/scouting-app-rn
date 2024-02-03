@@ -5,7 +5,7 @@ import { TbaTeam } from "./tbaTypes";
 
 let tbaKey = "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs";
 
-export default async (eventKey: string) => {
+export default async () => {
   const fetchTeamFromTba = async (teamKey: string) => {
     try {
       let apiUrl = `https://www.thebluealliance.com/api/v3/team/${teamKey}`;
@@ -25,8 +25,8 @@ export default async (eventKey: string) => {
   };
 
   // Load all Matches and Teams.
-  const matches = await Database.getMatchesForEvent(eventKey);
-  const teams = await Database.getTeamsForEvent(eventKey);
+  const matches = await Database.getMatches();
+  const teams = await Database.getTeams();
 
   // Create a Dictionary so we can easily lookup Teams.
   const teamsLookup: Record<string, Team> = {};
@@ -59,5 +59,5 @@ export default async (eventKey: string) => {
 
   // Let's look at the teams we're going to insert.
   const teamsToPersist = Object.values(tbaTeams) as Array<TbaTeam>;
-  Database.saveEventTeams(eventKey, teamsToPersist);
+  Database.saveTeams(teamsToPersist);
 };
