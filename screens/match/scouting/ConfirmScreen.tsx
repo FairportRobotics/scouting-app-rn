@@ -41,6 +41,16 @@ const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
         setCurrentSession(session);
 
         // Attempt to map the scheduled and scouted teams.
+        const lookupScheduled = eventTeams.find(
+          (team) => team.key === session.scheduledTeamKey
+        );
+        if (lookupScheduled !== undefined) setScheduledTeam(lookupScheduled);
+
+        // Attempt to map the scheduled and scouted teams.
+        const lookupScouted = eventTeams.find(
+          (team) => team.key === session.scoutedTeamKey
+        );
+        if (lookupScouted !== undefined) setScoutedTeam(lookupScouted);
 
         setIsLoading(false);
       } catch (eror) {
