@@ -1,5 +1,4 @@
-import { Text, RefreshControl, FlatList, View } from "react-native";
-import { useIsFocused } from "@react-navigation/native";
+import { Text, RefreshControl, FlatList, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import { Match, Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
@@ -10,62 +9,19 @@ export type MatchResultModel = {
   matchNumber: number;
   alliance: string;
   allianceTeam: number;
-  teamNumber: string;
-  teamNickname: string;
+  scheduledTeamNumber: string;
+  scheduledTeamNickname: string;
+  scoutedTeamNumber: string;
+  scoutedTeamNickname: string;
 };
 
 export default function MatchResultsScreen() {
-  const isFocused = useIsFocused();
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
-  const [sessions, setSessions] = useState<Array<MatchResultModel>>([]);
-  const [matchesLookup, setMatchesLookup] = useState<Record<string, Match>>({});
-  const [teamsLookup, setTeamsLookup] = useState<Record<string, Team>>({});
+  const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
 
-  const loadData = async () => {
-    // Retrieve Matches and produce a Dictionary.
-    let matchesDictionary: Record<string, Match> = {};
-    const matches = await Database.getMatches();
-    matches.forEach((match) => {
-      matchesDictionary[match.key] = match;
-    });
-    setMatchesLookup(matchesDictionary);
-
-    // Retrieve Teams and produce a Dictionary.
-    let teamsDictionary: Record<string, Team> = {};
-    const teams = await Database.getTeams();
-    teams.forEach((team) => {
-      teamsDictionary[team.key] = team;
-    });
-    setTeamsLookup(teamsDictionary);
-
-    // Retrieve sessions and convert to the model.
-    const dtoSessions = await Database.getMatchScoutingSessions();
-
-    const models = dtoSessions.map((session) => {
-      const match = matchesDictionary[session.matchKey];
-      const scheduledTeam = teamsLookup[session.scheduledTeamKey];
-      const scoutedTeam = teamsLookup[session.scoutedTeamKey];
-
-      const model = {
-        sessionKey: session.key,
-        matchNumber: match.matchNumber,
-        alliance: session.alliance,
-        allianceTeam: session.allianceTeam,
-        teamNumber:
-          scheduledTeam !== undefined
-            ? scoutedTeam.teamNumber
-            : session.scheduledTeamKey,
-        teamNickname:
-          scheduledTeam !== undefined
-            ? scoutedTeam.nickname
-            : session.scheduledTeamKey,
-      } as MatchResultModel;
-
-      return model;
-    });
-
-    setSessions(models);
-
+  const onRefresh = () => {
+    setIsRefreshing(true);
+    loadData();
     setIsRefreshing(false);
   };
 
@@ -73,26 +29,102 @@ export default function MatchResultsScreen() {
     loadData();
   }, []);
 
-  return (
-    <View>
-      <FlatList
-        data={sessions}
-        renderItem={(session) => (
-          <ContainerGroup title="" key={session.item.sessionKey}>
-            <Text>
-              Match {session.item.matchNumber}: {session.item.alliance}{" "}
-              {session.item.allianceTeam}
-            </Text>
-            <Text>
-              {session.item.teamNumber} - {session.item.teamNickname}
-            </Text>
-          </ContainerGroup>
-        )}
-        keyExtractor={(session) => session.sessionKey}
-        refreshControl={
-          <RefreshControl refreshing={isRefeshing} onRefresh={loadData} />
+  const loadData = async () => {
+    try {
+      const dtoMatches = await Database.getMatches();
+      const dtoTeams = await Database.getTeams();
+      const dtoSessions = await Database.getMatchScoutingSessions();
+
+      // Create a Matches dictionary for faster lookups.
+      let matchesDictionary: Record<string, Match> = {};
+      dtoMatches.forEach((match) => {
+        matchesDictionary[match.key] = match;
+      });
+
+      // Retrieve Teams and produce a Dictionary.
+      let teamsDictionary: Record<string, Team> = {};
+      dtoTeams.forEach((team) => {
+        teamsDictionary[team.key] = team;
+      });
+
+      const models = dtoSessions.map((session) => {
+        const match = matchesDictionary[session.matchKey];
+        const scheduledTeam = teamsDictionary[session.scheduledTeamKey];
+        const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
+
+        const model = {
+          sessionKey: session.key,
+          matchNumber: match.matchNumber,
+          alliance: session.alliance,
+          allianceTeam: session.allianceTeam,
+        } as MatchResultModel;
+
+        if (scheduledTeam !== undefined) {
+          model.scheduledTeamNumber = scheduledTeam.teamNumber;
+          model.scheduledTeamNickname = scheduledTeam.nickname;
         }
-      />
+
+        if (scoutedTeam !== undefined) {
+          model.scoutedTeamNumber = scoutedTeam.teamNumber;
+          model.scoutedTeamNickname = scoutedTeam.nickname;
+        }
+
+        return model;
+      });
+
+      setReportModels(models);
+
+      setIsRefreshing(false);
+    } catch (error) {
+      console.log("MatchResultsScreen loadData error:", error);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
+        }
+      >
+        <ContainerGroup title="All Match Data">
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text>[Upload]</Text>
+            <Text>[Share JSON]</Text>
+            <Text>[Share CSV]</Text>
+          </View>
+        </ContainerGroup>
+        {reportModels.map((match, index) => (
+          <ContainerGroup
+            title={`Match ${match.matchNumber}: ${match.alliance} ${match.allianceTeam}: ${match.scoutedTeamNumber} - ${match.scoutedTeamNickname}`}
+            key={index}
+          >
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text>[Edit]</Text>
+              <Text>[Upload]</Text>
+              <Text>[QR JSON]</Text>
+              <Text>[QR CSV]</Text>
+              <Text>[Share JSON]</Text>
+              <Text>[Share CSV]</Text>
+            </View>
+          </ContainerGroup>
+        ))}
+      </ScrollView>
     </View>
   );
 }

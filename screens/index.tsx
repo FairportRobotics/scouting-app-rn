@@ -1,5 +1,5 @@
 export { default as MatchSelectTeamScreen } from "@/screens/match/scouting/SelectTeamScreen";
-export { default as MatchResultsScreen } from "@/screens/match/results/ResultsScreen";
+export { default as MatchResultsScreen } from "@/screens/match/results/MatchResultsScreen";
 export { default as PitResultsScreen } from "@/screens/pit/results/ResultsScreen";
 
 export { default as ConfirmScreen } from "./match/scouting/ConfirmScreen";

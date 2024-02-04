@@ -523,7 +523,7 @@ export const getMatchScoutingSessions = async (): Promise<
   Array<MatchScoutingSession>
 > => {
   try {
-    const query = "SELECT * FROM match_scouting_sessions ORDER BY ";
+    const query = "SELECT * FROM match_scouting_sessions ORDER BY matchNumber";
     return (await executeSql(query, [])) as Array<MatchScoutingSession>;
   } catch (error) {
     console.error("Error fetching user data:", error);
