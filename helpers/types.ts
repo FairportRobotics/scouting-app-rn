@@ -39,8 +39,8 @@ export type MatchScoutingSession = {
   scoutedTeamKey: string;
 
   // Auto
-  autoStartedWithNote: number;
-  autoLeftStartArea: number;
+  autoStartedWithNote: boolean;
+  autoLeftStartArea: boolean;
   autoSpeakerScore: number;
   autoSpeakerScoreAmplified: number;
   autoSpeakerMiss: number;
@@ -58,8 +58,8 @@ export type MatchScoutingSession = {
   // Endgame
   endgameTrapScore: number;
   endgameMicrophoneScore: number;
-  endgameDidRobotPark: number;
-  endgameDidRobotHang: number;
+  endgameDidRobotPark: boolean;
+  endgameDidRobotHang: boolean;
   endgameHarmony: string;
 
   // Final

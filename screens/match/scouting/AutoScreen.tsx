@@ -29,11 +29,13 @@ function AutoScreen({ navigation }) {
 
   const loadData = async () => {
     const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-    console.log("AutoScreen session:", dtoSession);
+    console.log("AutoScreen saveData dtoSession:", dtoSession);
     setSession(dtoSession);
   };
 
   const saveData = async () => {
+    if (session === undefined) return;
+    console.log("AutoScreen saveData session:", session);
     await Database.saveMatchScoutingSessionAuto(session);
   };
 
@@ -48,14 +50,14 @@ function AutoScreen({ navigation }) {
   const navigatePrevious = () => {
     saveData();
     navigation.navigate(ROUTES.MATCH_SCOUT_CONFIRM, {
-      session: session,
+      sessionKey: sessionKey,
     });
   };
 
   const navigateNext = () => {
     saveData();
     navigation.navigate(ROUTES.MATCH_SCOUT_TELEOP, {
-      session: session,
+      sessionKey: sessionKey,
     });
   };
 
@@ -73,28 +75,22 @@ function AutoScreen({ navigation }) {
         >
           <Check
             label="Started with Note"
-            checked={session.autoStartedWithNote == 1}
+            checked={session?.autoStartedWithNote}
             onToggle={() =>
-              handleChange(
-                "autoStartedWithNote",
-                !session.autoStartedWithNote ? 1 : 0
-              )
+              handleChange("autoStartedWithNote", !session.autoStartedWithNote)
             }
           />
           <Check
             label="Left Start Area"
-            checked={session.autoLeftStartArea == 1}
+            checked={session.autoLeftStartArea}
             onToggle={() =>
-              handleChange(
-                "autoLeftStartArea",
-                !session.autoLeftStartArea ? 1 : 0
-              )
+              handleChange("autoLeftStartArea", !session.autoLeftStartArea)
             }
           />
         </View>
       </ContainerGroup>
 
-      <ContainerGroup title="Speaker">
+      {/* <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score"
           count={session.autoSpeakerScore}
@@ -129,7 +125,7 @@ function AutoScreen({ navigation }) {
             handleChange("autoAmpMiss", (session.autoAmpMiss += delta))
           }
         />
-      </ContainerGroup>
+      </ContainerGroup> */}
       <ContainerGroup title="">
         <View style={{ flexDirection: "row" }}>
           <Button title="Previous" onPress={navigatePrevious} />
