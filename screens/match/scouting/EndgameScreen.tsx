@@ -18,7 +18,7 @@ function EndgameScreen({ navigation }) {
   const [microphoneScore, setMicrophoneScore] = useState<number>(0);
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
   const [didRobotHang, setDidRobotHang] = useState<boolean>(false);
-  const [harmonyScore, setHarmonyScore] = useState<string>("");
+  const [harmonyScore, setHarmonyScore] = useState<string>("NOT_SELCTED");
 
   useEffect(() => {
     loadData();
@@ -35,7 +35,7 @@ function EndgameScreen({ navigation }) {
     setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? 0);
     setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
     setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
-    setHarmonyScore(dtoSession?.endgameHarmony ?? "");
+    setHarmonyScore(dtoSession?.endgameHarmony ?? "NOT_SELCTED");
   };
 
   const saveData = async () => {

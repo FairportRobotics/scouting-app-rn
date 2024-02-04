@@ -18,8 +18,6 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   options,
   onChange,
 }) => {
-  console.log(options);
-
   const [selectedOption, setSelectedOption] = useState<string>(value ?? "");
 
   useEffect(() => {

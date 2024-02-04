@@ -98,7 +98,7 @@ function FinalScreen({ navigation }) {
         <MinusPlusPair
           label="Penalties"
           count={penalties}
-          onChange={(delta) => setPenalties(rankingPoints + delta)}
+          onChange={(delta) => setPenalties(penalties + delta)}
         />
       </ContainerGroup>
       <ContainerGroup title="Notes">
