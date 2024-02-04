@@ -18,11 +18,13 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   options,
   onChange,
 }) => {
+  console.log(options);
+
+  const [selectedOption, setSelectedOption] = useState<string>(value ?? "");
+
   useEffect(() => {
     setSelectedOption(value);
   });
-
-  const [selectedOption, setSelectedOption] = useState<string>(value);
 
   const handleSelectOption = (option: string) => {
     let newOption = option === selectedOption ? "" : option;
@@ -33,7 +35,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   return (
     <InputGroup title={label}>
       <View style={styles.optionsContainer}>
-        {options.map((option) => (
+        {options.map((option: string) => (
           <TouchableOpacity
             key={option}
             style={[

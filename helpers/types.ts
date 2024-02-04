@@ -66,6 +66,7 @@ export type MatchScoutingSession = {
   finalAllianceScore: number;
   finalRankingPoints: number;
   finalAllianceResult: string;
+  finalViolations: string;
   finalPenalties: number;
   finalNotes: string;
 };
@@ -112,6 +113,7 @@ export default function getDefaultMatchScoutingSession() {
     finalAllianceScore: 0,
     finalRankingPoints: 0,
     finalAllianceResult: 0,
+    finalViolations: "",
     finalPenalties: 0,
     finalNotes: "",
   } as unknown as MatchScoutingSession;

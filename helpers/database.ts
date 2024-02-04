@@ -83,7 +83,7 @@ export function initializeDatabase(
         autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, \
         teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
         endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
-        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalPenalties INTEGER, finalNotes TEXT)"
+        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT)"
     );
 
     tx.executeSql(
@@ -462,6 +462,53 @@ export const saveMatchScoutingSessionEndgame = async (
         didRobotPark ? 1 : 0,
         didRobotHang ? 1 : 0,
         harmonyScore,
+      ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionFinal = async (
+  sessionKey: string,
+  finalAllianceScore: number,
+  finalRankingPoints: number,
+  finalAllianceResult: string,
+  finalViolations: string,
+  finalPenalties: number,
+  finalNotes: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions \
+      ( \
+        key, \
+        finalAllianceScore, finalRankingPoints, finalAllianceResult, finalViolations, finalPenalties, finalNotes \
+      ) \
+      VALUES \
+      ( \
+        :key,\
+        :finalAllianceScore, :finalRankingPoints, :finalAllianceResult, :finalViolations, :finalPenalties, :finalNotes \
+      ) \
+      ON CONFLICT (key) DO UPDATE SET \
+        finalAllianceScore = excluded.finalAllianceScore, \
+        finalRankingPoints = excluded.finalRankingPoints, \
+        finalAllianceResult = excluded.finalAllianceResult, \
+        finalViolations = excluded.finalViolations, \
+        finalPenalties = excluded.finalPenalties, \
+        finalNotes = excluded.finalNotes \
+      ",
+      [
+        sessionKey,
+        finalAllianceScore,
+        finalRankingPoints,
+        finalAllianceResult,
+        finalViolations,
+        finalPenalties,
+        finalNotes,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
