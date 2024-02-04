@@ -3,7 +3,7 @@ import FRSettings from "./FRSettings";
 import TBACaches from "./TBACaches";
 import DatabaseSettings from "./DatabaseSettings";
 
-export default function SettingsScreen() {
+function SettingsScreen({ navigation }) {
   return (
     <ScrollView>
       <View style={{ flex: 1 }}>
@@ -14,3 +14,5 @@ export default function SettingsScreen() {
     </ScrollView>
   );
 }
+
+export default SettingsScreen;

@@ -26,10 +26,10 @@ export default function TBACaches() {
 
   // Handles fetching and saving all TBA data to the database.
   const handleFetchEventData = async () => {
-    handleFetchEvent();
-    handleFetchEventMatches();
-    handleFetchEventTeams();
-    backfillMissingTeams();
+    await handleFetchEvent();
+    await handleFetchEventMatches();
+    await handleFetchEventTeams();
+    await backfillMissingTeams();
   };
 
   // Support for retrieving Event

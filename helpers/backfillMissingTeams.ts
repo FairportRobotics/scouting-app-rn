@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Event, Match, Team, MatchScoutingSession } from "@/helpers/types";
+import type { Team } from "@/helpers/types";
 import * as Database from "@/helpers/database";
 import { TbaTeam } from "./tbaTypes";
 

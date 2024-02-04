@@ -1,48 +1,28 @@
-import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
-import ContainerGroup from "@/components/ContainerGroup";
-import MinusPlusPair from "@/components/MinusPlusPair";
+import React, { useEffect, useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import { View, Button, ScrollView } from "react-native";
+import { ContainerGroup, MinusPlusPair } from "@/components";
+import ROUTES from "@/constants/routes";
+import * as Database from "@/helpers/database";
 
-export default function TeleopScreen() {
-  // Support for Speaker Score Non-Amplified
-  const [speakerScore, setSpeakerScore] = useState(0);
-  const handleSpeakerScore = (delta: number) => {
-    setSpeakerScore((prev) => (prev += delta));
-  };
+function TeleopScreen({ navigation }) {
+  const { params } = useRoute();
+  const sessionKey = params["sessionKey"];
 
-  // SUpport for Speaker Score Amplified
-  const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState(0);
-  const handleSpeakerScoreAmplified = (delta: number) => {
-    setSpeakerScoreAmplified((prev) => (prev += delta));
-  };
+  const [speakerScore, setSpeakerScore] = useState<number>(0);
+  const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
+  const [speakerMiss, setSpeakerMiss] = useState<number>(0);
 
-  // Support for Speaker Miss
-  const [speakerMiss, setSpeakerMiss] = useState(0);
-  const handleSpeakerMiss = (delta: number) => {
-    setSpeakerMiss((prev) => (prev += delta));
-  };
-
-  // Support for Amp Score
-  const [ampScore, setAmpScore] = useState(0);
-  const handleAmpScore = (delta: number) => {
-    setAmpScore((prev) => (prev += delta));
-  };
-
-  // Support for Amp Miss
-  const [ampMiss, setAmpMiss] = useState(0);
-  const handleAmpMiss = (delta: number) => {
-    setAmpMiss((prev) => (prev += delta));
-  };
-
-  // Support for Pass
-  const [pass, setPass] = useState(0);
-  const handlePass = (delta: number) => {
-    setPass((prev) => (prev += delta));
-  };
+  const [ampScore, setAmpScore] = useState<number>(0);
+  const [ampMiss, setAmpMiss] = useState<number>(0);
+  const [pass, setPass] = useState<number>(0);
 
   useEffect(() => {
-    console.log("Teleop: Update the session");
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    saveData();
   }, [
     speakerScore,
     speakerScoreAmplified,
@@ -52,37 +32,94 @@ export default function TeleopScreen() {
     pass,
   ]);
 
+  const loadData = async () => {
+    const dtoSession = await Database.getMatchScoutingSession(sessionKey);
+
+    setSpeakerScore(dtoSession?.teleopSpeakerScore ?? 0);
+    setSpeakerScoreAmplified(dtoSession?.teleopSpeakerScoreAmplified ?? 0);
+    setSpeakerMiss(dtoSession?.teleopSpeakerMiss ?? 0);
+
+    setAmpScore(dtoSession?.teleopAmpScore ?? 0);
+    setAmpMiss(dtoSession?.teleopAmpMiss ?? 0);
+
+    setPass(dtoSession?.teleopRelayPass ?? 0);
+  };
+
+  const saveData = async () => {
+    await Database.saveMatchScoutingSessionTeleop(
+      sessionKey,
+      speakerScore,
+      speakerScoreAmplified,
+      speakerMiss,
+      ampScore,
+      ampMiss,
+      pass
+    );
+  };
+
+  const navigatePrevious = () => {
+    saveData();
+    navigation.navigate(ROUTES.MATCH_SCOUT_AUTO, {
+      sessionKey: sessionKey,
+    });
+  };
+
+  const navigateNext = () => {
+    saveData();
+    navigation.navigate(ROUTES.MATCH_SCOUT_ENDGAME, {
+      sessionKey: sessionKey,
+    });
+  };
+
   return (
     <ScrollView style={{ margin: 10 }}>
-      <MatchScoutingHeader />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
           count={speakerScore}
-          onChange={handleSpeakerScore}
+          onChange={(delta) => setSpeakerScore(speakerScore + delta)}
         />
         <MinusPlusPair
           label="Score: Amplified"
           count={speakerScoreAmplified}
-          onChange={handleSpeakerScoreAmplified}
+          onChange={(delta) =>
+            setSpeakerScoreAmplified(speakerScoreAmplified + delta)
+          }
         />
         <MinusPlusPair
           label="Miss"
           count={speakerMiss}
-          onChange={handleSpeakerMiss}
+          onChange={(delta) => setSpeakerMiss(speakerMiss + delta)}
         />
       </ContainerGroup>
       <ContainerGroup title="Amp">
         <MinusPlusPair
           label="Score"
           count={ampScore}
-          onChange={handleAmpScore}
+          onChange={(delta) => setAmpScore(ampScore + delta)}
         />
-        <MinusPlusPair label="Miss" count={ampMiss} onChange={handleAmpMiss} />
+        <MinusPlusPair
+          label="Miss"
+          count={ampMiss}
+          onChange={(delta) => setAmpMiss(ampMiss + delta)}
+        />
       </ContainerGroup>
       <ContainerGroup title="Relay">
-        <MinusPlusPair label="Passes" count={pass} onChange={handlePass} />
+        <MinusPlusPair
+          label="Passes"
+          count={pass}
+          onChange={(delta) => setPass(pass + delta)}
+        />
+      </ContainerGroup>
+
+      <ContainerGroup title="">
+        <View style={{ flexDirection: "row" }}>
+          <Button title="Previous" onPress={navigatePrevious} />
+          <Button title="Next" onPress={navigateNext} />
+        </View>
       </ContainerGroup>
     </ScrollView>
   );
 }
+
+export default TeleopScreen;
