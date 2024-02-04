@@ -14,29 +14,43 @@ function AutoScreen({ navigation }) {
   const { params } = useRoute();
   let sessionKey = params["sessionKey"];
 
-  const [session, setSession] = useState<MatchScoutingSession>(
-    getDefaultMatchScoutingSession()
-  );
+  const [autoStartedWithNote, setAutoStartedWithNote] =
+    useState<boolean>(false);
+  const [autoLeftStartArea, setAutoLeftStartArea] = useState<boolean>(false);
 
-  const handleChange = (property: string, value: any) => {
-    setSession((currentSession) => {
-      return {
-        ...currentSession,
-        [property]: value,
-      };
-    });
-  };
+  const [autoSpeakerScore, setAutoSpeakerScore] = useState<number>(0);
+  const [autoSpeakerScoreAmplified, setAutoSpeakerScoreAmplified] =
+    useState<number>(0);
+  const [autoSpeakerMiss, setAutoSpeakerMiss] = useState<number>(0);
+
+  const [autoAmpScore, setAutoAmpScore] = useState<number>(0);
+  const [autoAmpMiss, setAutoAmpMiss] = useState<number>(0);
 
   const loadData = async () => {
     const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-    console.log("AutoScreen saveData dtoSession:", dtoSession);
-    setSession(dtoSession);
+
+    setAutoStartedWithNote(dtoSession?.autoStartedWithNote ?? false);
+    setAutoLeftStartArea(dtoSession?.autoLeftStartArea ?? false);
+
+    setAutoSpeakerScore(dtoSession?.autoSpeakerScore ?? 0);
+    setAutoSpeakerScoreAmplified(dtoSession?.autoSpeakerScoreAmplified ?? 0);
+    setAutoSpeakerMiss(dtoSession?.autoSpeakerMiss ?? 0);
+
+    setAutoAmpScore(dtoSession?.autoAmpScore ?? 0);
+    setAutoAmpMiss(dtoSession?.autoAmpMiss ?? 0);
   };
 
   const saveData = async () => {
-    if (session === undefined) return;
-    console.log("AutoScreen saveData session:", session);
-    await Database.saveMatchScoutingSessionAuto(session);
+    await Database.saveMatchScoutingSessionAuto(
+      sessionKey,
+      autoStartedWithNote,
+      autoLeftStartArea,
+      autoSpeakerScore,
+      autoSpeakerScoreAmplified,
+      autoSpeakerMiss,
+      autoAmpScore,
+      autoAmpMiss
+    );
   };
 
   useEffect(() => {
@@ -45,7 +59,15 @@ function AutoScreen({ navigation }) {
 
   useEffect(() => {
     saveData();
-  }, [session]);
+  }, [
+    autoStartedWithNote,
+    autoLeftStartArea,
+    autoSpeakerScore,
+    autoSpeakerScoreAmplified,
+    autoSpeakerMiss,
+    autoAmpScore,
+    autoAmpMiss,
+  ]);
 
   const navigatePrevious = () => {
     saveData();
@@ -75,57 +97,49 @@ function AutoScreen({ navigation }) {
         >
           <Check
             label="Started with Note"
-            checked={session?.autoStartedWithNote}
-            onToggle={() =>
-              handleChange("autoStartedWithNote", !session?.autoStartedWithNote)
-            }
+            checked={autoStartedWithNote}
+            onToggle={() => setAutoStartedWithNote(!autoStartedWithNote)}
           />
           <Check
             label="Left Start Area"
-            checked={session?.autoLeftStartArea}
-            onToggle={() =>
-              handleChange("autoLeftStartArea", !session?.autoLeftStartArea)
-            }
+            checked={autoLeftStartArea}
+            onToggle={() => setAutoLeftStartArea(!autoLeftStartArea)}
           />
         </View>
       </ContainerGroup>
 
-      {/* <ContainerGroup title="Speaker">
+      <ContainerGroup title="Speaker:">
         <MinusPlusPair
-          label="Score"
-          count={session.autoSpeakerScore}
+          label="Score: Unamplified"
+          count={autoSpeakerScore}
+          onChange={(delta) => setAutoSpeakerScore(autoSpeakerScore + delta)}
+        />
+        <MinusPlusPair
+          label="Speaker: Amplified"
+          count={autoSpeakerScoreAmplified}
           onChange={(delta) =>
-            handleChange(
-              "autoSpeakerScore",
-              (session.autoSpeakerScore += delta)
-            )
+            setAutoSpeakerScoreAmplified(autoSpeakerScoreAmplified + delta)
           }
         />
         <MinusPlusPair
           label="Miss"
-          count={session.autoSpeakerMiss}
-          onChange={(delta) =>
-            handleChange("autoSpeakerMiss", (session.autoSpeakerMiss += delta))
-          }
+          count={autoSpeakerMiss}
+          onChange={(delta) => setAutoSpeakerMiss(autoSpeakerMiss + delta)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Amp">
         <MinusPlusPair
           label="Score"
-          count={session.autoAmpScore}
-          onChange={(delta) =>
-            handleChange("autoAmpScore", (session.autoAmpScore += delta))
-          }
+          count={autoAmpScore}
+          onChange={(delta) => setAutoAmpScore(autoAmpScore + delta)}
         />
         <MinusPlusPair
           label="Miss"
-          count={session.autoAmpMiss}
-          onChange={(delta) =>
-            handleChange("autoAmpMiss", (session.autoAmpMiss += delta))
-          }
+          count={autoAmpMiss}
+          onChange={(delta) => setAutoAmpMiss(autoAmpMiss + delta)}
         />
-      </ContainerGroup> */}
+      </ContainerGroup>
       <ContainerGroup title="">
         <View style={{ flexDirection: "row" }}>
           <Button title="Previous" onPress={navigatePrevious} />

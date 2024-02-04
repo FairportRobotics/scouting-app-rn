@@ -15,11 +15,11 @@ function ConfirmScreen({ navigation }) {
   const { params } = useRoute();
   let sessionKey = params["sessionKey"];
 
-  const [session, setSession] = useState<MatchScoutingSession>(
-    getDefaultMatchScoutingSession()
-  );
+  const [scouterName, setScouterName] = useState<string>("");
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
+  const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
+
   const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [filterText, setFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
@@ -34,7 +34,7 @@ function ConfirmScreen({ navigation }) {
 
   useEffect(() => {
     saveData();
-  }, [session]);
+  }, [scouterName, scoutedTeam]);
 
   const loadData = async () => {
     // Retrieve the Session and Teams from the database.
@@ -42,25 +42,19 @@ function ConfirmScreen({ navigation }) {
     const dtoTeams = await Database.getTeams();
 
     // Set State.
-    setSession(dtoSession);
+    setScouterName(dtoSession.scouterName ?? "");
     setAllTeams(dtoTeams);
     setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
     setScoutedTeam(lookupTeam(dtoTeams, dtoSession.scoutedTeamKey));
+    setScoutedTeamKey(dtoSession.scoutedTeamKey);
   };
 
   const saveData = async () => {
-    await Database.saveMatchScoutingSessionConfirm(session);
-  };
-
-  const handleChange = async (property: string, value: any) => {
-    setSession((currentSession) => {
-      return {
-        ...currentSession,
-        [property]: value,
-      };
-    });
-
-    await saveData();
+    await Database.saveMatchScoutingSessionConfirm(
+      sessionKey,
+      scoutedTeamKey,
+      scouterName
+    );
   };
 
   const handleChangeFilterText = (value: string) => {
@@ -80,8 +74,7 @@ function ConfirmScreen({ navigation }) {
   };
 
   const handleChangeScoutedTeam = (value: string) => {
-    handleChange("scoutedTeamKey", value);
-
+    setScoutedTeamKey(value);
     setScoutedTeam(lookupTeam(allTeams, value));
     setFilterText("");
     setFilteredTeams([]);
@@ -96,7 +89,7 @@ function ConfirmScreen({ navigation }) {
   const navigateNext = () => {
     saveData();
     navigation.navigate(ROUTES.MATCH_SCOUT_AUTO, {
-      session: session,
+      sessionKey: sessionKey,
     });
   };
 
@@ -105,8 +98,8 @@ function ConfirmScreen({ navigation }) {
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
           style={themes.textInput}
-          value={session.scouterName}
-          onChangeText={(text) => handleChange("scouterName", text)}
+          value={scouterName}
+          onChangeText={(text) => setScouterName(text)}
           placeholder="My name is..."
         />
       </ContainerGroup>

@@ -50,7 +50,6 @@ const ScoutTeamScreen: React.FC<ScoutTeamProps> = ({
       };
     });
 
-    console.log("ScoutTeamScreen handleChange currentSession:", currentSession);
     await Database.updatePitScoutingSession(currentSession);
   };
 
@@ -58,9 +57,7 @@ const ScoutTeamScreen: React.FC<ScoutTeamProps> = ({
     const loadSession = async () => {
       try {
         const session = await Database.getPitScoutingSession(sessionKey);
-        console.log("ScoutTeamScreen useEffect session:", session);
         setCurrentSession(session || defaultSession);
-        console.log("ScoutTeamScreen useEffect session:", session);
       } catch (error) {
         console.error("Error saving data to database:", error);
       }

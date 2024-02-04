@@ -226,7 +226,6 @@ export function saveTeams(teams: Array<TbaTeam>) {
     );
 
     // Insert a Practice Match placeholder.
-    // TBD: UPSERT this so if match schedules change, we can update the application.
     teams.forEach((team) => {
       tx.executeSql(
         "INSERT INTO event_teams(key, teamNumber, nickname) \
@@ -286,50 +285,9 @@ export const saveMatchScoutingSession = async (
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO match_scouting_sessions \
-      ( \
-        key, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey, \
-        scouterName, \
-        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss, \
-        teleopSpeakerScore, teleopSpeakerScoreAmplified, teleopSpeakerMiss, teleopAmpScore, teleopAmpMiss, teleopRelayPass, \
-        endgameTrapScore, endgameMicrophoneScore, endgameDidRobotPark, endgameDidRobotHang, endgameHarmony, finalAllianceScore, \
-        finalRankingPoints, finalAllianceResult, finalPenalties, finalNotes \
-      ) \
-      VALUES \
-      ( \
-        :key, :matchKey, :matchNumber, :alliance, :allianceTeam, :scheduledTeamKey, :scoutedTeamKey, \
-        :scouterName, \
-        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss, \
-        :teleopSpeakerScore, :teleopSpeakerScoreAmplified, :teleopSpeakerMiss, :teleopAmpScore, :teleopAmpMiss, :teleopRelayPass, \
-        :endgameTrapScore, :endgameMicrophoneScore, :endgameDidRobotPark, :endgameDidRobotHang, :endgameHarmony, \
-        :finalAllianceScore, :finalRankingPoints, :finalAllianceResult, :finalPenalties, :finalNotes \
-      ) \
-      ON CONFLICT (key) DO UPDATE SET \
-        scoutedTeamKey = excluded.scoutedTeamKey, \
-        scouterName = excluded.scouterName, \
-        autoStartedWithNote = excluded.autoStartedWithNote, \
-        autoLeftStartArea = excluded.autoLeftStartArea, \
-        autoSpeakerScore = excluded.autoSpeakerScore, \
-        autoSpeakerScoreAmplified = excluded.autoSpeakerScoreAmplified, \
-        autoSpeakerMiss = excluded.autoSpeakerMiss, \
-        autoAmpScore = excluded.autoAmpScore, \
-        autoAmpMiss = excluded.autoAmpMiss, \
-        teleopSpeakerScore = excluded.teleopSpeakerScore, \
-        teleopSpeakerScoreAmplified = excluded.teleopSpeakerScoreAmplified, \
-        teleopSpeakerMiss = excluded.teleopSpeakerMiss, \
-        teleopAmpScore = excluded.teleopAmpScore, \
-        teleopAmpMiss = excluded.teleopAmpMiss, \
-        teleopRelayPass = excluded.teleopRelayPass, \
-        endgameTrapScore = excluded.endgameTrapScore, \
-        endgameMicrophoneScore = excluded.endgameMicrophoneScore, \
-        endgameDidRobotPark = excluded.endgameDidRobotPark, \
-        endgameDidRobotHang = excluded.endgameDidRobotHang, \
-        endgameHarmony = excluded.endgameHarmony, \
-        finalAllianceScore = excluded.finalAllianceScore, \
-        finalRankingPoints = excluded.finalRankingPoints, \
-        finalAllianceResult = excluded.finalAllianceResult, \
-        finalPenalties = excluded.finalPenalties, \
-        finalNotes = excluded.finalNotes \
-      ",
+      (key, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
+      VALUES (:key, :matchKey, :matchNumber, :alliance, :allianceTeam, :scheduledTeamKey, :scoutedTeamKey) \
+      ON CONFLICT (key) DO NOTHING",
       [
         session.key,
         session.matchKey,
@@ -338,35 +296,6 @@ export const saveMatchScoutingSession = async (
         session.allianceTeam,
         session.scheduledTeamKey,
         session.scoutedTeamKey,
-
-        session.scouterName,
-
-        session.autoStartedWithNote,
-        session.autoLeftStartArea,
-        session.autoSpeakerScore,
-        session.autoSpeakerScoreAmplified,
-        session.autoSpeakerMiss,
-        session.autoAmpScore,
-        session.autoAmpMiss,
-
-        session.teleopSpeakerScore,
-        session.teleopSpeakerScoreAmplified,
-        session.teleopSpeakerMiss,
-        session.teleopAmpScore,
-        session.teleopAmpMiss,
-        session.teleopRelayPass,
-
-        session.endgameTrapScore,
-        session.endgameMicrophoneScore,
-        session.endgameDidRobotPark,
-        session.endgameDidRobotHang,
-        session.endgameHarmony,
-
-        session.finalAllianceScore,
-        session.finalRankingPoints,
-        session.finalAllianceResult,
-        session.finalPenalties,
-        session.finalNotes,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -378,7 +307,9 @@ export const saveMatchScoutingSession = async (
 };
 
 export const saveMatchScoutingSessionConfirm = async (
-  session: MatchScoutingSession
+  sessionKey: string,
+  scoutedTeamKey: string,
+  scouterName: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
@@ -390,7 +321,7 @@ export const saveMatchScoutingSessionConfirm = async (
         scoutedTeamKey = excluded.scoutedTeamKey, \
         scouterName = excluded.scouterName \
       ",
-      [session.key, session.scoutedTeamKey, session.scouterName],
+      [sessionKey, scoutedTeamKey, scouterName],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
@@ -401,7 +332,14 @@ export const saveMatchScoutingSessionConfirm = async (
 };
 
 export const saveMatchScoutingSessionAuto = async (
-  session: MatchScoutingSession
+  sessionKey: string,
+  autoStartedWithNote: boolean,
+  autoLeftStartArea: boolean,
+  autoSpeakerScore: number,
+  autoSpeakerScoreAmplified: number,
+  autoSpeakerMiss: number,
+  autoAmpScore: number,
+  autoAmpMiss: number
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
@@ -425,15 +363,14 @@ export const saveMatchScoutingSessionAuto = async (
         autoAmpMiss = excluded.autoAmpMiss \
       ",
       [
-        session.key,
-
-        session.autoStartedWithNote,
-        session.autoLeftStartArea,
-        session.autoSpeakerScore,
-        session.autoSpeakerScoreAmplified,
-        session.autoSpeakerMiss,
-        session.autoAmpScore,
-        session.autoAmpMiss,
+        sessionKey,
+        autoStartedWithNote ? 1 : 0,
+        autoLeftStartArea ? 1 : 0,
+        autoSpeakerScore,
+        autoSpeakerScoreAmplified,
+        autoSpeakerMiss,
+        autoAmpScore,
+        autoAmpMiss,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
