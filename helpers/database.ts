@@ -381,6 +381,53 @@ export const saveMatchScoutingSessionAuto = async (
   });
 };
 
+export const saveMatchScoutingSessionTeleop = async (
+  sessionKey: string,
+  teleopSpeakerScore: number,
+  teleopSpeakerScoreAmplified: number,
+  teleopSpeakerMiss: number,
+  teleopAmpScore: number,
+  teleopAmpMiss: number,
+  teleopRelayPass: number
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions \
+      ( \
+        key, \
+        teleopSpeakerScore, teleopSpeakerScoreAmplified, teleopSpeakerMiss, teleopAmpScore, teleopAmpMiss, teleopRelayPass \
+      ) \
+      VALUES \
+      ( \
+        :key,\
+        :teleopSpeakerScore, :teleopSpeakerScoreAmplified, :teleopSpeakerMiss, :teleopAmpScore, :teleopAmpMiss, :teleopRelayPass \
+      ) \
+      ON CONFLICT (key) DO UPDATE SET \
+      teleopSpeakerScore = excluded.teleopSpeakerScore, \
+      teleopSpeakerScoreAmplified = excluded.teleopSpeakerScoreAmplified, \
+      teleopSpeakerMiss = excluded.teleopSpeakerMiss, \
+      teleopAmpScore = excluded.teleopAmpScore, \
+      teleopAmpMiss = excluded.teleopAmpMiss, \
+      teleopRelayPass = excluded.teleopRelayPass \
+      ",
+      [
+        sessionKey,
+        teleopSpeakerScore,
+        teleopSpeakerScoreAmplified,
+        teleopSpeakerMiss,
+        teleopAmpScore,
+        teleopAmpMiss,
+        teleopRelayPass,
+      ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
 export const getMatchScoutingSessions = async (): Promise<
   Array<MatchScoutingSession>
 > => {
