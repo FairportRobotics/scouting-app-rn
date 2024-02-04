@@ -17,8 +17,8 @@ function FinalScreen({ navigation }) {
 
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
-  const [allianceResult, setAllianceResult] = useState<string>("");
-  const [violations, setViolations] = useState<string>("");
+  const [allianceResult, setAllianceResult] = useState<string>();
+  const [violations, setViolations] = useState<string>();
   const [penalties, setPenalties] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
 
@@ -35,8 +35,8 @@ function FinalScreen({ navigation }) {
 
     setTotalScore(dtoSession?.finalAllianceScore ?? 0);
     setRankingPoints(dtoSession?.finalRankingPoints ?? 0);
-    setAllianceResult(dtoSession?.finalAllianceResult ?? "");
-    setViolations(dtoSession?.finalViolations ?? "");
+    setAllianceResult(dtoSession?.finalAllianceResult ?? null);
+    setViolations(dtoSession?.finalViolations ?? null);
     setPenalties(dtoSession?.finalPenalties ?? 0);
     setNotes(dtoSession?.finalNotes ?? "");
   };
