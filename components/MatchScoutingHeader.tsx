@@ -3,7 +3,6 @@ import { useState } from "react";
 import { View, Text } from "react-native";
 import { Event } from "@/helpers/types";
 import colors from "@/themes/colors";
-import themes from "@/themes/themes";
 import * as Database from "@/helpers/database";
 
 interface MatchScoutingHeaderProps {

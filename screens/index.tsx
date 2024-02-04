@@ -8,6 +8,5 @@ export { default as TeleopScreen } from "./match/scouting/TeleopScreen";
 export { default as EndgameScreen } from "./match/scouting/EndgameScreen";
 export { default as FinalScreen } from "./match/scouting/FinalScreen";
 
-export { default as MatchScreen } from "./match/scouting/MatchScreen";
 export { default as PitScreen } from "./pit/scouting/PitScreen";
 export { default as SettingsScreen } from "@/screens/admin/SettingsScreen";

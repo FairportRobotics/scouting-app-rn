@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Button } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import getDefaultMatchScoutingSession, {
-  MatchScoutingSession,
-  Team,
-} from "@/helpers/types";
+import { Team } from "@/helpers/types";
+import { ContainerGroup } from "@/components";
 import themes from "@/themes/themes";
 import colors from "@/themes/colors";
 import ROUTES from "@/constants/routes";
-import ContainerGroup from "@/components/ContainerGroup";
 import * as Database from "@/helpers/database";
 
 function ConfirmScreen({ navigation }) {

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, ScrollView } from "react-native";
 import { useRoute } from "@react-navigation/native";
-import ROUTES from "../../../constants/routes";
-import ContainerGroup from "@/components/ContainerGroup";
-import MinusPlusPair from "@/components/MinusPlusPair";
+import { View, Button, ScrollView } from "react-native";
+import { ContainerGroup, MinusPlusPair } from "@/components";
+import ROUTES from "@/constants/routes";
 import * as Database from "@/helpers/database";
 
 function TeleopScreen({ navigation }) {

@@ -428,6 +428,50 @@ export const saveMatchScoutingSessionTeleop = async (
   });
 };
 
+export const saveMatchScoutingSessionEndgame = async (
+  sessionKey: string,
+  trapScore: number,
+  microphoneScore: number,
+  didRobotPark: boolean,
+  didRobotHang: boolean,
+  harmonyScore: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions \
+      ( \
+        key, \
+        endgameTrapScore, endgameMicrophoneScore, endgameDidRobotPark, endgameDidRobotHang, endgameHarmony \
+      ) \
+      VALUES \
+      ( \
+        :key,\
+        :endgameTrapScore, :endgameMicrophoneScore, :endgameDidRobotPark, :endgameDidRobotHang, :endgameHarmony \
+      ) \
+      ON CONFLICT (key) DO UPDATE SET \
+        endgameTrapScore = excluded.endgameTrapScore, \
+        endgameMicrophoneScore = excluded.endgameMicrophoneScore, \
+        endgameDidRobotPark = excluded.endgameDidRobotPark, \
+        endgameDidRobotHang = excluded.endgameDidRobotHang, \
+        endgameHarmony = excluded.endgameHarmony \
+      ",
+      [
+        sessionKey,
+        trapScore,
+        microphoneScore,
+        didRobotPark ? 1 : 0,
+        didRobotHang ? 1 : 0,
+        harmonyScore,
+      ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
 export const getMatchScoutingSessions = async (): Promise<
   Array<MatchScoutingSession>
 > => {
