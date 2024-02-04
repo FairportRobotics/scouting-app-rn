@@ -39,8 +39,8 @@ export type MatchScoutingSession = {
   scoutedTeamKey: string;
 
   // Auto
-  autoStartedWithNote: boolean;
-  autoLeftStartArea: boolean;
+  autoStartedWithNote: number;
+  autoLeftStartArea: number;
   autoSpeakerScore: number;
   autoSpeakerScoreAmplified: number;
   autoSpeakerMiss: number;
@@ -58,8 +58,8 @@ export type MatchScoutingSession = {
   // Endgame
   endgameTrapScore: number;
   endgameMicrophoneScore: number;
-  endgameDidRobotPark: boolean;
-  endgameDidRobotHang: boolean;
+  endgameDidRobotPark: number;
+  endgameDidRobotHang: number;
   endgameHarmony: string;
 
   // Final
@@ -69,6 +69,55 @@ export type MatchScoutingSession = {
   finalPenalties: number;
   finalNotes: string;
 };
+
+export default function getDefaultMatchScoutingSession() {
+  let session: MatchScoutingSession = {
+    // Root properties.
+    key: "",
+    matchKey: "",
+    matchNumber: "",
+    alliance: "",
+    allianceTeam: "",
+    scheduledTeamKey: "",
+
+    // Confirm
+    scouterName: "",
+    scoutedTeamKey: "",
+
+    // Auto
+    autoStartedWithNote: 0,
+    autoLeftStartArea: 0,
+    autoSpeakerScore: 0,
+    autoSpeakerScoreAmplified: 0,
+    autoSpeakerMiss: 0,
+    autoAmpScore: 0,
+    autoAmpMiss: 0,
+
+    // Teleop
+    teleopSpeakerScore: 0,
+    teleopSpeakerScoreAmplified: 0,
+    teleopSpeakerMiss: 0,
+    teleopAmpScore: 0,
+    teleopAmpMiss: 0,
+    teleopRelayPass: 0,
+
+    // Endgame
+    endgameTrapScore: 0,
+    endgameMicrophoneScore: 0,
+    endgameDidRobotPark: 0,
+    endgameDidRobotHang: 0,
+    endgameHarmony: "",
+
+    // Final
+    finalAllianceScore: 0,
+    finalRankingPoints: 0,
+    finalAllianceResult: 0,
+    finalPenalties: 0,
+    finalNotes: "",
+  } as unknown as MatchScoutingSession;
+
+  return session;
+}
 
 export type PitScoutingSession = {
   // Root properties.

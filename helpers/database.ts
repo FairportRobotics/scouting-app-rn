@@ -31,48 +31,40 @@ export function initializeDatabase(
   dropAndRecreate: boolean = false,
   deleteExistingData: boolean = false
 ) {
-  console.log("initializeDatabase...");
   if (dropAndRecreate) {
     db.transaction((tx) => {
-      console.log("initializeDatabase dropAndRecreate...");
       tx.executeSql("DROP TABLE IF EXISTS settings");
       tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
-      console.log("initializeDatabase dropAndRecreate complete.");
     });
   }
 
   if (deleteExistingData) {
     db.transaction((tx) => {
-      console.log("initializeDatabase deleteExistingData...");
       tx.executeSql("DELETE FROM settings");
       tx.executeSql("DELETE FROM events");
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
       tx.executeSql("DELETE FROM match_scouting_sessions");
       tx.executeSql("DELETE FROM pit_scouting_sessions");
-      console.log("initializeDatabase deleteExistingData complete.");
     });
   }
 
   db.transaction((tx) => {
     // Create new tables.
-    console.log("initializeDatabase create settings");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS settings \
       (key TEXT PRIMARY KEY, tbaKey TEXT, saveUri)"
     );
 
-    console.log("initializeDatabase create events");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS events \
       (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
     );
 
-    console.log("initializeDatabase create event_matches");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS event_matches \
       (key TEXT PRIMARY KEY, matchNumber INTEGER, predictedTime TEXT, \
@@ -80,13 +72,11 @@ export function initializeDatabase(
         red1TeamKey TEXT, red2TeamKey TEXT, red3TeamKey TEXT)"
     );
 
-    console.log("initializeDatabase create event_teams");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS event_teams \
       (key TEXT PRIMARY KEY, teamNumber INTEGER, nickname TEXT)"
     );
 
-    console.log("initializeDatabase create match_scouting_sessions");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
       (key TEXT PRIMARY KEY, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
@@ -96,7 +86,6 @@ export function initializeDatabase(
         finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalPenalties INTEGER, finalNotes TEXT)"
     );
 
-    console.log("initializeDatabase create pit_scouting_sessions");
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
       (key TEXT PRIMARY KEY, teamKey TEXT, canAchieveHarmony TEXT, \
@@ -105,14 +94,13 @@ export function initializeDatabase(
         planOnScoringTrap TEXT, robotDimenions TEXT, teamExperiance TEXT)"
     );
   });
-  console.log("initializeDatabase complete.");
 }
 
 export function saveSettings(settings: AppSettings) {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO settings(key, tbaKey, saveUri) \
-      VALUES(?, ?, ?) \
+      VALUES(:key, :tbaKey, :saveUri) \
       ON CONFLICT (key) DO NOTHING",
       [settings.key, settings.tbaKey, settings.saveUri],
       (txObj, resultSet) => {},
@@ -147,7 +135,7 @@ export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO events(key, name, shortName, startDate, endDate) \
-      VALUES(?, ?, ?, ?, ?) \
+      VALUES(:key, :name, :shortName, :startDate, :endDate) \
       ON CONFLICT (key) DO NOTHING",
       [
         event.key,
@@ -166,13 +154,12 @@ export function saveEvent(event: TbaEvent) {
 }
 
 export function saveMatches(matches: Array<TbaMatch>) {
-  console.log("saveMatches...");
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO event_matches(key, matchNumber, predictedTime, \
         blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ON \
-      CONFLICT (key) DO NOTHING",
+      VALUES(:key, :matchNumber, :predictedTime, :blue1TeamKey, :blue2TeamKey, :blue3TeamKey, :red1TeamKey, :red2TeamKey, :red3TeamKey) \
+      ON CONFLICT (key) DO NOTHING",
       [
         "practice",
         0,
@@ -195,10 +182,9 @@ export function saveMatches(matches: Array<TbaMatch>) {
 
     matches.forEach((match) => {
       tx.executeSql(
-        "INSERT INTO event_matches(key, matchNumber, predictedTime, \
-          blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ON \
-        CONFLICT (key) DO NOTHING",
+        "INSERT INTO event_matches(key, matchNumber, predictedTime, blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
+        VALUES(:key, :matchNumber, :predictedTime, :blue1TeamKey, :blue2TeamKey, :blue3TeamKey, :red1TeamKey, :red2TeamKey, :red3TeamKey) \
+        ON CONFLICT (key) DO NOTHING",
         [
           match.key,
           match.match_number,
@@ -223,12 +209,11 @@ export function saveMatches(matches: Array<TbaMatch>) {
 }
 
 export function saveTeams(teams: Array<TbaTeam>) {
-  console.log("saveTeams...");
   db.transaction((tx) => {
     // Insert a Practice Match placeholder.
     tx.executeSql(
       "INSERT INTO event_teams(key, teamNumber, nickname) \
-      VALUES(?, ?, ?) \
+      VALUES(:key, :teamNumber, :nickname) \
       ON CONFLICT (key) DO NOTHING",
       ["frc00000", 0, "Practice Team"],
       (txObj, resultSet) => {
@@ -245,7 +230,7 @@ export function saveTeams(teams: Array<TbaTeam>) {
     teams.forEach((team) => {
       tx.executeSql(
         "INSERT INTO event_teams(key, teamNumber, nickname) \
-        VALUES(?, ?, ?) \
+        VALUES(:key, :teamNumber, :nickname) \
         ON CONFLICT (key) DO NOTHING",
         [team.key, team.team_number, team.nickname],
         (txObj, resultSet) => {
@@ -295,14 +280,56 @@ export const getTeams = async (): Promise<Array<Team>> => {
   }
 };
 
-export const initializeMatchScoutingSession = async (
+export const saveMatchScoutingSession = async (
   session: MatchScoutingSession
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO match_scouting_sessions(key, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
-      VALUES(?, ?, ?, ?, ?, ?, ?) \
-      ON CONFLICT (key) DO NOTHING",
+      "INSERT INTO match_scouting_sessions \
+      ( \
+        key, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey, \
+        scouterName, \
+        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss, \
+        teleopSpeakerScore, teleopSpeakerScoreAmplified, teleopSpeakerMiss, teleopAmpScore, teleopAmpMiss, teleopRelayPass, \
+        endgameTrapScore, endgameMicrophoneScore, endgameDidRobotPark, endgameDidRobotHang, endgameHarmony, finalAllianceScore, \
+        finalRankingPoints, finalAllianceResult, finalPenalties, finalNotes \
+      ) \
+      VALUES \
+      ( \
+        :key, :matchKey, :matchNumber, :alliance, :allianceTeam, :scheduledTeamKey, :scoutedTeamKey, \
+        :scouterName, \
+        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss, \
+        :teleopSpeakerScore, :teleopSpeakerScoreAmplified, :teleopSpeakerMiss, :teleopAmpScore, :teleopAmpMiss, :teleopRelayPass, \
+        :endgameTrapScore, :endgameMicrophoneScore, :endgameDidRobotPark, :endgameDidRobotHang, :endgameHarmony, \
+        :finalAllianceScore, :finalRankingPoints, :finalAllianceResult, :finalPenalties, :finalNotes \
+      ) \
+      ON CONFLICT (key) DO UPDATE SET \
+        scoutedTeamKey = excluded.scoutedTeamKey, \
+        scouterName = excluded.scouterName, \
+        autoStartedWithNote = excluded.autoStartedWithNote, \
+        autoLeftStartArea = excluded.autoLeftStartArea, \
+        autoSpeakerScore = excluded.autoSpeakerScore, \
+        autoSpeakerScoreAmplified = excluded.autoSpeakerScoreAmplified, \
+        autoSpeakerMiss = excluded.autoSpeakerMiss, \
+        autoAmpScore = excluded.autoAmpScore, \
+        autoAmpMiss = excluded.autoAmpMiss, \
+        teleopSpeakerScore = excluded.teleopSpeakerScore, \
+        teleopSpeakerScoreAmplified = excluded.teleopSpeakerScoreAmplified, \
+        teleopSpeakerMiss = excluded.teleopSpeakerMiss, \
+        teleopAmpScore = excluded.teleopAmpScore, \
+        teleopAmpMiss = excluded.teleopAmpMiss, \
+        teleopRelayPass = excluded.teleopRelayPass, \
+        endgameTrapScore = excluded.endgameTrapScore, \
+        endgameMicrophoneScore = excluded.endgameMicrophoneScore, \
+        endgameDidRobotPark = excluded.endgameDidRobotPark, \
+        endgameDidRobotHang = excluded.endgameDidRobotHang, \
+        endgameHarmony = excluded.endgameHarmony, \
+        finalAllianceScore = excluded.finalAllianceScore, \
+        finalRankingPoints = excluded.finalRankingPoints, \
+        finalAllianceResult = excluded.finalAllianceResult, \
+        finalPenalties = excluded.finalPenalties, \
+        finalNotes = excluded.finalNotes \
+      ",
       [
         session.key,
         session.matchKey,
@@ -311,6 +338,102 @@ export const initializeMatchScoutingSession = async (
         session.allianceTeam,
         session.scheduledTeamKey,
         session.scoutedTeamKey,
+
+        session.scouterName,
+
+        session.autoStartedWithNote,
+        session.autoLeftStartArea,
+        session.autoSpeakerScore,
+        session.autoSpeakerScoreAmplified,
+        session.autoSpeakerMiss,
+        session.autoAmpScore,
+        session.autoAmpMiss,
+
+        session.teleopSpeakerScore,
+        session.teleopSpeakerScoreAmplified,
+        session.teleopSpeakerMiss,
+        session.teleopAmpScore,
+        session.teleopAmpMiss,
+        session.teleopRelayPass,
+
+        session.endgameTrapScore,
+        session.endgameMicrophoneScore,
+        session.endgameDidRobotPark,
+        session.endgameDidRobotHang,
+        session.endgameHarmony,
+
+        session.finalAllianceScore,
+        session.finalRankingPoints,
+        session.finalAllianceResult,
+        session.finalPenalties,
+        session.finalNotes,
+      ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionConfirm = async (
+  session: MatchScoutingSession
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions \
+      (key, scoutedTeamKey, scouterName) \
+      VALUES \
+      (:key, :scoutedTeamKey, :scouterName) \
+      ON CONFLICT (key) DO UPDATE SET \
+        scoutedTeamKey = excluded.scoutedTeamKey, \
+        scouterName = excluded.scouterName \
+      ",
+      [session.key, session.scoutedTeamKey, session.scouterName],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionAuto = async (
+  session: MatchScoutingSession
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_sessions \
+      ( \
+        key, \
+        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss \
+      ) \
+      VALUES \
+      ( \
+        :key,\
+        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss \
+      ) \
+      ON CONFLICT (key) DO UPDATE SET \
+        autoStartedWithNote = excluded.autoStartedWithNote, \
+        autoLeftStartArea = excluded.autoLeftStartArea, \
+        autoSpeakerScore = excluded.autoSpeakerScore, \
+        autoSpeakerScoreAmplified = excluded.autoSpeakerScoreAmplified, \
+        autoSpeakerMiss = excluded.autoSpeakerMiss, \
+        autoAmpScore = excluded.autoAmpScore, \
+        autoAmpMiss = excluded.autoAmpMiss \
+      ",
+      [
+        session.key,
+
+        session.autoStartedWithNote,
+        session.autoLeftStartArea,
+        session.autoSpeakerScore,
+        session.autoSpeakerScoreAmplified,
+        session.autoSpeakerMiss,
+        session.autoAmpScore,
+        session.autoAmpMiss,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -352,34 +475,13 @@ export const getMatchScoutingSession = async (
   }
 };
 
-export const updateScoutingMatchSessionSetup = async (
-  sessionKey: string,
-  scouterName: string,
-  scoutedTeamKey: string
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "UPDATE match_scouting_sessions \
-      SET scouterName = ?, scoutedTeamKey = ? \
-      WHERE key = ?",
-      [scouterName, scoutedTeamKey, sessionKey],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
 export const initializePitScoutingSession = async (
   session: PitScoutingSession
 ) => {
-  console.log("initializePitScoutingSession session:", session);
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions(key) \
-      VALUES(?) \
+      VALUES(:key) \
       ON CONFLICT (key) DO NOTHING",
       [session.key],
       (txObj, resultSet) => {},
@@ -407,7 +509,6 @@ export const getPitScoutingSession = async (
   sessionKey: string
 ): Promise<PitScoutingSession | undefined> => {
   try {
-    console.log("getPitScoutingSession sessionKey:", sessionKey);
     const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
     const results = (await executeSql(query, params)) as PitScoutingSession[];

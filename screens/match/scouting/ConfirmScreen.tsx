@@ -1,121 +1,127 @@
-import { TextInput, Text, View, TouchableOpacity } from "react-native";
-import { useEffect, useState } from "react";
-import { MatchScoutingSession, Team } from "@/helpers/types";
-import ContainerGroup from "@/components/ContainerGroup";
+import React, { useEffect, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, Button } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import getDefaultMatchScoutingSession, {
+  MatchScoutingSession,
+  Team,
+} from "@/helpers/types";
 import themes from "@/themes/themes";
 import colors from "@/themes/colors";
+import ROUTES from "@/constants/routes";
+import ContainerGroup from "@/components/ContainerGroup";
 import * as Database from "@/helpers/database";
 
-interface ConfirmScreenProps {
-  sessionKey: string;
-  eventTeams: Array<Team>;
-  onPrevious: () => void;
-  onNext: () => void;
-}
+function ConfirmScreen({ navigation }) {
+  const { params } = useRoute();
+  let sessionKey = params["sessionKey"];
 
-const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
-  sessionKey,
-  eventTeams,
-  onPrevious,
-  onNext,
-}) => {
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [currentSession, setCurrentSession] = useState<MatchScoutingSession>(
-    {} as MatchScoutingSession
+  const [session, setSession] = useState<MatchScoutingSession>(
+    getDefaultMatchScoutingSession()
   );
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
-  const [filterText, setFilterText] = useState("");
+  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
+  const [filterText, setFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
 
-  // Upon changing the filter text.
+  const lookupTeam = (teams: Array<Team>, teamKey: string) => {
+    return teams.find((team) => team.key == teamKey);
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        // Attempt to load the Session.
-        const session = await Database.getMatchScoutingSession(sessionKey);
-        if (session === undefined) return;
-        setCurrentSession(session);
-        console.log("ConfirmScreen useEffect session:", session);
-
-        // Attempt to map the scheduled and scouted teams.
-        const lookupScheduled = eventTeams.find(
-          (team) => team.key === session.scheduledTeamKey
-        );
-        if (lookupScheduled !== undefined) setScheduledTeam(lookupScheduled);
-
-        // Attempt to map the scheduled and scouted teams.
-        const lookupScouted = eventTeams.find(
-          (team) => team.key === session.scoutedTeamKey
-        );
-        if (lookupScouted !== undefined) setScoutedTeam(lookupScouted);
-
-        setIsLoading(false);
-      } catch (eror) {
-        console.error();
-        setIsLoading(false);
-      }
-    };
-
     loadData();
   }, []);
 
-  // Respond to the change to the Team filter.
   useEffect(() => {
-    let filtered = Object.values(eventTeams).filter(
-      (team) =>
-        filterText !== "" &&
-        (team.teamNumber.toString().includes(filterText.toLowerCase()) ||
-          team.nickname.toLowerCase().includes(filterText.toLowerCase()))
-    );
+    saveData();
+  }, [session]);
 
-    setFilteredTeams(filtered);
-  }, [filterText]);
+  const loadData = async () => {
+    // Retrieve the Session and Teams from the database.
+    const dtoSession = await Database.getMatchScoutingSession(sessionKey);
+    const dtoTeams = await Database.getTeams();
 
-  // Respond to updates against the Session.
-  const handleChange = (key: string, value: string) => {
-    console.log(key, ":", value);
-    setCurrentSession((previous) => {
+    // Set State.
+    setSession(dtoSession);
+    setAllTeams(dtoTeams);
+    setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
+    setScoutedTeam(lookupTeam(dtoTeams, dtoSession.scoutedTeamKey));
+  };
+
+  const saveData = async () => {
+    await Database.saveMatchScoutingSessionConfirm(session);
+  };
+
+  const handleChange = async (property: string, value: any) => {
+    setSession((currentSession) => {
       return {
-        ...previous,
-        [key]: value,
+        ...currentSession,
+        [property]: value,
       };
     });
 
-    console.log("currentSession:", currentSession);
-    // TBD: Save to the damn database.
+    await saveData();
   };
 
-  if (isLoading) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
+  const handleChangeFilterText = (value: string) => {
+    // Convert the filter text to lower case.
+    value = value.toLowerCase();
+
+    // Find matching teams where the filter text is part of the team
+    // number of nickname.
+    let filtered = allTeams.filter(
+      (team) =>
+        value.length > 0 &&
+        (team.teamNumber.toString().includes(value) ||
+          team.nickname.toLowerCase().includes(value))
     );
-  }
+
+    setFilteredTeams(filtered);
+  };
+
+  const handleChangeScoutedTeam = (value: string) => {
+    handleChange("scoutedTeamKey", value);
+
+    setScoutedTeam(lookupTeam(allTeams, value));
+    setFilterText("");
+    setFilteredTeams([]);
+    saveData();
+  };
+
+  const navigatePrevious = () => {
+    saveData();
+    navigation.navigate(ROUTES.MATCH_SCOUT_SELECT);
+  };
+
+  const navigateNext = () => {
+    saveData();
+    navigation.navigate(ROUTES.MATCH_SCOUT_AUTO, {
+      session: session,
+    });
+  };
 
   return (
     <View>
-      <ContainerGroup title="Scouter Name">
+      <ContainerGroup title="Scouter Name (required)">
         <TextInput
           style={themes.textInput}
-          value={currentSession.scouterName}
+          value={session.scouterName}
           onChangeText={(text) => handleChange("scouterName", text)}
           placeholder="My name is..."
         />
       </ContainerGroup>
-      <ContainerGroup
-        title={`${scoutedTeam?.teamNumber} - ${scoutedTeam?.nickname}`}
-      >
+      <ContainerGroup title="Confirm Team to be Scouted">
         <Text>
-          {scheduledTeam?.teamNumber} - {scheduledTeam?.nickname} was originally
-          scheduled
+          {scoutedTeam?.teamNumber} - {scoutedTeam?.nickname}
+        </Text>
+        <Text>
+          ({scheduledTeam?.teamNumber} - {scheduledTeam?.nickname} was
+          originally scheduled)
         </Text>
         <TextInput
           style={themes.textInput}
           value={filterText}
-          onChangeText={(text) => setFilterText(text)}
+          onChangeText={(text) => handleChangeFilterText(text)}
           placeholder="I actually need to scout..."
         />
         {filteredTeams.map((team) => (
@@ -128,7 +134,7 @@ const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
               marginBottom: 8,
             }}
             key={team.key}
-            onPress={() => handleChange("scoutedTeamKey", team.key)}
+            onPress={() => handleChangeScoutedTeam(team.key)}
           >
             <Text
               style={{
@@ -140,8 +146,14 @@ const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
           </TouchableOpacity>
         ))}
       </ContainerGroup>
+      <ContainerGroup title="">
+        <View style={{ flexDirection: "row" }}>
+          <Button title="Previous" onPress={navigatePrevious} />
+          <Button title="Next" onPress={navigateNext} />
+        </View>
+      </ContainerGroup>
     </View>
   );
-};
+}
 
 export default ConfirmScreen;

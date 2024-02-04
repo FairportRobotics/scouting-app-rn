@@ -47,7 +47,7 @@ const MinusPlus: React.FC<MinusPlusProps> = ({
       </TouchableOpacity>
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <MetricLabel label={label} />
-        <MetricCount count={count} />
+        <MetricCount count={count ?? 0} />
       </View>
       <TouchableOpacity
         onPress={handleIncrement}

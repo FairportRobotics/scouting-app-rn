@@ -1,12 +1,6 @@
 import { StyleSheet } from "react-native";
 import colors from "@/themes/colors";
 
-// TBD
-// [ ] Theme for option button selected/unselected
-// [ ] Theme for action button enabled/disabled
-// [ ] Theme for TextInput
-// [ ] Theme for Alliance button blue/red
-
 export default StyleSheet.create({
   app: {
     backgroundColor: colors.appBackground,
@@ -82,4 +76,7 @@ export default StyleSheet.create({
     borderRadius: 4,
     borderColor: "darkgray",
   },
+  text: {},
+  textSubscript: {},
+  textSuperscript: {},
 });

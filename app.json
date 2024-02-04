@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Scouter",
-    "slug": "scouting-app-rn",
-    "version": "2024020.11457.0",
+    "name": "navigation",
+    "slug": "navigation",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,18 +25,6 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "extra": {
-      "eas": {
-        "projectId": "a90a99f4-e77c-475d-9318-74c9c62a3396"
-      }
-    },
-    "owner": "fairport-robotics",
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/a90a99f4-e77c-475d-9318-74c9c62a3396"
     }
   }
 }

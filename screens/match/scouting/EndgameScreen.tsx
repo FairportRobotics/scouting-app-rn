@@ -1,82 +1,25 @@
-import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
-import MatchScoutingHeader from "@/components/MatchScoutingHeader";
-import ContainerGroup from "@/components/ContainerGroup";
-import MinusPlusPair from "@/components/MinusPlusPair";
-import Check from "@/components/Check";
-import OptionSelect from "@/components/OptionSelect";
+import React, { useState } from "react";
+import { View, Text, Button } from "react-native";
+import { useRoute } from "@react-navigation/native";
+import ROUTES from "../../../constants/routes";
 
-export default function EndgameScreen() {
-  // Support for Trap Score
-  const [trapScore, setTrapScore] = useState(0);
-  const handleTrapScore = (delta: number) => {
-    setTrapScore((prev) => (prev += delta));
-  };
-
-  // Support for Microphone Score
-  const [microphoneScore, setMicrophoneScore] = useState(0);
-  const handleMicrophoneScore = (delta: number) => {
-    setMicrophoneScore((prev) => (prev += delta));
-  };
-
-  // Support for Did robot Park?
-  const [didRobotPark, setDidRobotPark] = useState(false);
-  const handleDidRobotPark = () => {
-    setDidRobotPark((prev) => !prev);
-  };
-
-  // Support for Did robot Hang?
-  const [didRobotHang, setDidRobotHang] = useState(false);
-  const handleDidRobotHang = () => {
-    setDidRobotHang((prev) => !prev);
-    setHarmonyScore("");
-  };
-
-  // Support for Harmony
-  const [harmonyScore, setHarmonyScore] = useState("");
-  const handleHarmonyScore = (option: string) => {
-    setHarmonyScore(option);
-  };
-
-  useEffect(() => {
-    console.log("Auto: Update the session");
-  }, [trapScore, microphoneScore, didRobotPark, didRobotHang, harmonyScore]);
+function EndgameScreen({ navigation }) {
+  const { params } = useRoute();
+  const sessionKey = params["sessionKey"];
 
   return (
-    <ScrollView style={{ margin: 10 }}>
-      <MatchScoutingHeader />
-      <ContainerGroup title="Stage">
-        <MinusPlusPair
-          label="Trap"
-          count={trapScore}
-          onChange={handleTrapScore}
-        />
-        <MinusPlusPair
-          label="Microphone"
-          count={microphoneScore}
-          onChange={handleMicrophoneScore}
-        />
-        <Check
-          style={{ marginTop: 18 }}
-          label="Did robot Park?"
-          checked={didRobotPark}
-          onToggle={handleDidRobotPark}
-        />
-        <Check
-          style={{ marginTop: 18 }}
-          label="Did robot Hang?"
-          checked={didRobotHang}
-          onToggle={handleDidRobotHang}
-        />
-        {didRobotHang && (
-          <OptionSelect
-            label="Harmony"
-            options={["0", "1", "2"]}
-            value={harmonyScore}
-            onChange={handleHarmonyScore}
-          />
-        )}
-      </ContainerGroup>
-    </ScrollView>
+    <View>
+      <Text>Teleop Screen for {sessionKey}</Text>
+      <Button
+        title="Next"
+        onPress={() =>
+          navigation.navigate(ROUTES.MATCH_SCOUT_FINAL, {
+            sessionKey: sessionKey,
+          })
+        }
+      />
+    </View>
   );
 }
+
+export default EndgameScreen;
