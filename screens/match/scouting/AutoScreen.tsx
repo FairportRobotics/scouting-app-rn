@@ -77,14 +77,14 @@ function AutoScreen({ navigation }) {
             label="Started with Note"
             checked={session?.autoStartedWithNote}
             onToggle={() =>
-              handleChange("autoStartedWithNote", !session.autoStartedWithNote)
+              handleChange("autoStartedWithNote", !session?.autoStartedWithNote)
             }
           />
           <Check
             label="Left Start Area"
-            checked={session.autoLeftStartArea}
+            checked={session?.autoLeftStartArea}
             onToggle={() =>
-              handleChange("autoLeftStartArea", !session.autoLeftStartArea)
+              handleChange("autoLeftStartArea", !session?.autoLeftStartArea)
             }
           />
         </View>
