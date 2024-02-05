@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import themes from "@/constants/Styles";
+import Styles from "@/constants/Styles";
 
 interface OptionGroupProps {
   value: string;

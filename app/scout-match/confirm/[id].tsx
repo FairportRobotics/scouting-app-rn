@@ -5,8 +5,8 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { Team } from "@/constants/Types";
 import { ContainerGroup } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
-import themes from "@/constants/Styles";
-import colors from "@/constants/Colors";
+import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 
 function ConfirmScreen() {
@@ -113,7 +113,7 @@ function ConfirmScreen() {
     <View>
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={scouterName}
           onChangeText={(text) => setScouterName(text)}
           placeholder="My name is..."
@@ -128,7 +128,7 @@ function ConfirmScreen() {
           originally scheduled)
         </Text>
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={filterText}
           onChangeText={(text) => handleChangeFilterText(text)}
           placeholder="I actually need to scout..."
@@ -137,7 +137,7 @@ function ConfirmScreen() {
           <TouchableOpacity
             style={{
               width: "100%",
-              backgroundColor: colors.appBackground,
+              backgroundColor: Colors.appBackground,
               borderRadius: 6,
               padding: 10,
               marginBottom: 8,

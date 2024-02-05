@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import themes from "@/constants/Styles";
+import Styles from "@/constants/Styles";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import { PitResultModel } from "../(tabs)/scoutPit";
 
@@ -37,7 +37,7 @@ const SelectTeamRow: React.FC<SelectTeamRowProps> = ({ team, onSelect }) => {
         </View>
         <TouchableOpacity
           onPress={() => handleOnSelect()}
-          style={[themes.baseButton, { paddingHorizontal: 8 }]}
+          style={[Styles.baseButton, { paddingHorizontal: 8 }]}
         >
           <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
             Scout

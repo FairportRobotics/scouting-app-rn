@@ -6,7 +6,7 @@ import {
   faShareFromSquare,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
-import themes from "@/constants/Styles";
+import Styles from "@/constants/Styles";
 
 interface ActionButtonProps {
   label: string | "";
@@ -28,7 +28,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[themes.baseButton, { flex: 1, flexDirection: "row", gap: 8 }]}
+      style={[Styles.baseButton, { flex: 1, flexDirection: "row", gap: 8 }]}
       onPress={() => onPress()}
     >
       <FontAwesomeIcon

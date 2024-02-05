@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import themes from "@/constants/Styles";
+import Styles from "@/constants/Styles";
 
 interface ContainerGroupProps {
   title: string | "";
@@ -13,9 +13,9 @@ const ContainerGroup: React.FC<ContainerGroupProps> = ({
   style,
 }) => {
   return (
-    <View style={themes.containerGroup}>
+    <View style={Styles.containerGroup}>
       {title.length > 0 && (
-        <Text style={themes.containerGroupTitle}>{title}</Text>
+        <Text style={Styles.containerGroupTitle}>{title}</Text>
       )}
       {children}
     </View>
