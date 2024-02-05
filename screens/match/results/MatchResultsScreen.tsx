@@ -1,8 +1,22 @@
-import { Text, RefreshControl, FlatList, View, ScrollView } from "react-native";
+import {
+  Text,
+  RefreshControl,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useEffect, useState } from "react";
-import { Match, Team } from "@/helpers/types";
-import * as Database from "@/helpers/database";
+import { Match, MatchScoutingSession, Team } from "@/helpers/types";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  faCloudArrowUp,
+  faQrcode,
+  faShareFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
+
 import ContainerGroup from "@/components/ContainerGroup";
+import themes from "@/themes/themes";
+import * as Database from "@/helpers/database";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -18,6 +32,7 @@ export type MatchResultModel = {
 export default function MatchResultsScreen() {
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
+  const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -73,11 +88,48 @@ export default function MatchResultsScreen() {
       });
 
       setReportModels(models);
+      setSessions(dtoSessions);
 
       setIsRefreshing(false);
     } catch (error) {
       console.log("MatchResultsScreen loadData error:", error);
     }
+  };
+
+  const handleUploadAllSessions = () => {
+    console.log("Session Upload All");
+  };
+
+  const handleShareAllSessionsJson = () => {
+    console.log("Session Share JSON for All");
+  };
+
+  const handleShareAllSessionsCsv = () => {
+    console.log("Session Share CSB for All");
+  };
+
+  const handleEditSession = (sessionKey: string) => {
+    console.log("Session Edit", sessionKey);
+  };
+
+  const handleUploadSession = (sessionKey: string) => {
+    console.log("Session Upload", sessionKey);
+  };
+
+  const handleShowSessionJsonQR = (sessionKey: string) => {
+    console.log("Session JSON QQ Code", sessionKey);
+  };
+
+  const handleShowSessionCsvQR = (sessionKey: string) => {
+    console.log("Session CSV QQ Code", sessionKey);
+  };
+
+  const handleShareSessionJson = (sessionKey: string) => {
+    console.log("Session JSON Share", sessionKey);
+  };
+
+  const handleShareSessionCsv = (sessionKey: string) => {
+    console.log("Session CSV Share", sessionKey);
   };
 
   return (
@@ -97,9 +149,60 @@ export default function MatchResultsScreen() {
               justifyContent: "space-between",
             }}
           >
-            <Text>[Upload]</Text>
-            <Text>[Share JSON]</Text>
-            <Text>[Share CSV]</Text>
+            <View
+              style={{
+                flex: 1,
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                gap: 10,
+              }}
+            >
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleUploadAllSessions()}
+              >
+                <FontAwesomeIcon
+                  icon={faCloudArrowUp}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>Upload</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShareAllSessionsJson()}
+              >
+                <FontAwesomeIcon
+                  icon={faShareFromSquare}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>JSON</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShareAllSessionsCsv()}
+              >
+                <FontAwesomeIcon
+                  icon={faShareFromSquare}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>CSV</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ContainerGroup>
         {reportModels.map((match, index) => (
@@ -113,14 +216,93 @@ export default function MatchResultsScreen() {
                 width: "100%",
                 flexDirection: "row",
                 justifyContent: "space-between",
+                gap: 10,
               }}
             >
-              <Text>[Edit]</Text>
-              <Text>[Upload]</Text>
-              <Text>[QR JSON]</Text>
-              <Text>[QR CSV]</Text>
-              <Text>[Share JSON]</Text>
-              <Text>[Share CSV]</Text>
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleEditSession(match.sessionKey)}
+              >
+                <Text style={{ color: "white" }}>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleUploadSession(match.sessionKey)}
+              >
+                <FontAwesomeIcon
+                  icon={faCloudArrowUp}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>Upload</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShowSessionJsonQR(match.sessionKey)}
+              >
+                <FontAwesomeIcon
+                  icon={faQrcode}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>JSON</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShowSessionCsvQR(match.sessionKey)}
+              >
+                <FontAwesomeIcon
+                  icon={faQrcode}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>CSV</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShareSessionJson(match.sessionKey)}
+              >
+                <FontAwesomeIcon
+                  icon={faShareFromSquare}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>JSON</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  themes.baseButton,
+                  { flex: 1, flexDirection: "row", gap: 10 },
+                ]}
+                onPress={() => handleShareSessionCsv(match.sessionKey)}
+              >
+                <FontAwesomeIcon
+                  icon={faShareFromSquare}
+                  size={32}
+                  style={{ color: "white" }}
+                />
+                <Text style={{ color: "white" }}>CSV</Text>
+              </TouchableOpacity>
             </View>
           </ContainerGroup>
         ))}
