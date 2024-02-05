@@ -1,4 +1,4 @@
-export { default as MatchSelectTeamScreen } from "@/screens/match/scouting/SelectTeamScreen";
+export { default as IndexScreen } from "@/screens/match/scouting/IndexScreen";
 export { default as MatchResultsScreen } from "@/screens/match/results/MatchResultsScreen";
 export { default as PitResultsScreen } from "@/screens/pit/results/ResultsScreen";
 

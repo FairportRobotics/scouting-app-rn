@@ -1,7 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
-  MatchSelectTeamScreen,
+  IndexScreen,
   ConfirmScreen,
   AutoScreen,
   TeleopScreen,
@@ -16,10 +16,7 @@ const Stack = createStackNavigator();
 function ScoutMatchNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name={ROUTES.MATCH_SCOUT_SELECT}
-        component={MatchSelectTeamScreen}
-      />
+      <Stack.Screen name={ROUTES.MATCH_SCOUT_SELECT} component={IndexScreen} />
       <Stack.Screen
         name={ROUTES.MATCH_SCOUT_CONFIRM}
         component={ConfirmScreen}
