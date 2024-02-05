@@ -19,9 +19,6 @@ const SelectTeamScreen: React.FC<SelectTeamScreenProps> = ({ onSelect }) => {
     };
 
     fetchData();
-
-    // Cleanup function.
-    return () => {};
   }, []);
 
   const handleOnSelect = (teamKey: string) => {

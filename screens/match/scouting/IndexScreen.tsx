@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, RefreshControl, View, Text } from "react-native";
+import { ScrollView, RefreshControl, View } from "react-native";
 import getDefaultMatchScoutingSession, {
   Match,
   MatchScoutingSession,
@@ -10,7 +10,7 @@ import ContainerGroup from "@/components/ContainerGroup";
 import ScoutingMatchSelect from "@/components/ScoutingMatchSelect";
 import * as Database from "@/helpers/database";
 
-function SelectTeamScreen({ navigation }) {
+function IndexScreen({ navigation }) {
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
@@ -95,4 +95,4 @@ function SelectTeamScreen({ navigation }) {
   );
 }
 
-export default SelectTeamScreen;
+export default IndexScreen;

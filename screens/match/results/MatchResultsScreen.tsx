@@ -1,9 +1,14 @@
 import { RefreshControl, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import { Match, MatchScoutingSession, Team } from "@/helpers/types";
+import {
+  CommonActions,
+  StackActions,
+  useNavigation,
+} from "@react-navigation/native";
 import ContainerGroup from "@/components/ContainerGroup";
 import ActionButton from "@/screens/match/results/ActionButton";
-
+import ROUTES from "@/constants/routes";
 import * as Database from "@/helpers/database";
 
 export type MatchResultModel = {
@@ -17,7 +22,10 @@ export type MatchResultModel = {
   scoutedTeamNickname: string;
 };
 
-export default function MatchResultsScreen() {
+export default function MatchResultsScreen({ navigation, route }) {
+  console.log("MatchResultsScreen navigation", navigation);
+  console.log("MatchResultsScreen route", route);
+
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
@@ -98,6 +106,34 @@ export default function MatchResultsScreen() {
 
   const handleEditSession = (sessionKey: string) => {
     console.log(sessionKey, ": Session Edit");
+
+    // This does nothing.
+    // navigation.dispatch(CommonActions.reset({
+    //   index: 0, // Navigate to the first screen in the stack
+    //   routes: [
+    //     {
+    //       name: ROUTES.MATCH_SCOUT_CONFIRM, // Replace the stack with this screen
+    //       params: {
+    //         sessionKey: sessionKey,
+    //       }
+    //     },
+    //   ],
+    // }));
+
+    // This doesn't work.
+    navigation.navigate(ROUTES.MATCH_SCOUT_CONFIRM, { sessionKey: sessionKey });
+
+    // navigation.dispatch(
+    //   StackActions.replace(ROUTES.MATCH_SCOUT_CONFIRM, {
+    //     sessionKey: sessionKey,
+    //   })
+    // );
+
+    // // This works sometimes.
+    // navigation.dispatch(StackActions.popToTop());
+    // navigation.navigate(ROUTES.MATCH_SCOUT_CONFIRM, {
+    //   sessionKey: sessionKey,
+    // });
   };
 
   const handleUploadSession = (sessionKey: string) => {

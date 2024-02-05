@@ -8,10 +8,12 @@ import colors from "@/themes/colors";
 import ROUTES from "@/constants/routes";
 import * as Database from "@/helpers/database";
 
-function ConfirmScreen({ navigation }) {
+function ConfirmScreen({ navigation, route }) {
+  console.log("ConfirmScreen navigation", navigation);
+  console.log("ConfirmScreen route", route);
   const { params } = useRoute();
-  let sessionKey = params["sessionKey"];
 
+  const [sessionKey, setSessionKey] = useState<string>(params["sessionKey"]);
   const [scouterName, setScouterName] = useState<string>("");
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
@@ -30,10 +32,15 @@ function ConfirmScreen({ navigation }) {
   }, []);
 
   useEffect(() => {
+    loadData();
+  }, [sessionKey]);
+
+  useEffect(() => {
     saveData();
   }, [scouterName, scoutedTeam]);
 
   const loadData = async () => {
+    console.log("ConfirmScreen loadData..");
     // Retrieve the Session and Teams from the database.
     const dtoSession = await Database.getMatchScoutingSession(sessionKey);
     const dtoTeams = await Database.getTeams();
