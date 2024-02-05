@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import type { Team } from "@/app/helpers/types";
-import themes from "@/app/themes/themes";
+import themes from "@/constants/Styles";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import { PitResultModel } from "../(tabs)/scoutPit";
 

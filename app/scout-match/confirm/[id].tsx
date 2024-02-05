@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Button } from "react-native";
 import { useRouter } from "expo-router";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { Team } from "@/app/helpers/types";
+import { Team } from "@/constants/Types";
 import { ContainerGroup } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
-import themes from "@/app/themes/themes";
-import colors from "@/app/themes/colors";
+import themes from "@/constants/Styles";
+import colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 
 function ConfirmScreen() {

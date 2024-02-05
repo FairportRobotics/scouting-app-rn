@@ -5,7 +5,7 @@ import getDefaultMatchScoutingSession, {
   Match,
   MatchScoutingSession,
   Team,
-} from "@/app/helpers/types";
+} from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import ScoutingMatchSelect from "@/app/components/ScoutingMatchSelect";
 import * as Database from "@/app/helpers/database";
@@ -83,7 +83,7 @@ function IndexScreen() {
       // Save to DB
       await Database.saveMatchScoutingSession(session);
 
-      router.push(`/scout-match/confirm/${sessionKey}`);
+      router.replace(`/scout-match/confirm/${sessionKey}`);
     } catch (error) {
       console.error(error);
     }

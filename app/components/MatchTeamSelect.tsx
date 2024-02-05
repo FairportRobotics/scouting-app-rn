@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import themes from "@/app/themes/themes";
-import type { Match, Team } from "@/app/helpers/types";
-import { Alliance, AllianceTeam } from "@/app/helpers/constants";
+import themes from "@/constants/Styles";
+import type { Match, Team } from "@/constants/Types";
+import { Alliance, AllianceTeam } from "@/constants/Enums";
 
 interface MatchTeamSelectProps {
   match: Match;

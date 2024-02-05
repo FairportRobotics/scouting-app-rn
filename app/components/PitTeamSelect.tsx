@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import type { Team } from "@/app/helpers/types";
+import type { Team } from "@/constants/Types";
 import ContainerGroup from "./ContainerGroup";
 
 interface PitTeamSelectProps {

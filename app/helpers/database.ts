@@ -1,4 +1,4 @@
-import type { TbaEvent, TbaMatch, TbaTeam } from "@/app/helpers/tbaTypes";
+import type { TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -6,7 +6,8 @@ import type {
   MatchScoutingSession,
   PitScoutingSession,
   AppSettings,
-} from "@/app/helpers/types";
+  PitScoutingSessionAction,
+} from "@/constants/Types";
 import * as SQLite from "expo-sqlite";
 
 const db = SQLite.openDatabase("scouting-app.db");
@@ -38,7 +39,9 @@ export function initializeDatabase(
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
+      tx.executeSql("DROP TABLE IF EXISTS match_scouting_session_actions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
+      tx.executeSql("DROP TABLE IF EXISTS pit_scouting_session_actions");
     });
   }
 
@@ -49,7 +52,9 @@ export function initializeDatabase(
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
       tx.executeSql("DELETE FROM match_scouting_sessions");
+      tx.executeSql("DELETE FROM match_scouting_session_actions");
       tx.executeSql("DELETE FROM pit_scouting_sessions");
+      tx.executeSql("DELETE FROM pit_scouting_session_actions");
     });
   }
 
@@ -87,11 +92,21 @@ export function initializeDatabase(
     );
 
     tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS match_scouting_session_actions \
+      (key TEXT PRIMARY KEY, uploadedDate TEXT, qrJsonDate TEXT, qrCsvDate TEXT, shareJsonDate TEXT, shareCsvDate TEXT)"
+    );
+
+    tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
       (key TEXT PRIMARY KEY, teamKey TEXT, canAchieveHarmony TEXT, \
         canFitOnStage TEXT, canFitUnderStage TEXT, canGetFromSource TEXT, canGetOnStage TEXT, canPark TEXT, canPickUpNoteFromGround TEXT, \
         canRobotRecover TEXT, canScoreAmp TEXT, canScoreSpeaker TEXT, canScoreTrap TEXT, isRobotReady TEXT, numberOfAutoMethods TEXT, planOnClimbing TEXT, \
         planOnScoringTrap TEXT, robotDimenions TEXT, teamExperiance TEXT)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS pit_scouting_session_actions \
+      (key TEXT PRIMARY KEY, uploadedDate TEXT, qrJsonDate TEXT, qrCsvDate TEXT, shareJsonDate TEXT, shareCsvDate TEXT)"
     );
   });
 }
@@ -575,7 +590,7 @@ export const getPitScoutingSessions = async (): Promise<
     const query = "SELECT * FROM pit_scouting_sessions";
     return (await executeSql(query, [])) as Array<PitScoutingSession>;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Error fetching PitScoutingSession:", error);
     return [];
   }
 };
@@ -596,6 +611,18 @@ export const getPitScoutingSession = async (
   } catch (error) {
     console.error("Error fetching match scouting session:", error);
     return undefined;
+  }
+};
+
+export const getPitScoutingSessionActions = async (): Promise<
+  Array<PitScoutingSessionAction>
+> => {
+  try {
+    const query = "SELECT * FROM pit_scouting_session_actions";
+    return (await executeSql(query, [])) as Array<PitScoutingSessionAction>;
+  } catch (error) {
+    console.error("Error fetching PitScoutingSessionAction:", error);
+    return [];
   }
 };
 

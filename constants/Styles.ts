@@ -1,14 +1,14 @@
 import { StyleSheet } from "react-native";
-import colors from "@/app/themes/colors";
+import Colors from "@/constants/Colors";
 
 export default StyleSheet.create({
   app: {
-    backgroundColor: colors.appBackground,
+    backgroundColor: Colors.appBackground,
     flex: 1,
     padding: 20,
   },
   containerGroup: {
-    backgroundColor: colors.containerBackground,
+    backgroundColor: Colors.containerBackground,
     alignItems: "flex-start",
     justifyContent: "flex-start",
     padding: 15,
@@ -17,7 +17,7 @@ export default StyleSheet.create({
     gap: 10,
   },
   inputGroup: {
-    backgroundColor: colors.containerBackground,
+    backgroundColor: Colors.containerBackground,
     alignItems: "flex-start",
     justifyContent: "flex-start",
     borderRadius: 10,
@@ -30,7 +30,7 @@ export default StyleSheet.create({
   },
   baseButton: {
     borderRadius: 8,
-    backgroundColor: colors.primary,
+    backgroundColor: Colors.primary,
     color: "white",
     fontWeight: "900",
     justifyContent: "center",
@@ -39,7 +39,7 @@ export default StyleSheet.create({
   },
   minusPlusButton: {
     borderRadius: 8,
-    backgroundColor: colors.primary,
+    backgroundColor: Colors.primary,
     color: "white",
     fontWeight: "900",
     justifyContent: "center",
@@ -52,7 +52,7 @@ export default StyleSheet.create({
   },
   allianceBlueButton: {
     borderRadius: 8,
-    backgroundColor: colors.allianceBlue,
+    backgroundColor: Colors.allianceBlue,
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
@@ -61,7 +61,7 @@ export default StyleSheet.create({
   },
   allianceRedButton: {
     borderRadius: 8,
-    backgroundColor: colors.allianceRed,
+    backgroundColor: Colors.allianceRed,
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",

@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import themes from "@/app/themes/themes";
+import themes from "@/constants/Styles";
 
 interface ContainerGroupProps {
   title: string | "";

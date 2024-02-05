@@ -1,7 +1,7 @@
 import { RefreshControl, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { Match, MatchScoutingSession, Team } from "@/app/helpers/types";
+import { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import ActionButton from "@/app/components/ActionButton";
 import * as Database from "@/app/helpers/database";

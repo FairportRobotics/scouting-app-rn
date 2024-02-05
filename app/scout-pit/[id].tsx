@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View, Button, ScrollView, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { OptionSelect } from "@/app/components";
+import { ContainerGroup, OptionSelect } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
-import { PitScoutingSession } from "../helpers/types";
+import { PitScoutingSession } from "@/constants/Types";
+import OptionGroup from "../components/OptionGroup";
 
 function ScoutPitScreen() {
   const router = useRouter();
@@ -90,6 +91,14 @@ function ScoutPitScreen() {
 
   return (
     <ScrollView style={{ margin: 10 }}>
+      <ContainerGroup title="Can your robot pick up Notes from the ground?">
+        <OptionGroup
+          value={currentSession.canPickUpNoteFromGround}
+          options={["Yes", "No"]}
+          onChange={(value) => handleChange("canPickUpNoteFromGround", value)}
+        />
+      </ContainerGroup>
+
       <OptionSelect
         label="Can your robot pick up Notes from the ground?"
         options={["Yes", "No"]}

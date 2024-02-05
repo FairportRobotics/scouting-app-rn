@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
-import type { Match, Team } from "@/app/helpers/types";
-import { Alliance, AllianceTeam } from "@/app/helpers/constants";
+import type { Match, Team } from "@/constants/Types";
+import { Alliance, AllianceTeam } from "@/constants/Enums";
 import MatchTeamSelect from "./MatchTeamSelect";
 
 interface ScoutingMatchSelectProps {

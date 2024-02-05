@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { TbaMatch } from "@/app/helpers/tbaTypes";
+import type { TbaMatch } from "@/constants/Types";
 
 export default async (eventKey: string) => {
   // Define the API endpoint.

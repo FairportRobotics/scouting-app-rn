@@ -6,7 +6,7 @@ import {
   faShareFromSquare,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
-import themes from "@/app/themes/themes";
+import themes from "@/constants/Styles";
 
 interface ActionButtonProps {
   label: string | "";

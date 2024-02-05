@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import themes from "@/app/themes/themes";
-import colors from "@/app/themes/colors";
+import themes from "@/constants/Styles";
+import colors from "@/constants/Colors";
 import InputGroup from "@/app/components/InputGroup";
 
 interface OptionSelectProps {

@@ -5,7 +5,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { ContainerGroup, MinusPlusPair, OptionSelect } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
-import themes from "@/app/themes/themes";
+import themes from "@/constants/Styles";
 
 function FinalScreen() {
   const router = useRouter();
