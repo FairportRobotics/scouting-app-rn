@@ -93,10 +93,7 @@ export default function TBACaches() {
         </View>
       </View>
       <View style={{ alignItems: "flex-start" }}>
-        <Button
-          title={`Show cache for ${eventKey}`}
-          onPress={handleShowCaheData}
-        />
+        <Button title="Show cache" onPress={handleShowCaheData} />
         <Text>Event:</Text>
         <Text>{JSON.stringify(event, null, 2)}</Text>
         <Text>Matches:</Text>
