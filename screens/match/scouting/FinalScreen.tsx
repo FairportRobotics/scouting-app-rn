@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, ScrollView, TextInput } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { StackActions, useRoute } from "@react-navigation/native";
 import {
   Check,
   ContainerGroup,
@@ -17,8 +17,8 @@ function FinalScreen({ navigation }) {
 
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
-  const [allianceResult, setAllianceResult] = useState<string>();
-  const [violations, setViolations] = useState<string>();
+  const [allianceResult, setAllianceResult] = useState<string>(null);
+  const [violations, setViolations] = useState<string>(null);
   const [penalties, setPenalties] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
 
@@ -63,9 +63,9 @@ function FinalScreen({ navigation }) {
   const navigateNext = () => {
     console.log("Final Screen TBD: Clear Stack");
     saveData();
-    navigation.navigate(ROUTES.MATCH_SCOUT_SELECT, {
-      sessionKey: sessionKey,
-    });
+
+    navigation.dispatch(StackActions.popToTop());
+    navigation.navigate(ROUTES.MATCH_SCOUT_SELECT);
   };
 
   return (
