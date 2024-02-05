@@ -1,21 +1,9 @@
-import {
-  Text,
-  RefreshControl,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { RefreshControl, View, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
 import { Match, MatchScoutingSession, Team } from "@/helpers/types";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faCloudArrowUp,
-  faQrcode,
-  faShareFromSquare,
-} from "@fortawesome/free-solid-svg-icons";
-
 import ContainerGroup from "@/components/ContainerGroup";
-import themes from "@/themes/themes";
+import ActionButton from "@/screens/match/results/ActionButton";
+
 import * as Database from "@/helpers/database";
 
 export type MatchResultModel = {
@@ -109,27 +97,27 @@ export default function MatchResultsScreen() {
   };
 
   const handleEditSession = (sessionKey: string) => {
-    console.log("Session Edit", sessionKey);
+    console.log(sessionKey, ": Session Edit");
   };
 
   const handleUploadSession = (sessionKey: string) => {
-    console.log("Session Upload", sessionKey);
+    console.log(sessionKey, ": Session Upload");
   };
 
   const handleShowSessionJsonQR = (sessionKey: string) => {
-    console.log("Session JSON QQ Code", sessionKey);
+    console.log(sessionKey, ": Session QR JSON");
   };
 
   const handleShowSessionCsvQR = (sessionKey: string) => {
-    console.log("Session CSV QQ Code", sessionKey);
+    console.log(sessionKey, ": Session QR CSV");
   };
 
   const handleShareSessionJson = (sessionKey: string) => {
-    console.log("Session JSON Share", sessionKey);
+    console.log(sessionKey, ": Session Share JSON");
   };
 
   const handleShareSessionCsv = (sessionKey: string) => {
-    console.log("Session CSV Share", sessionKey);
+    console.log(sessionKey, ": Session Share CSV");
   };
 
   return (
@@ -158,50 +146,21 @@ export default function MatchResultsScreen() {
                 gap: 10,
               }}
             >
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              <ActionButton
+                label="Upload"
+                faIcon="upload"
                 onPress={() => handleUploadAllSessions()}
-              >
-                <FontAwesomeIcon
-                  icon={faCloudArrowUp}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>Upload</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="JSON"
+                faIcon="share"
                 onPress={() => handleShareAllSessionsJson()}
-              >
-                <FontAwesomeIcon
-                  icon={faShareFromSquare}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>JSON</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="CSV"
+                faIcon="share"
                 onPress={() => handleShareAllSessionsCsv()}
-              >
-                <FontAwesomeIcon
-                  icon={faShareFromSquare}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>CSV</Text>
-              </TouchableOpacity>
+              />
             </View>
           </View>
         </ContainerGroup>
@@ -219,90 +178,36 @@ export default function MatchResultsScreen() {
                 gap: 10,
               }}
             >
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              <ActionButton
+                label="Edit"
+                faIcon="edit"
                 onPress={() => handleEditSession(match.sessionKey)}
-              >
-                <Text style={{ color: "white" }}>Edit</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="Upload"
+                faIcon="upload"
                 onPress={() => handleUploadSession(match.sessionKey)}
-              >
-                <FontAwesomeIcon
-                  icon={faCloudArrowUp}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>Upload</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="JSON"
+                faIcon="qr"
                 onPress={() => handleShowSessionJsonQR(match.sessionKey)}
-              >
-                <FontAwesomeIcon
-                  icon={faQrcode}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>JSON</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="CSV"
+                faIcon="qr"
                 onPress={() => handleShowSessionCsvQR(match.sessionKey)}
-              >
-                <FontAwesomeIcon
-                  icon={faQrcode}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>CSV</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="JSON"
+                faIcon="share"
                 onPress={() => handleShareSessionJson(match.sessionKey)}
-              >
-                <FontAwesomeIcon
-                  icon={faShareFromSquare}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>JSON</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  themes.baseButton,
-                  { flex: 1, flexDirection: "row", gap: 10 },
-                ]}
+              />
+              <ActionButton
+                label="CSV"
+                faIcon="share"
                 onPress={() => handleShareSessionCsv(match.sessionKey)}
-              >
-                <FontAwesomeIcon
-                  icon={faShareFromSquare}
-                  size={32}
-                  style={{ color: "white" }}
-                />
-                <Text style={{ color: "white" }}>CSV</Text>
-              </TouchableOpacity>
+              />
             </View>
           </ContainerGroup>
         ))}
