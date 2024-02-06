@@ -47,7 +47,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             ]}
             onPress={() => handleSelectOption(option)}
           >
-            <Text style={Styles.labelText}>{option ?? "WTF"}</Text>
+            {option && <Text style={Styles.labelText}>{option}</Text>}
           </TouchableOpacity>
         ))}
       </View>

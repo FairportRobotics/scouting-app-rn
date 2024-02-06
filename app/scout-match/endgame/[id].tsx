@@ -38,15 +38,11 @@ function EndgameScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
-      console.log(
-        "EndgameScreen dtoSession:",
-        JSON.stringify(dtoSession, null, 2)
-      );
       setTrapScore(dtoSession?.endgameTrapScore ?? 0);
       setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? 0);
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
       setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
-      setHarmonyScore(dtoSession?.endgameHarmony ?? null);
+      setHarmonyScore(dtoSession?.endgameHarmony ?? "NONE_SELECTED");
     } catch (error) {
       console.error(error);
     }
