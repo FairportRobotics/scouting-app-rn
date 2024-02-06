@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { ContainerGroup } from "@/app/components";
-import { RootStackParamList } from "@/constants/Types";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ContainerGroup, OptionGroup } from "@/app/components";
 import { PitScoutingSession } from "@/constants/Types";
-import OptionGroup from "../components/OptionGroup";
 import * as Database from "@/app/helpers/database";
 
 function ScoutPitScreen() {
   const router = useRouter();
-
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const defaultSession = {
     key: id,
@@ -92,74 +86,74 @@ function ScoutPitScreen() {
     <ScrollView style={{ margin: 10 }}>
       <ContainerGroup title="Wow many Auto methods do you have?">
         <OptionGroup
-          options={["1", "2", "3+"]}
           value={currentSession?.numberOfAutoMethods || ""}
+          options={["1", "2", "3+"]}
           onChange={(value) => handleChange("numberOfAutoMethods", value)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Can your robot pick up Notes from the ground?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession.canPickUpNoteFromGround}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canPickUpNoteFromGround", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can your robot receive Notes from the Source?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canGetFromSource || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canGetFromSource", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can you score in the Amp?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canScoreAmp || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreAmp", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can you score in the Speaker?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canScoreSpeaker || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreSpeaker", value)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Can you score in the Trap?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canScoreTrap || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreTrap", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Do you plan on scoring in the Trap?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.planOnScoringTrap || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("planOnScoringTrap", value)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Can you get Onstage?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canGetOnStage || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canGetOnStage", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Do you plan on getting Onstage?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.planOnClimbing || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("planOnClimbing", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="How many of your robot can fit Onstage at the same time?">
         <OptionGroup
-          options={["1", "2", "3"]}
           value={currentSession?.canFitOnStage || ""}
+          options={["1", "2", "3"]}
           onChange={(value) => handleChange("canFitOnStage", value)}
         />
       </ContainerGroup>
@@ -174,13 +168,14 @@ function ScoutPitScreen() {
 
       <ContainerGroup title="Can you achieve Harmony?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canAchieveHarmony || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canAchieveHarmony", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="What experiance does your Drive Team have?">
         <OptionGroup
+          value={currentSession?.teamExperiance || ""}
           options={[
             "All New",
             "Mostly New",
@@ -188,7 +183,6 @@ function ScoutPitScreen() {
             "Mostly Veterans",
             "All Veterans",
           ]}
-          value={currentSession?.teamExperiance || ""}
           onChange={(value) => handleChange("teamExperiance", value)}
         />
       </ContainerGroup>
@@ -208,20 +202,19 @@ function ScoutPitScreen() {
       </ContainerGroup>
       <ContainerGroup title="What are the dimentions of your Robot?">
         <OptionGroup
-          options={["Do Later"]}
           value={currentSession?.robotDimenions || ""}
+          options={["Do Later"]}
           onChange={(value) => handleChange("robotDimenions", value)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Can your Robot fit under the Stage?">
         <OptionGroup
-          options={["Yes", "No"]}
           value={currentSession?.canFitUnderStage || ""}
+          options={["Yes", "No"]}
           onChange={(value) => handleChange("canFitUnderStage", value)}
         />
       </ContainerGroup>
-
       <View>
         <Button title="Complete" onPress={handleOnComplete} />
       </View>

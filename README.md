@@ -91,41 +91,44 @@ https://docs.expo.dev/versions/latest/sdk/sqlite/
 
 App:
 
+- [ ] Create a better TextInput with a clear icon and use that in place of existing TextInput.
 - [ ] Do we want a whole-app header?
-- [ ] For QR of JSON and CSV, should we use Stack navigation so the QR image modal close button just returns to the triggering location?
-- [ ] For Share of JSON and CSV, just call into a global function and pass the key and string content.
+- [N] For QR of JSON and CSV, should we use Stack navigation so the QR image modal close button just returns to the triggering location?
+- [x] For Share of JSON and CSV, just call into a global function and pass the key and string content.
 
 Match Scouting:
 
+- [?] Header
 - [ ] Better navigation UI
-- [ ] Header
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Match Results:
 
 - [ ] All Upload
-- [ ] All Share JSON
+- [x] All Share JSON
 - [ ] All Share CSV
 - [ ] Match Upload
 - [x] Match JSON QR
 - [ ] Match CSV QR
-- [ ] Match Share JSON
+- [x] Match Share JSON
 - [ ] Match Share CSV
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Pit Scouting:
 
 - [ ] Header
 - [ ] Better navigation UI
 - [ ] All Upload
-- [ ] All Share JSON
+- [x] All Share JSON
 - [ ] All Share CSV
 - [ ] Scout Upload
 - [x] Scout JSON QR
 - [ ] Scout CSV QR
-- [ ] Scout Share JSON
+- [x] Scout Share JSON
 - [ ] Scout Share CSV
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [ ] Disable share/QR buttons if the team has not been scouted.
+- [ ] Change opacity on buttons where the function has been triggered.
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Settings:
 

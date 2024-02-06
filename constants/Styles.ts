@@ -63,7 +63,6 @@ export default StyleSheet.create({
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
-    width: 50,
     height: 50,
   },
   allianceRedButton: {
@@ -72,7 +71,6 @@ export default StyleSheet.create({
     fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
-    width: 50,
     height: 50,
   },
   textInput: {

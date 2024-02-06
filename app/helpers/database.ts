@@ -16,6 +16,9 @@ import * as SQLite from "expo-sqlite";
 
 const db = SQLite.openDatabase("scouting-app.db");
 
+//=================================================================================================
+// Common.
+//=================================================================================================
 const executeSql = (query: string, params: Array<any> = []) => {
   return new Promise((resolve, reject) => {
     db.transaction(
@@ -32,6 +35,9 @@ const executeSql = (query: string, params: Array<any> = []) => {
   });
 };
 
+//=================================================================================================
+// Admin.
+//=================================================================================================
 export function initializeDatabase(
   dropAndRecreate: boolean = false,
   deleteExistingData: boolean = false
@@ -115,6 +121,9 @@ export function initializeDatabase(
   });
 }
 
+//=================================================================================================
+// Settings data access.
+//=================================================================================================
 export function saveSettings(settings: AppSettings) {
   db.transaction((tx) => {
     tx.executeSql(
@@ -149,6 +158,10 @@ export const getSettings = async (
     return undefined;
   }
 };
+
+//=================================================================================================
+// Event data access.
+//=================================================================================================
 
 export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {
@@ -297,6 +310,10 @@ export const getTeams = async (): Promise<Array<Team>> => {
     return [];
   }
 };
+
+//=================================================================================================
+// Match Scouting data access.
+//=================================================================================================
 
 export const saveMatchScoutingSession = async (
   session: MatchScoutingSession
@@ -569,6 +586,118 @@ export const getMatchScoutingSession = async (
   }
 };
 
+export const saveMatchScoutingSessionUploadedDate = async (
+  sessionKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_session_actions \
+        (key, uploadedDate) \
+      VALUES \
+        (:key, :uploadedDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        uploadedDate = excluded.uploadedDate \
+      ",
+      [sessionKey, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionQrJsonDate = async (
+  sessionKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_session_actions \
+        (key, qrJsonDate) \
+      VALUES \
+        (:key, :qrJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrJsonDate = excluded.qrJsonDate \
+      ",
+      [sessionKey, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionQrCsvDate = async (sessionKey: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_session_actions \
+        (key, qrCsvDate) \
+      VALUES \
+        (:key, :qrCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrCsvDate = excluded.qrCsvDate \
+      ",
+      [sessionKey, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionShareJsonDate = async (
+  sessionKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_session_actions \
+        (key, shareJsonDate) \
+      VALUES \
+        (:key, :shareJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        shareJsonDate = excluded.shareJsonDate \
+      ",
+      [sessionKey, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const saveMatchScoutingSessionShareCsvDate = async (
+  sessionKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_scouting_session_actions \
+        (key, shareCsvDate) \
+      VALUES \
+        (:key, :shareCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        shareCsvDate = excluded.shareCsvDate \
+      ",
+      [sessionKey, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+//=================================================================================================
+// Pit Scouting data access.
+//=================================================================================================
+
 export const initializePitScoutingSession = async (
   session: PitScoutingSession
 ) => {
@@ -585,6 +714,18 @@ export const initializePitScoutingSession = async (
       }
     );
   });
+};
+
+export const getPitScoutingSessions = async (): Promise<
+  Array<PitScoutingSession>
+> => {
+  try {
+    const query = "SELECT * FROM pit_scouting_sessions";
+    return (await executeSql(query, [])) as Array<PitScoutingSession>;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return [];
+  }
 };
 
 export const getPitScoutingSession = async (

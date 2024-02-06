@@ -67,7 +67,7 @@ const handleShare = async () => {
     const databaseUri = await exportDatabase();
     const shareOptions = {
       url: `file://${databaseUri}`,
-      type: "application/x-sqlite3", // Adjust MIME type if needed
+      type: "application/x-sqlite3",
     };
     await Share.share(shareOptions);
   } catch (error) {

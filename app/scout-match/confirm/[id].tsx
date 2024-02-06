@@ -1,28 +1,15 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Button,
-  StyleSheet,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Team } from "@/constants/Types";
-import { ContainerGroup } from "@/app/components";
-import { RootStackParamList } from "@/constants/Types";
+import { ContainerGroup, ResultsButton } from "@/app/components";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
-import ResultsButton from "@/app/components/ResultsButton";
 
 function ConfirmScreen() {
   const router = useRouter();
-
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [scouterName, setScouterName] = useState<string>("");
@@ -168,10 +155,9 @@ function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <ContainerGroup title="All Match Data">
+      <ContainerGroup title="" style={{}}>
         <View
           style={{
-            flex: 1,
             width: "100%",
             flexDirection: "row",
             justifyContent: "space-between",

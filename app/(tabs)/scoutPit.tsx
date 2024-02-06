@@ -3,13 +3,17 @@ import {
   View,
   ActivityIndicator,
   RefreshControl,
+  Share,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import { PitScoutingSessionAction, Match } from "@/constants/Types";
-import ResultsButton from "../components/ResultsButton";
-import QrCodeModal from "../components/QrCodeModal";
+import {
+  PitScoutingSessionAction,
+  Match,
+  PitScoutingSession,
+} from "@/constants/Types";
+import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 
 function ScoutPitScreen() {
@@ -17,14 +21,12 @@ function ScoutPitScreen() {
 
   const [matches, setMatches] = useState<Array<Match>>([]);
   const [actions, setActions] = useState<Array<PitScoutingSessionAction>>([]);
-  const [isRefeshing, setIsRefreshing] = useState<boolean>(true);
+  const [sessions, setSessions] = useState<Array<PitScoutingSession>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
 
   const onRefresh = () => {
-    setIsRefreshing(true);
     loadData();
-    setIsRefreshing(false);
   };
 
   const loadData = async () => {
@@ -39,10 +41,15 @@ function ScoutPitScreen() {
 
       setMatches(matches);
       setActions(dtoActions);
+
+      const dtoSessions = await Database.getPitScoutingSessions();
+      if (dtoSessions !== undefined) {
+        console.log(dtoSessions);
+        setSessions(dtoSessions);
+      }
     } catch (error) {
       console.error(error);
     }
-    setIsRefreshing(false);
   };
 
   useEffect(() => {
@@ -53,8 +60,19 @@ function ScoutPitScreen() {
     console.log("ScoutPitScreen handleUploadAllPitResults...");
   };
 
-  const handleShareAllPitResultsJson = () => {
-    console.log("ScoutPitScreen handleShareAllPitResultsJson...");
+  const handleShareAllPitResultsJson = async () => {
+    const sessions = await Database.getPitScoutingSessions();
+    if (sessions === undefined) return;
+    const json = JSON.stringify(sessions);
+
+    const shareOptions = {
+      message: json,
+      type: "application/json",
+    };
+
+    await Share.share(shareOptions);
+
+    loadData();
   };
 
   const handleShareAllPitResultsCsv = () => {
@@ -62,7 +80,6 @@ function ScoutPitScreen() {
   };
 
   const handleEditSession = (key: string) => {
-    console.log(key, ": Session Edit");
     router.replace(`/scout-pit/${key}`);
   };
 
@@ -89,6 +106,17 @@ function ScoutPitScreen() {
   };
 
   const handleShareSessionJson = async (key: string) => {
+    const session = await Database.getPitScoutingSession(key);
+    if (session === undefined) return;
+    const json = JSON.stringify(session);
+
+    const shareOptions = {
+      message: json,
+      type: "application/json",
+    };
+
+    await Share.share(shareOptions);
+
     await Database.savePitScoutingSessionShareJsonDate(key);
 
     loadData();
@@ -100,14 +128,6 @@ function ScoutPitScreen() {
     loadData();
   };
 
-  if (isRefeshing) {
-    return (
-      <View>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
   if (showQrCode) {
     return (
       <QrCodeModal
@@ -118,12 +138,7 @@ function ScoutPitScreen() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      refreshControl={
-        <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
-      }
-    >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <ContainerGroup title="All Match Data">
         <View
           style={{
