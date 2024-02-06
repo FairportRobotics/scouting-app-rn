@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, MinusPlusPair } from "@/app/components";
-import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 
 function TeleopScreen() {
   const router = useRouter();
-
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sessionKey, setSessionKey] = useState<string>(id);
-
   const [speakerScore, setSpeakerScore] = useState<number>(0);
   const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
   const [speakerMiss, setSpeakerMiss] = useState<number>(0);

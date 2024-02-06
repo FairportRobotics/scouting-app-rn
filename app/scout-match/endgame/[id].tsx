@@ -1,25 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
   ContainerGroup,
   MinusPlusPair,
   OptionSelect,
 } from "@/app/components";
-import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 
 function EndgameScreen() {
   const router = useRouter();
-
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sessionKey, setSessionKey] = useState<string>(id);
-
   const [trapScore, setTrapScore] = useState<number>(0);
   const [microphoneScore, setMicrophoneScore] = useState<number>(0);
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);

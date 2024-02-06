@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { View, ScrollView, Button } from "react-native";
-import { RootStackParamList } from "@/constants/Types";
 import { Check, MinusPlusPair, ContainerGroup } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 
 function AutoScreen() {
   const router = useRouter();
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sessionKey, setSessionKey] = useState<string>(id);
-
   const [startedWithNote, setStartedWithNote] = useState<boolean>(false);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);

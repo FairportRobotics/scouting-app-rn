@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, Button, ScrollView, TextInput } from "react-native";
-import { useRouter } from "expo-router";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, MinusPlusPair, OptionSelect } from "@/app/components";
-import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 
 function FinalScreen() {
   const router = useRouter();
-
-  const route =
-    useRoute<RouteProp<RootStackParamList, "ScoutMatchEditScreen">>();
-  const { id } = route.params;
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [sessionKey, setSessionKey] = useState<string>(id);
-
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NOT_SET");

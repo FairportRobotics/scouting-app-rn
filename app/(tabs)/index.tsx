@@ -6,8 +6,7 @@ import getDefaultMatchScoutingSession, {
   MatchScoutingSession,
   Team,
 } from "@/constants/Types";
-import ContainerGroup from "@/app/components/ContainerGroup";
-import ScoutingMatchSelect from "@/app/components/ScoutingMatchSelect";
+import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 
 function IndexScreen() {

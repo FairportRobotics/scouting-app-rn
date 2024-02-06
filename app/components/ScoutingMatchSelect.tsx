@@ -32,7 +32,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
   };
 
   return (
-    <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+    <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
       <View style={{ marginRight: 20, width: 100 }}>
         {match.matchNumber === 0 && (
           <View>
@@ -47,7 +47,13 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
           </View>
         )}
       </View>
-      <View style={{ flexDirection: "row", gap: 4 }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}

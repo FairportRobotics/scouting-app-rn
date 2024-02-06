@@ -1,10 +1,8 @@
-import { RefreshControl, View, ScrollView } from "react-native";
+import { RefreshControl, View, ScrollView, Share } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { Match, MatchScoutingSession, Team } from "@/constants/Types";
-import ContainerGroup from "@/app/components/ContainerGroup";
-import ResultsButton from "@/app/components/ResultsButton";
-import QrCodeModal from "../components/QrCodeModal";
+import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 
 export type MatchResultModel = {
@@ -95,37 +93,62 @@ export default function MatchResultsScreen() {
     console.log("Session Upload All");
   };
 
-  const handleShareAllSessionsJson = () => {
-    console.log("Session Share JSON for All");
+  const handleShareAllSessionsJson = async () => {
+    const json = JSON.stringify(sessions);
+    const shareOptions = {
+      message: json,
+      type: "application/json",
+    };
+
+    await Share.share(shareOptions);
   };
 
   const handleShareAllSessionsCsv = () => {
     console.log("Session Share CSB for All");
   };
 
-  const handleUploadSession = (sessionKey: string) => {
-    console.log(sessionKey, ": Session Upload");
+  const handleUploadSession = async (sessionKey: string) => {
+    await Database.saveMatchScoutingSessionUploadedDate(sessionKey);
+    loadData();
   };
 
-  const handleShowSessionJsonQR = (sessionKey: string) => {
+  const handleShowSessionJsonQR = async (sessionKey: string) => {
     const session = sessions.find((session) => session.key == sessionKey);
     if (session === undefined) return;
 
     const json = JSON.stringify(session);
     setQrCodeText(json);
     setShowQrCode(true);
+
+    await Database.saveMatchScoutingSessionQrJsonDate(sessionKey);
+    loadData();
   };
 
-  const handleShowSessionCsvQR = (sessionKey: string) => {
+  const handleShowSessionCsvQR = async (sessionKey: string) => {
     console.log(sessionKey, ": Session QR CSV");
+
+    await Database.saveMatchScoutingSessionQrCsvDate(sessionKey);
+    loadData();
   };
 
-  const handleShareSessionJson = (sessionKey: string) => {
-    console.log(sessionKey, ": Session Share JSON");
+  const handleShareSessionJson = async (sessionKey: string) => {
+    const session = sessions.find((session) => session.key == sessionKey);
+    if (session === undefined) return;
+    const json = JSON.stringify(session);
+    const shareOptions = {
+      message: json,
+      type: "application/json",
+    };
+
+    await Share.share(shareOptions);
+
+    await Database.saveMatchScoutingSessionShareJsonDate(sessionKey);
+    loadData();
   };
 
-  const handleShareSessionCsv = (sessionKey: string) => {
-    console.log(sessionKey, ": Session Share CSV");
+  const handleShareSessionCsv = async (sessionKey: string) => {
+    await Database.saveMatchScoutingSessionShareCsvDate(sessionKey);
+    loadData();
   };
 
   if (showQrCode) {
