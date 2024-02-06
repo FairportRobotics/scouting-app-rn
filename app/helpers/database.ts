@@ -688,30 +688,97 @@ export const getPitScoutingSessionActions = async (): Promise<
   }
 };
 
-export const savePitScoutingSessionAction = async (
-  action: PitScoutingSessionAction
-) => {
+export const savePitScoutingSessionUploadedDate = async (key: string) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_session_actions \
-      (key, uploadedDate, qrJsonDate, qrCsvDate, shareJsonDate, shareCsvDate) \
+        (key, uploadedDate) \
       VALUES \
-      (:key, :uploadedDate, :qrJsonDate, :qrCsvDate, :shareJsonDate, :shareCsvDate) \
+        (:key, :uploadedDate) \
       ON CONFLICT (key) DO UPDATE SET \
-        uploadedDate = excluded.uploadedDate, \
-        qrJsonDate = excluded.qrJsonDate, \
-        qrCsvDate = excluded.qrCsvDate, \
-        shareJsonDate = excluded.shareJsonDate, \
+        uploadedDate = excluded.uploadedDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionQrJsonDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, qrJsonDate) \
+      VALUES \
+        (:key, :qrJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrJsonDate = excluded.qrJsonDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionQrCsvDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, qrCsvDate) \
+      VALUES \
+        (:key, :qrCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrCsvDate = excluded.qrCsvDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionShareJsonDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, shareJsonDate) \
+      VALUES \
+        (:key, :shareJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        shareJsonDate = excluded.shareJsonDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionShareCsvDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, shareCsvDate) \
+      VALUES \
+        (:key, :shareCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
         shareCsvDate = excluded.shareCsvDate \
       ",
-      [
-        action.key,
-        action.uploadedDate?.toISOString() || "",
-        action.qrJsonDate?.toISOString() || "",
-        action.qrCsvDate?.toISOString() || "",
-        action.shareJsonDate?.toISOString() || "",
-        action.shareCsvDate?.toISOString() || "",
-      ],
+      [key, new Date().toISOString()],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
