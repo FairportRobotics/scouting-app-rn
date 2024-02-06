@@ -3,6 +3,7 @@ import { View, Button, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, MinusPlusPair } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import Navigation from "../Navigation";
 
 function TeleopScreen() {
   const router = useRouter();
@@ -68,18 +69,23 @@ function TeleopScreen() {
     }
   };
 
-  const navigatePrevious = () => {
+  const handleNavigatePrevious = () => {
     saveData();
     router.replace(`/scout-match/auto/${sessionKey}`);
   };
 
-  const navigateNext = () => {
+  const handleNavigateDone = () => {
+    saveData();
+    router.replace(`/`);
+  };
+
+  const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/endgame/${sessionKey}`);
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
+    <View style={{ flex: 1 }}>
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
@@ -119,13 +125,15 @@ function TeleopScreen() {
         />
       </ContainerGroup>
 
-      <ContainerGroup title="">
-        <View style={{ flexDirection: "row" }}>
-          <Button title="Previous" onPress={navigatePrevious} />
-          <Button title="Next" onPress={navigateNext} />
-        </View>
-      </ContainerGroup>
-    </ScrollView>
+      <Navigation
+        previousLabel="Auto"
+        doneLabel="Done"
+        nextLabel="Endgame"
+        onPrevious={() => handleNavigatePrevious()}
+        onDone={() => handleNavigateDone()}
+        onNext={() => handleNavigateNext()}
+      />
+    </View>
   );
 }
 

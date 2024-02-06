@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Team } from "@/constants/Types";
 import { ContainerGroup, ResultsButton } from "@/app/components";
+import Navigation from "../Navigation";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
@@ -94,24 +95,24 @@ function ConfirmScreen() {
     saveData();
   };
 
-  const navigatePrevious = () => {
+  const handleNavigatePrevious = () => {
     saveData();
     router.replace(`/`);
   };
 
-  const handleDone = () => {
+  const handleNavigateDone = () => {
     saveData();
     router.replace(`/`);
   };
 
-  const navigateNext = () => {
+  const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/auto/${sessionKey}`);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <ContainerGroup title="Scouter Name (required)">
+      <ContainerGroup title="Scouter Name (required)" style={{}}>
         <TextInput
           style={Styles.textInput}
           value={scouterName}
@@ -119,7 +120,7 @@ function ConfirmScreen() {
           placeholder="My name is..."
         />
       </ContainerGroup>
-      <ContainerGroup title="Confirm Team to be Scouted">
+      <ContainerGroup title="Confirm Team to be Scouted" style={{}}>
         <Text>
           {scoutedTeam?.teamNumber} - {scoutedTeam?.nickname}
         </Text>
@@ -155,32 +156,14 @@ function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <ContainerGroup title="" style={{}}>
-        <View
-          style={{
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            gap: 10,
-          }}
-        >
-          <ResultsButton
-            label="Previous"
-            faIcon="upload"
-            onPress={() => navigatePrevious()}
-          />
-          <ResultsButton
-            label="Done"
-            faIcon="share"
-            onPress={() => handleDone()}
-          />
-          <ResultsButton
-            label="Next"
-            faIcon="share"
-            onPress={() => navigateNext()}
-          />
-        </View>
-      </ContainerGroup>
+      <Navigation
+        previousLabel="Select Team"
+        doneLabel="Done"
+        nextLabel="Auto"
+        onPrevious={() => handleNavigatePrevious()}
+        onDone={() => handleNavigateDone()}
+        onNext={() => handleNavigateNext()}
+      />
     </View>
   );
 }

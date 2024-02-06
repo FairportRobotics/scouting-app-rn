@@ -22,7 +22,6 @@ export default function MatchResultsScreen() {
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
-
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
 

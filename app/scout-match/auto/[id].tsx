@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { View, ScrollView, Button } from "react-native";
 import { Check, MinusPlusPair, ContainerGroup } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import Navigation from "../Navigation";
 
 function AutoScreen() {
   const router = useRouter();
@@ -72,18 +73,23 @@ function AutoScreen() {
     ampMiss,
   ]);
 
-  const navigatePrevious = () => {
+  const handleNavigatePrevious = () => {
     saveData();
     router.replace(`/scout-match/confirm/${sessionKey}`);
   };
 
-  const navigateNext = () => {
+  const handleNavigateDone = () => {
+    saveData();
+    router.replace(`/`);
+  };
+
+  const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/teleop/${sessionKey}`);
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
+    <View style={{ flex: 1 }}>
       <ContainerGroup title="Start">
         <View
           style={{
@@ -139,13 +145,15 @@ function AutoScreen() {
           onChange={(delta) => setAmpMiss(ampMiss + delta)}
         />
       </ContainerGroup>
-      <ContainerGroup title="">
-        <View style={{ flexDirection: "row" }}>
-          <Button title="Previous" onPress={navigatePrevious} />
-          <Button title="Next" onPress={navigateNext} />
-        </View>
-      </ContainerGroup>
-    </ScrollView>
+      <Navigation
+        previousLabel="Confirm"
+        doneLabel="Done"
+        nextLabel="Teleop"
+        onPrevious={() => handleNavigatePrevious()}
+        onDone={() => handleNavigateDone()}
+        onNext={() => handleNavigateNext()}
+      />
+    </View>
   );
 }
 
