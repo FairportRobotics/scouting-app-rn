@@ -6,15 +6,15 @@ import {
   faShareFromSquare,
   faEdit,
 } from "@fortawesome/free-solid-svg-icons";
-import themes from "@/app/themes/themes";
+import Styles from "@/constants/Styles";
 
-interface ActionButtonProps {
+interface ResultsButtonProps {
   label: string | "";
   faIcon: "edit" | "upload" | "qr" | "share";
   onPress: () => void;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
+const ResultsButton: React.FC<ResultsButtonProps> = ({
   label,
   faIcon,
   onPress,
@@ -28,7 +28,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[themes.baseButton, { flex: 1, flexDirection: "row", gap: 8 }]}
+      style={[Styles.baseButton, { flex: 1, flexDirection: "row", gap: 8 }]}
       onPress={() => onPress()}
     >
       <FontAwesomeIcon
@@ -43,4 +43,4 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   );
 };
 
-export default ActionButton;
+export default ResultsButton;

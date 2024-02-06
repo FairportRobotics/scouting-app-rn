@@ -3,7 +3,7 @@ import { View, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
-import themes from "@/app/themes/themes";
+import Styles from "@/constants/Styles";
 
 import MetricCount from "@/app/components/MetricCount";
 import MetricLabel from "@/app/components/MetricLabel";
@@ -41,7 +41,7 @@ const MinusPlus: React.FC<MinusPlusProps> = ({
     >
       <TouchableOpacity
         onPress={handleDecrement}
-        style={themes.minusPlusButton}
+        style={Styles.minusPlusButton}
       >
         <FontAwesomeIcon icon={faMinus} size={32} style={{ color: "white" }} />
       </TouchableOpacity>
@@ -51,7 +51,7 @@ const MinusPlus: React.FC<MinusPlusProps> = ({
       </View>
       <TouchableOpacity
         onPress={handleIncrement}
-        style={themes.minusPlusButton}
+        style={Styles.minusPlusButton}
       >
         <FontAwesomeIcon icon={faPlus} size={32} style={{ color: "white" }} />
       </TouchableOpacity>

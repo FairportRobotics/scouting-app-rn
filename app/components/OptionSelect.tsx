@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import themes from "@/app/themes/themes";
-import colors from "@/app/themes/colors";
+import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 import InputGroup from "@/app/components/InputGroup";
 
 interface OptionSelectProps {
@@ -40,12 +40,12 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
               styles.option,
               {
                 backgroundColor:
-                  selectedOption === option ? colors.primary : colors.secondary,
+                  selectedOption === option ? Colors.primary : Colors.secondary,
               },
             ]}
             onPress={() => handleSelectOption(option)}
           >
-            <Text style={themes.labelText}>{option}</Text>
+            <Text style={Styles.labelText}>{option}</Text>
           </TouchableOpacity>
         ))}
       </View>

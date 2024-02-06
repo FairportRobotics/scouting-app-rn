@@ -5,7 +5,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { ContainerGroup, MinusPlusPair, OptionSelect } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
-import themes from "@/app/themes/themes";
+import Styles from "@/constants/Styles";
 
 function FinalScreen() {
   const router = useRouter();
@@ -70,12 +70,12 @@ function FinalScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/scout-match/endgame/${sessionKey}`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/`);
+    router.replace(`/`);
   };
 
   return (
@@ -115,7 +115,7 @@ function FinalScreen() {
         <TextInput
           multiline
           maxLength={1024}
-          style={[themes.textInput, { height: 100 }]}
+          style={[Styles.textInput, { height: 100 }]}
           value={notes}
           onChangeText={(text) => setNotes(text)}
           placeholder="Anything interesting happen?"

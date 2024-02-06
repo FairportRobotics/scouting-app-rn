@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import themes from "@/app/themes/themes";
-import type { Match, Team } from "@/app/helpers/types";
-import { Alliance, AllianceTeam } from "@/app/helpers/constants";
+import { Alliance, AllianceTeam } from "@/constants/Enums";
+import type { Match, Team } from "@/constants/Types";
+import Styles from "@/constants/Styles";
 
 interface MatchTeamSelectProps {
   match: Match;
@@ -71,8 +71,8 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
       <View
         style={[
           alliance === Alliance.Blue
-            ? themes.allianceBlueButton
-            : themes.allianceRedButton,
+            ? Styles.allianceBlueButton
+            : Styles.allianceRedButton,
           { flexDirection: "column", width: 90 },
         ]}
       >

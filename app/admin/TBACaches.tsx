@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, View, TextInput, Text } from "react-native";
-import type { TbaEvent, TbaMatch, TbaTeam } from "@/app/helpers/tbaTypes";
-import type { Event, Match, Team } from "@/app/helpers/types";
+import type { TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
+import type { Event, Match, Team } from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import fetchEvent from "@/app/helpers/fetchEvent";
 import fetchEventMatches from "@/app/helpers/fetchEventMatches";

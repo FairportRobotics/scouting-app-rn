@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Text, TextInput, View } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
-import type { AppSettings } from "@/app/helpers/types";
+import type { AppSettings } from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
-import themes from "@/app/themes/themes";
+import Styles from "@/constants/Styles";
 import * as Database from "@/app/helpers/database";
 
 export default function FRSettings() {
@@ -57,7 +57,7 @@ export default function FRSettings() {
       <View style={{ width: "100%" }}>
         <Text>The Blue Alliance API Key</Text>
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={appSettings.tbaKey}
           secureTextEntry={true}
           onChangeText={(text) => handleChange("tbaKey", text)}
@@ -66,7 +66,7 @@ export default function FRSettings() {
       <View style={{ width: "100%" }}>
         <Text>Save URI</Text>
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={appSettings.saveUri}
           onChangeText={(text) => handleChange("saveUri", text)}
         ></TextInput>

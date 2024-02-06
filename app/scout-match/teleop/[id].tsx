@@ -76,12 +76,12 @@ function TeleopScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/scout-match/auto/${sessionKey}`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/scout-match/endgame/${sessionKey}`);
   };
 
   return (

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Team } from "@/app/helpers/types";
+import type { Team } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 import { TbaTeam } from "./tbaTypes";
 

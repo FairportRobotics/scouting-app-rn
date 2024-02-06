@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Button } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Button,
+  StyleSheet,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { Team } from "@/app/helpers/types";
+import { Team } from "@/constants/Types";
 import { ContainerGroup } from "@/app/components";
 import { RootStackParamList } from "@/constants/Types";
-import themes from "@/app/themes/themes";
-import colors from "@/app/themes/colors";
+import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
+import ResultsButton from "@/app/components/ResultsButton";
 
 function ConfirmScreen() {
   const router = useRouter();
@@ -101,19 +109,24 @@ function ConfirmScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/`);
+    router.replace(`/`);
+  };
+
+  const handleDone = () => {
+    saveData();
+    router.replace(`/`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/scout-match/auto/${sessionKey}`);
   };
 
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={scouterName}
           onChangeText={(text) => setScouterName(text)}
           placeholder="My name is..."
@@ -128,7 +141,7 @@ function ConfirmScreen() {
           originally scheduled)
         </Text>
         <TextInput
-          style={themes.textInput}
+          style={Styles.textInput}
           value={filterText}
           onChangeText={(text) => handleChangeFilterText(text)}
           placeholder="I actually need to scout..."
@@ -137,7 +150,7 @@ function ConfirmScreen() {
           <TouchableOpacity
             style={{
               width: "100%",
-              backgroundColor: colors.appBackground,
+              backgroundColor: Colors.appBackground,
               borderRadius: 6,
               padding: 10,
               marginBottom: 8,
@@ -155,10 +168,31 @@ function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <ContainerGroup title="">
-        <View style={{ flexDirection: "row" }}>
-          <Button title="Previous" onPress={navigatePrevious} />
-          <Button title="Next" onPress={navigateNext} />
+      <ContainerGroup title="All Match Data">
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            gap: 10,
+          }}
+        >
+          <ResultsButton
+            label="Previous"
+            faIcon="upload"
+            onPress={() => navigatePrevious()}
+          />
+          <ResultsButton
+            label="Done"
+            faIcon="share"
+            onPress={() => handleDone()}
+          />
+          <ResultsButton
+            label="Next"
+            faIcon="share"
+            onPress={() => navigateNext()}
+          />
         </View>
       </ContainerGroup>
     </View>

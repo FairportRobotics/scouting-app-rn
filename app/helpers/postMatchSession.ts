@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { MatchScoutingSession } from "@/app/helpers/types";
+import type { MatchScoutingSession } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 
 export default async (session: MatchScoutingSession) => {

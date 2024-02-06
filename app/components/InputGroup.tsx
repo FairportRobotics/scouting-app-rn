@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import themes from "@/app/themes/themes";
+import Styles from "@/constants/Styles";
 
 interface InputGroupProps {
   title: string | "";
@@ -9,8 +9,8 @@ interface InputGroupProps {
 
 const InputGroup: React.FC<InputGroupProps> = ({ title, children, style }) => {
   return (
-    <View style={themes.inputGroup}>
-      <Text style={themes.labelText}>{title}</Text>
+    <View style={Styles.inputGroup}>
+      <Text style={Styles.labelText}>{title}</Text>
       {children}
     </View>
   );
