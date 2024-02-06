@@ -9,23 +9,12 @@ import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
 import ResultsButton from "../components/ResultsButton";
 import * as Database from "@/app/helpers/database";
-
-export type PitResultModel = {
-  key: string;
-  number: string;
-  nickname: string;
-  wasScouted: boolean;
-  wasUploaded: boolean;
-  qrJson: boolean;
-  qrCsv: boolean;
-  shareJson: boolean;
-  shareCsv: boolean;
-  matches: Set<number>;
-};
+import { PitScoutingSessionAction, Match } from "@/constants/Types";
 
 function ScoutPitScreen() {
   const router = useRouter();
-  const [reportModels, setEventTeams] = useState<Array<PitResultModel>>([]);
+  const [matches, setMatches] = useState<Array<Match>>([]);
+  const [actions, setActions] = useState<Array<PitScoutingSessionAction>>([]);
   const [isRefeshing, setIsRefreshing] = useState<boolean>(true);
 
   const onRefresh = () => {
@@ -38,56 +27,14 @@ function ScoutPitScreen() {
     try {
       // Load data from database.
       const dtoMatches = await Database.getMatches();
-      const dtoTeams = await Database.getTeams();
-      const dtoSessions = await Database.getPitScoutingSessions();
+      const dtoActions = await Database.getPitScoutingSessionActions();
 
       // Validate.
       if (dtoMatches === undefined) return;
-      if (dtoTeams === undefined) return;
+      if (dtoActions === undefined) return;
 
-      // Create the dictionary of Teams.
-      let teamMatchesDictionary: Record<string, Set<number>> = {};
-      dtoTeams.forEach((team) => {
-        teamMatchesDictionary[team.key] = new Set();
-      });
-
-      // Create the dictionary of Teams.
-      let sessionsDictionary: Record<string, boolean> = {};
-      dtoSessions.forEach((session) => {
-        sessionsDictionary[session.key] = true;
-      });
-
-      // Enumerate over the Matches and add the Match Number to the Set
-      // associated with each Team.
-      dtoMatches.forEach((match) => {
-        try {
-          teamMatchesDictionary[match.blue1TeamKey].add(match.matchNumber);
-        } catch (error) {
-          console.error("ScoutPitScreen match.blue1TeamKey:", error);
-        }
-        teamMatchesDictionary[match.blue2TeamKey].add(match.matchNumber);
-        teamMatchesDictionary[match.blue3TeamKey].add(match.matchNumber);
-
-        teamMatchesDictionary[match.red1TeamKey].add(match.matchNumber);
-        teamMatchesDictionary[match.red2TeamKey].add(match.matchNumber);
-        teamMatchesDictionary[match.red3TeamKey].add(match.matchNumber);
-      });
-
-      // Build the PitResultModel models.
-      let models = dtoTeams.map((team) => {
-        return {
-          key: team.key,
-          number: team.teamNumber,
-          nickname: team.nickname,
-          matches: teamMatchesDictionary[team.key],
-        } as PitResultModel;
-      });
-
-      // Sort.
-      models.sort((a, b) => (a.number > b.number ? 1 : 0));
-
-      // Set State.
-      setEventTeams(models);
+      setMatches(matches);
+      setActions(dtoActions);
     } catch (error) {
       console.error(error);
     }
@@ -115,24 +62,31 @@ function ScoutPitScreen() {
     router.replace(`/scout-pit/${key}`);
   };
 
-  const handleUploadSession = (key: string) => {
-    console.log(key, ": Session Upload");
+  const handleUploadSession = async (key: string) => {
+    await Database.savePitScoutingSessionUploadedDate(key);
+    loadData();
   };
 
-  const handleShowSessionJsonQR = (key: string) => {
-    console.log(key, ": Session QR JSON");
+  const handleShowSessionJsonQR = async (key: string) => {
+    await Database.savePitScoutingSessionQrJsonDate(key);
+    loadData();
   };
 
-  const handleShowSessionCsvQR = (key: string) => {
-    console.log(key, ": Session QR CSV");
+  const handleShowSessionCsvQR = async (key: string) => {
+    await Database.savePitScoutingSessionQrCsvDate(key);
+    loadData();
   };
 
-  const handleShareSessionJson = (key: string) => {
-    console.log(key, ": Session Share JSON");
+  const handleShareSessionJson = async (key: string) => {
+    await Database.savePitScoutingSessionShareJsonDate(key);
+
+    loadData();
   };
 
-  const handleShareSessionCsv = (key: string) => {
-    console.log(key, ": Session Share CSV");
+  const handleShareSessionCsv = async (key: string) => {
+    await Database.savePitScoutingSessionShareCsvDate(key);
+
+    loadData();
   };
 
   if (isRefeshing) {
@@ -186,8 +140,11 @@ function ScoutPitScreen() {
           </View>
         </View>
       </ContainerGroup>
-      {reportModels.map((item, index) => (
-        <ContainerGroup title={`${item.number} - ${item.nickname}`} key={index}>
+      {actions.map((item, index) => (
+        <ContainerGroup
+          title={`${item.teamNumber} - ${item.nickname}`}
+          key={index}
+        >
           <View
             style={{
               flex: 1,
@@ -200,31 +157,37 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
+              styles={{ opacity: item.wasScouted ? 0.5 : 1.0 }}
               onPress={() => handleEditSession(item.key)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
+              styles={{ opacity: item.uploadedDate ? 0.5 : 1.0 }}
               onPress={() => handleUploadSession(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
+              styles={{ opacity: item.qrJsonDate ? 0.5 : 1.0 }}
               onPress={() => handleShowSessionJsonQR(item.key)}
             />
             <ResultsButton
               label="CSV"
               faIcon="qr"
+              styles={{ opacity: item.qrCsvDate ? 0.5 : 1.0 }}
               onPress={() => handleShowSessionCsvQR(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
+              styles={{ opacity: item.shareJsonDate ? 0.5 : 1.0 }}
               onPress={() => handleShareSessionJson(item.key)}
             />
             <ResultsButton
               label="CSV"
               faIcon="share"
+              styles={{ opacity: item.shareCsvDate ? 0.5 : 1.0 }}
               onPress={() => handleShareSessionCsv(item.key)}
             />
           </View>

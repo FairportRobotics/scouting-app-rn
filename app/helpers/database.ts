@@ -1,4 +1,9 @@
-import type { TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
+import type {
+  PitScoutingSessionAction,
+  TbaEvent,
+  TbaMatch,
+  TbaTeam,
+} from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -6,7 +11,6 @@ import type {
   MatchScoutingSession,
   PitScoutingSession,
   AppSettings,
-  PitScoutingSessionAction,
 } from "@/constants/Types";
 import * as SQLite from "expo-sqlite";
 
@@ -583,18 +587,6 @@ export const initializePitScoutingSession = async (
   });
 };
 
-export const getPitScoutingSessions = async (): Promise<
-  Array<PitScoutingSession>
-> => {
-  try {
-    const query = "SELECT * FROM pit_scouting_sessions";
-    return (await executeSql(query, [])) as Array<PitScoutingSession>;
-  } catch (error) {
-    console.error("Error fetching PitScoutingSession:", error);
-    return [];
-  }
-};
-
 export const getPitScoutingSession = async (
   sessionKey: string
 ): Promise<PitScoutingSession | undefined> => {
@@ -611,18 +603,6 @@ export const getPitScoutingSession = async (
   } catch (error) {
     console.error("Error fetching match scouting session:", error);
     return undefined;
-  }
-};
-
-export const getPitScoutingSessionActions = async (): Promise<
-  Array<PitScoutingSessionAction>
-> => {
-  try {
-    const query = "SELECT * FROM pit_scouting_session_actions";
-    return (await executeSql(query, [])) as Array<PitScoutingSessionAction>;
-  } catch (error) {
-    console.error("Error fetching PitScoutingSessionAction:", error);
-    return [];
   }
 };
 
@@ -672,6 +652,133 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
         session.robotDimenions,
         session.teamExperiance,
       ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const getPitScoutingSessionActions = async (): Promise<
+  Array<PitScoutingSessionAction>
+> => {
+  try {
+    const query =
+      "\
+      SELECT \
+        t.key, \
+        t.teamNumber, \
+        t.nickname, \
+        CASE WHEN s.key IS NULL THEN 0 ELSE 1 END wasScouted, \
+        a.uploadedDate, \
+        a.qrJsonDate, \
+        a.qrCsvDate, \
+        a.shareJsonDate, \
+        a.shareCsvDate \
+      FROM event_teams t \
+      LEFT OUTER JOIN pit_scouting_sessions s ON t.key = s.key \
+      LEFT OUTER JOIN pit_scouting_session_actions a ON t.key = a.key \
+      ";
+    return (await executeSql(query, [])) as Array<PitScoutingSessionAction>;
+  } catch (error) {
+    console.error("Error fetching PitScoutingSession:", error);
+    return [];
+  }
+};
+
+export const savePitScoutingSessionUploadedDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, uploadedDate) \
+      VALUES \
+        (:key, :uploadedDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        uploadedDate = excluded.uploadedDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionQrJsonDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, qrJsonDate) \
+      VALUES \
+        (:key, :qrJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrJsonDate = excluded.qrJsonDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionQrCsvDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, qrCsvDate) \
+      VALUES \
+        (:key, :qrCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        qrCsvDate = excluded.qrCsvDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionShareJsonDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, shareJsonDate) \
+      VALUES \
+        (:key, :shareJsonDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        shareJsonDate = excluded.shareJsonDate \
+      ",
+      [key, new Date().toISOString()],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const savePitScoutingSessionShareCsvDate = async (key: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO pit_scouting_session_actions \
+        (key, shareCsvDate) \
+      VALUES \
+        (:key, :shareCsvDate) \
+      ON CONFLICT (key) DO UPDATE SET \
+        shareCsvDate = excluded.shareCsvDate \
+      ",
+      [key, new Date().toISOString()],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
