@@ -11,12 +11,14 @@ import Styles from "@/constants/Styles";
 interface ResultsButtonProps {
   label: string | "";
   faIcon: "edit" | "upload" | "qr" | "share";
+  styles?: {};
   onPress: () => void;
 }
 
 const ResultsButton: React.FC<ResultsButtonProps> = ({
   label,
   faIcon,
+  styles,
   onPress,
 }) => {
   const iconLookup = {
@@ -28,7 +30,11 @@ const ResultsButton: React.FC<ResultsButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[Styles.baseButton, { flex: 1, flexDirection: "row", gap: 8 }]}
+      style={[
+        Styles.baseButton,
+        styles,
+        { flex: 1, flexDirection: "row", gap: 8 },
+      ]}
       onPress={() => onPress()}
     >
       <FontAwesomeIcon

@@ -180,8 +180,10 @@ export type PitScoutingSession = {
 };
 
 export type PitScoutingSessionAction = {
-  // Root properties.
   key: string;
+  teamNumber: string;
+  nickname: string;
+  wasScouted: boolean;
   uploadedDate: Date | null;
   qrJsonDate: Date | null;
   qrCsvDate: Date | null;
