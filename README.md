@@ -98,9 +98,9 @@ App:
 
 Match Scouting:
 
+- [?] Header
 - [ ] Better navigation UI
-- [ ] Header
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Match Results:
 
@@ -112,21 +112,23 @@ Match Results:
 - [ ] Match CSV QR
 - [x] Match Share JSON
 - [ ] Match Share CSV
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Pit Scouting:
 
 - [ ] Header
 - [ ] Better navigation UI
 - [ ] All Upload
-- [ ] All Share JSON
+- [x] All Share JSON
 - [ ] All Share CSV
 - [ ] Scout Upload
 - [x] Scout JSON QR
 - [ ] Scout CSV QR
-- [ ] Scout Share JSON
+- [x] Scout Share JSON
 - [ ] Scout Share CSV
-- [ ] Retain tab visibility? Is this desirable or possible?
+- [ ] Disable share/QR buttons if the team has not been scouted.
+- [ ] Change opacity on buttons where the function has been triggered.
+- [?] Retain tab visibility? Is this desirable or possible?
 
 Settings:
 
