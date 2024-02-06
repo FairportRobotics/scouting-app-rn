@@ -18,7 +18,9 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
   options,
   onChange,
 }) => {
-  const [selectedOption, setSelectedOption] = useState<string>(value ?? "");
+  const [selectedOption, setSelectedOption] = useState<string>(
+    value ?? "NOT_SELECTED"
+  );
 
   useEffect(() => {
     setSelectedOption(value);
@@ -45,7 +47,7 @@ const OptionSelect: React.FC<OptionSelectProps> = ({
             ]}
             onPress={() => handleSelectOption(option)}
           >
-            <Text style={Styles.labelText}>{option}</Text>
+            <Text style={Styles.labelText}>{option ?? "WTF"}</Text>
           </TouchableOpacity>
         ))}
       </View>

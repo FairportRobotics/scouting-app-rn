@@ -15,7 +15,7 @@ const ContainerGroup: React.FC<ContainerGroupProps> = ({
   return (
     <View style={Styles.containerGroup}>
       {title.length > 0 && (
-        <Text style={Styles.containerGroupTitle}>{title}</Text>
+        <Text style={Styles.containerGroupTitle}>{title} WTFA</Text>
       )}
       {children}
     </View>

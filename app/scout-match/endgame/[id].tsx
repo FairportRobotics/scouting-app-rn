@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
@@ -8,6 +8,7 @@ import {
   OptionSelect,
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import Navigation from "../Navigation";
 
 function EndgameScreen() {
   const router = useRouter();
@@ -18,7 +19,7 @@ function EndgameScreen() {
   const [microphoneScore, setMicrophoneScore] = useState<number>(0);
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
   const [didRobotHang, setDidRobotHang] = useState<boolean>(false);
-  const [harmonyScore, setHarmonyScore] = useState<string>("NOT_SET");
+  const [harmonyScore, setHarmonyScore] = useState<string>("NONE_SELECTED");
 
   useEffect(() => {
     loadData();
@@ -37,6 +38,10 @@ function EndgameScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
+      console.log(
+        "EndgameScreen dtoSession:",
+        JSON.stringify(dtoSession, null, 2)
+      );
       setTrapScore(dtoSession?.endgameTrapScore ?? 0);
       setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? 0);
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
@@ -66,18 +71,23 @@ function EndgameScreen() {
     if (!value) setHarmonyScore("");
   };
 
-  const navigatePrevious = () => {
+  const handleNavigatePrevious = () => {
     saveData();
     router.replace(`/scout-match/teleop/${sessionKey}`);
   };
 
-  const navigateNext = () => {
+  const handleNavigateDone = () => {
+    saveData();
+    router.replace(`/`);
+  };
+
+  const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/final/${sessionKey}`);
   };
 
   return (
-    <ScrollView style={{ margin: 10 }}>
+    <View style={{ flex: 1 }}>
       <ContainerGroup title="Stage">
         <MinusPlusPair
           label="Trap"
@@ -106,18 +116,20 @@ function EndgameScreen() {
             label="Harmony"
             options={["0", "1", "2"]}
             value={harmonyScore}
-            onChange={(value) => setHarmonyScore(value)}
+            onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
           />
         )}
       </ContainerGroup>
 
-      <ContainerGroup title="">
-        <View style={{ flexDirection: "row" }}>
-          <Button title="Previous" onPress={navigatePrevious} />
-          <Button title="Next" onPress={navigateNext} />
-        </View>
-      </ContainerGroup>
-    </ScrollView>
+      <Navigation
+        previousLabel="Teleop"
+        doneLabel="Done"
+        nextLabel="Final"
+        onPrevious={() => handleNavigatePrevious()}
+        onDone={() => handleNavigateDone()}
+        onNext={() => handleNavigateNext()}
+      />
+    </View>
   );
 }
 
