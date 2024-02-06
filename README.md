@@ -104,11 +104,11 @@ Match Scouting:
 Match Results:
 
 - [ ] All Upload
-- [ ] All JSON
-- [ ] All CSV
+- [ ] All Share JSON
+- [ ] All Share CSV
 - [ ] Match Upload
-- [ ] Match QR JSON
-- [ ] Match QR CSV
+- [x] Match JSON QR
+- [ ] Match CSV QR
 - [ ] Match Share JSON
 - [ ] Match Share CSV
 - [ ] Retain tab visibility? Is this desirable or possible?
@@ -118,11 +118,11 @@ Pit Scouting:
 - [ ] Header
 - [ ] Better navigation UI
 - [ ] All Upload
-- [ ] All JSON
-- [ ] All CSV
+- [ ] All Share JSON
+- [ ] All Share CSV
 - [ ] Scout Upload
-- [ ] Scout QR JSON
-- [ ] Scout QR CSV
+- [x] Scout JSON QR
+- [ ] Scout CSV QR
 - [ ] Scout Share JSON
 - [ ] Scout Share CSV
 - [ ] Retain tab visibility? Is this desirable or possible?
