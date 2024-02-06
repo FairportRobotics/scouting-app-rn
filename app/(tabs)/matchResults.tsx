@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import ResultsButton from "@/app/components/ResultsButton";
+import QrCodeModal from "../components/QrCodeModal";
 import * as Database from "@/app/helpers/database";
 
 export type MatchResultModel = {
@@ -23,6 +24,9 @@ export default function MatchResultsScreen() {
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
+
+  const [showQrCode, setShowQrCode] = useState<boolean>(false);
+  const [qrCodeText, setQrCodeText] = useState<string>("");
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -104,7 +108,12 @@ export default function MatchResultsScreen() {
   };
 
   const handleShowSessionJsonQR = (sessionKey: string) => {
-    console.log(sessionKey, ": Session QR JSON");
+    const session = sessions.find((session) => session.key == sessionKey);
+    if (session === undefined) return;
+
+    const json = JSON.stringify(session);
+    setQrCodeText(json);
+    setShowQrCode(true);
   };
 
   const handleShowSessionCsvQR = (sessionKey: string) => {
@@ -118,6 +127,15 @@ export default function MatchResultsScreen() {
   const handleShareSessionCsv = (sessionKey: string) => {
     console.log(sessionKey, ": Session Share CSV");
   };
+
+  if (showQrCode) {
+    return (
+      <QrCodeModal
+        value={qrCodeText}
+        onPressClose={() => setShowQrCode(false)}
+      />
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
