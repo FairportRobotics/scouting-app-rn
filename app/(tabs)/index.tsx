@@ -15,20 +15,24 @@ function IndexScreen() {
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
+  const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
 
   const loadData = async () => {
     try {
       // Load data from database.
       const dtoMatches = await Database.getMatches();
       const dtoTeams = await Database.getTeams();
+      const dtoSessions = await Database.getMatchScoutingSessions();
 
       // Validate.
       if (dtoMatches === undefined) return;
       if (dtoTeams === undefined) return;
+      if (dtoSessions === undefined) return;
 
       // Set State.
-      setEventMatches(await Database.getMatches());
-      setEventTeams(await Database.getTeams());
+      setEventMatches(dtoMatches);
+      setEventTeams(dtoTeams);
+      setSessions(dtoSessions);
     } catch (error) {
       console.error(error);
     }
@@ -80,7 +84,7 @@ function IndexScreen() {
         session.scoutedTeamKey = teamKey;
       }
 
-      // Save to DB
+      // Save to DB.
       await Database.saveMatchScoutingSession(session);
 
       router.replace(`/scout-match/confirm/${sessionKey}`);
@@ -97,11 +101,12 @@ function IndexScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
-        {eventMatches.map((match, index) => (
+        {eventMatches.map((match) => (
           <ContainerGroup title="" key={match.key}>
             <ScoutingMatchSelect
               match={match}
               eventTeams={eventTeams}
+              sessions={sessions}
               onSelect={(matchKey, alliance, allianceTeam, teamKey) =>
                 handleOnSelect(matchKey, alliance, allianceTeam, teamKey)
               }
