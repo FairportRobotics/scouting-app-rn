@@ -99,11 +99,6 @@ export default function MatchResultsScreen() {
     console.log("Session Share CSB for All");
   };
 
-  const handleEditSession = (sessionKey: string) => {
-    console.log(sessionKey, ": Session Edit");
-    router.replace(`/scout-match/confirm/${sessionKey}`);
-  };
-
   const handleUploadSession = (sessionKey: string) => {
     console.log(sessionKey, ": Session Upload");
   };
@@ -182,11 +177,6 @@ export default function MatchResultsScreen() {
                 gap: 10,
               }}
             >
-              <ResultsButton
-                label="Edit"
-                faIcon="edit"
-                onPress={() => handleEditSession(match.sessionKey)}
-              />
               <ResultsButton
                 label="Upload"
                 faIcon="upload"

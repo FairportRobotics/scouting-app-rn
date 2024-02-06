@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
-import type { Match, Team } from "@/constants/Types";
+import type { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import Styles from "@/constants/Styles";
 
 interface MatchTeamSelectProps {
   match: Match;
   eventTeams: Array<Team>;
+  sessions: Array<MatchScoutingSession>;
   alliance: string;
   allianceTeam: number;
   onSelect: () => void;
@@ -16,6 +17,7 @@ interface MatchTeamSelectProps {
 const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   match,
   eventTeams,
+  sessions,
   alliance,
   allianceTeam,
   onSelect,
@@ -66,8 +68,22 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
     else return team.teamNumber;
   };
 
+  const opacity = () => {
+    const session = sessions.find(
+      (session) =>
+        session.matchKey == match.key &&
+        session.alliance == alliance &&
+        session.allianceTeam == allianceTeam
+    );
+
+    return session ? 0.5 : 1.0;
+  };
+
   return (
-    <TouchableOpacity onPress={() => handleOnPress()}>
+    <TouchableOpacity
+      onPress={() => handleOnPress()}
+      style={{ opacity: opacity() }}
+    >
       <View
         style={[
           alliance === Alliance.Blue

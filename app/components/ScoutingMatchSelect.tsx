@@ -1,12 +1,13 @@
 import React from "react";
 import { View, Text } from "react-native";
-import type { Match, Team } from "@/constants/Types";
+import type { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
 import MatchTeamSelect from "./MatchTeamSelect";
 
 interface ScoutingMatchSelectProps {
   match: Match;
   eventTeams: Array<Team>;
+  sessions: Array<MatchScoutingSession>;
   onSelect: (
     matchKey: string,
     alliance: string,
@@ -18,6 +19,7 @@ interface ScoutingMatchSelectProps {
 const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
   match,
   eventTeams,
+  sessions,
   onSelect,
 }) => {
   const handleOnSelect = (
@@ -49,6 +51,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.One}
           onSelect={() =>
@@ -63,6 +66,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.Two}
           onSelect={() =>
@@ -77,6 +81,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Blue}
           allianceTeam={AllianceTeam.Three}
           onSelect={() =>
@@ -91,6 +96,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.One}
           onSelect={() =>
@@ -105,6 +111,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.Two}
           onSelect={() =>
@@ -119,6 +126,7 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
         <MatchTeamSelect
           match={match}
           eventTeams={eventTeams}
+          sessions={sessions}
           alliance={Alliance.Red}
           allianceTeam={AllianceTeam.Three}
           onSelect={() =>
