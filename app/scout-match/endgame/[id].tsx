@@ -74,12 +74,12 @@ function EndgameScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/scout-match/teleop/${sessionKey}`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/scout-match/final/${sessionKey}`);
+    router.replace(`/scout-match/final/${sessionKey}`);
   };
 
   return (

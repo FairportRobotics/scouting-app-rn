@@ -7,7 +7,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import ActionButton from "../components/ActionButton";
+import ResultsButton from "../components/ResultsButton";
 import * as Database from "@/app/helpers/database";
 
 export type PitResultModel = {
@@ -113,7 +113,6 @@ function ScoutPitScreen() {
   const handleEditSession = (key: string) => {
     console.log(key, ": Session Edit");
     router.replace(`/scout-pit/${key}`);
-    //router.push(`/scout-match/confirm/${key}`);
   };
 
   const handleUploadSession = (key: string) => {
@@ -169,17 +168,17 @@ function ScoutPitScreen() {
               gap: 10,
             }}
           >
-            <ActionButton
+            <ResultsButton
               label="Upload"
               faIcon="upload"
               onPress={() => handleUploadAllPitResults()}
             />
-            <ActionButton
+            <ResultsButton
               label="JSON"
               faIcon="share"
               onPress={() => handleShareAllPitResultsJson()}
             />
-            <ActionButton
+            <ResultsButton
               label="CSV"
               faIcon="share"
               onPress={() => handleShareAllPitResultsCsv()}
@@ -198,32 +197,32 @@ function ScoutPitScreen() {
               gap: 10,
             }}
           >
-            <ActionButton
+            <ResultsButton
               label="Scout"
               faIcon="edit"
               onPress={() => handleEditSession(item.key)}
             />
-            <ActionButton
+            <ResultsButton
               label="Upload"
               faIcon="upload"
               onPress={() => handleUploadSession(item.key)}
             />
-            <ActionButton
+            <ResultsButton
               label="JSON"
               faIcon="qr"
               onPress={() => handleShowSessionJsonQR(item.key)}
             />
-            <ActionButton
+            <ResultsButton
               label="CSV"
               faIcon="qr"
               onPress={() => handleShowSessionCsvQR(item.key)}
             />
-            <ActionButton
+            <ResultsButton
               label="JSON"
               faIcon="share"
               onPress={() => handleShareSessionJson(item.key)}
             />
-            <ActionButton
+            <ResultsButton
               label="CSV"
               faIcon="share"
               onPress={() => handleShareSessionCsv(item.key)}

@@ -8,13 +8,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Styles from "@/constants/Styles";
 
-interface ActionButtonProps {
+interface ResultsButtonProps {
   label: string | "";
   faIcon: "edit" | "upload" | "qr" | "share";
   onPress: () => void;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
+const ResultsButton: React.FC<ResultsButtonProps> = ({
   label,
   faIcon,
   onPress,
@@ -43,4 +43,4 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   );
 };
 
-export default ActionButton;
+export default ResultsButton;

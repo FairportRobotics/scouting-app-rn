@@ -6,9 +6,10 @@ export default {
   containerBackground: "#fff",
 
   primary: "#ffa50a",
-  secondary: "#ffe9cc",
+  secondary: "#ffcc80",
 
   text: "#1a1a19",
+  textLight: "#fff",
   textSubtle: "#42403e",
   textDisabled: "#908c89",
 

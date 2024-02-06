@@ -2,20 +2,17 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 
 interface OptionGroupProps {
   value: string;
   options: string[] | [];
-  style?: {};
-  itemStyle?: {};
   onChange: (option: string) => void;
 }
 
 const OptionGroup: React.FC<OptionGroupProps> = ({
   value,
   options,
-  style,
-  itemStyle,
   onChange,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>(value ?? "");
@@ -31,14 +28,25 @@ const OptionGroup: React.FC<OptionGroupProps> = ({
       {options.map((option: string) => (
         <TouchableOpacity
           key={option}
-          style={{
-            backgroundColor: "plum",
-            paddingVertical: 6,
-            paddingHorizontal: 10,
-          }}
+          style={[
+            Styles.baseButton,
+
+            option === value
+              ? Styles.optionGroupActive
+              : Styles.optionGroupDefault,
+          ]}
           onPress={() => handleSelectOption(option)}
         >
-          <Text style={itemStyle}>{option}</Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 20,
+              fontWeight: "bold",
+              paddingHorizontal: 20,
+            }}
+          >
+            {option}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -46,20 +54,3 @@ const OptionGroup: React.FC<OptionGroupProps> = ({
 };
 
 export default OptionGroup;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});

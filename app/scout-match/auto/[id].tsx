@@ -79,12 +79,12 @@ function AutoScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/scout-match/confirm/${sessionKey}`);
+    router.replace(`/scout-match/confirm/${sessionKey}`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/scout-match/teleop/${sessionKey}`);
   };
 
   return (

@@ -7,8 +7,14 @@ export default StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+
+  text: { fontSize: 20 },
+  textSubscript: { fontSize: 18 },
+  textSuperscript: { fontSize: 24 },
+
   containerGroup: {
     backgroundColor: Colors.containerBackground,
+    width: "100%",
     alignItems: "flex-start",
     justifyContent: "flex-start",
     padding: 15,
@@ -36,6 +42,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 50,
+    minWidth: 50,
   },
   minusPlusButton: {
     borderRadius: 8,
@@ -76,7 +83,11 @@ export default StyleSheet.create({
     borderRadius: 4,
     borderColor: "darkgray",
   },
-  text: {},
-  textSubscript: {},
-  textSuperscript: {},
+
+  optionGroupDefault: {
+    backgroundColor: Colors.textDisabled,
+  },
+  optionGroupActive: {
+    backgroundColor: Colors.primary,
+  },
 });

@@ -70,12 +70,12 @@ function FinalScreen() {
 
   const navigatePrevious = () => {
     saveData();
-    router.push(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/scout-match/endgame/${sessionKey}`);
   };
 
   const navigateNext = () => {
     saveData();
-    router.push(`/`);
+    router.replace(`/`);
   };
 
   return (

@@ -629,27 +629,31 @@ export const getPitScoutingSessionActions = async (): Promise<
 export const updatePitScoutingSession = async (session: PitScoutingSession) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "UPDATE pit_scouting_sessions \
-      SET \
-        canAchieveHarmony = ?, \
-        canFitOnStage = ?, \
-        canFitUnderStage = ?, \
-        canGetFromSource = ?, \
-        canGetOnStage = ?, \
-        canPark = ?, \
-        canPickUpNoteFromGround = ?, \
-        canRobotRecover = ?, \
-        canScoreAmp = ?, \
-        canScoreSpeaker = ?, \
-        canScoreTrap = ?, \
-        isRobotReady = ?, \
-        numberOfAutoMethods = ?, \
-        planOnClimbing = ?, \
-        planOnScoringTrap = ?, \
-        robotDimenions = ?, \
-        teamExperiance = ? \
-      WHERE key = ?",
+      "INSERT INTO pit_scouting_sessions \
+      (key, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimenions, teamExperiance) \
+      VALUES \
+      (:key, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimenions, :teamExperiance) \
+      ON CONFLICT (key) DO UPDATE SET \
+        canAchieveHarmony = excluded.canAchieveHarmony, \
+        canFitOnStage = excluded.canFitOnStage, \
+        canFitUnderStage = excluded.canFitUnderStage, \
+        canGetFromSource = excluded.canGetFromSource, \
+        canGetOnStage = excluded.canGetOnStage, \
+        canPark = excluded.canPark, \
+        canPickUpNoteFromGround = excluded.canPickUpNoteFromGround, \
+        canRobotRecover = excluded.canRobotRecover, \
+        canScoreAmp = excluded.canScoreAmp, \
+        canScoreSpeaker = excluded.canScoreSpeaker, \
+        canScoreTrap = excluded.canScoreTrap, \
+        isRobotReady = excluded.isRobotReady, \
+        numberOfAutoMethods = excluded.numberOfAutoMethods, \
+        planOnClimbing = excluded.planOnClimbing, \
+        planOnScoringTrap = excluded.planOnScoringTrap, \
+        robotDimenions = excluded.robotDimenions, \
+        teamExperiance = excluded.teamExperiance \
+      ",
       [
+        session.key,
         session.canAchieveHarmony,
         session.canFitOnStage,
         session.canFitUnderStage,
@@ -667,7 +671,6 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
         session.planOnScoringTrap,
         session.robotDimenions,
         session.teamExperiance,
-        session.key,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
