@@ -73,10 +73,6 @@ Once that was completed, I kicked off a build and publish with:
 eas update
 ```
 
-## Ideas
-
-Use sharing to send JSON results via AirDrop or messages or whatever else we want.
-
 ## Resources and Technologies
 
 **Icons**
@@ -91,5 +87,61 @@ https://axios-http.com/docs/intro
 **SQLite Storage**
 https://docs.expo.dev/versions/latest/sdk/sqlite/
 
-https://www.youtube.com/watch?v=1kSLd9oQX7c
-https://stackoverflow.com/questions/46299268/download-and-use-sqlite-database-on-react-native-application
+## Todo
+
+App:
+
+- [ ] Do we want a whole-app header?
+- [ ] For QR of JSON and CSV, should we use Stack navigation so the QR image modal close button just returns to the triggering location?
+- [ ] For Share of JSON and CSV, just call into a global function and pass the key and string content.
+
+Match Scouting:
+
+- [ ] Better navigation UI
+- [ ] Header
+- [ ] Retain tab visibility? Is this desirable or possible?
+
+Match Results:
+
+- [ ] All Upload
+- [ ] All JSON
+- [ ] All CSV
+- [ ] Match Upload
+- [ ] Match QR JSON
+- [ ] Match QR CSV
+- [ ] Match Share JSON
+- [ ] Match Share CSV
+- [ ] Retain tab visibility? Is this desirable or possible?
+
+Pit Scouting:
+
+- [ ] Header
+- [ ] Better navigation UI
+- [ ] All Upload
+- [ ] All JSON
+- [ ] All CSV
+- [ ] Scout Upload
+- [ ] Scout QR JSON
+- [ ] Scout QR CSV
+- [ ] Scout Share JSON
+- [ ] Scout Share CSV
+- [ ] Retain tab visibility? Is this desirable or possible?
+
+Settings:
+
+- [ ] Within the tab, use Drawer navigation to isolate the different features instead of listing them all on the landing screen.
+
+Fairport Robotics Settings:
+
+- [x] Save endpoint
+- [ ] Retrieve endpoint?
+
+The Blue Alliance Settigns:
+
+- [x] API Key
+
+Database:
+
+- [x] Share
+- [x] Delete data and initialize tables
+- [x] Drop tables and initialize tables
