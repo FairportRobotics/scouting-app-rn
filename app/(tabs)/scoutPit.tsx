@@ -7,15 +7,19 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import ResultsButton from "../components/ResultsButton";
-import * as Database from "@/app/helpers/database";
 import { PitScoutingSessionAction, Match } from "@/constants/Types";
+import ResultsButton from "../components/ResultsButton";
+import QrCodeModal from "../components/QrCodeModal";
+import * as Database from "@/app/helpers/database";
 
 function ScoutPitScreen() {
   const router = useRouter();
+
   const [matches, setMatches] = useState<Array<Match>>([]);
   const [actions, setActions] = useState<Array<PitScoutingSessionAction>>([]);
   const [isRefeshing, setIsRefreshing] = useState<boolean>(true);
+  const [showQrCode, setShowQrCode] = useState<boolean>(false);
+  const [qrCodeText, setQrCodeText] = useState<string>("");
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -70,6 +74,13 @@ function ScoutPitScreen() {
   const handleShowSessionJsonQR = async (key: string) => {
     await Database.savePitScoutingSessionQrJsonDate(key);
     loadData();
+
+    const session = await Database.getPitScoutingSession(key);
+    if (session === undefined) return;
+
+    const json = JSON.stringify(session);
+    setQrCodeText(json);
+    setShowQrCode(true);
   };
 
   const handleShowSessionCsvQR = async (key: string) => {
@@ -94,6 +105,15 @@ function ScoutPitScreen() {
       <View>
         <ActivityIndicator size="large" />
       </View>
+    );
+  }
+
+  if (showQrCode) {
+    return (
+      <QrCodeModal
+        value={qrCodeText}
+        onPressClose={() => setShowQrCode(false)}
+      />
     );
   }
 
