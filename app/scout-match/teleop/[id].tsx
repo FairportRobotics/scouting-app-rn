@@ -74,11 +74,6 @@ function TeleopScreen() {
     router.replace(`/scout-match/auto/${sessionKey}`);
   };
 
-  const handleNavigateDone = () => {
-    saveData();
-    router.replace(`/`);
-  };
-
   const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/endgame/${sessionKey}`);
@@ -127,10 +122,8 @@ function TeleopScreen() {
 
       <Navigation
         previousLabel="Auto"
-        doneLabel="Done"
         nextLabel="Endgame"
         onPrevious={() => handleNavigatePrevious()}
-        onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}
       />
     </View>

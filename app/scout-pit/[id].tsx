@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, OptionGroup } from "@/app/components";
 import { PitScoutingSession } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
+import Styles from "@/constants/Styles";
 
 function ScoutPitScreen() {
   const router = useRouter();
@@ -213,8 +214,37 @@ function ScoutPitScreen() {
           onChange={(value) => handleChange("canFitUnderStage", value)}
         />
       </ContainerGroup>
-      <View>
-        <Button title="Complete" onPress={handleOnComplete} />
+      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+        <ContainerGroup title="" style={{}}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
+            <TouchableOpacity
+              style={[
+                Styles.baseButton,
+                {
+                  flex: 1,
+                  flexDirection: "row",
+                  gap: 8,
+                  paddingHorizontal: 20,
+                  justifyContent: "center",
+                },
+              ]}
+              onPress={() => handleOnComplete()}
+            >
+              <Text
+                style={{ color: "white", fontSize: 24, fontWeight: "bold" }}
+              >
+                Done
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ContainerGroup>
       </View>
     </ScrollView>
   );

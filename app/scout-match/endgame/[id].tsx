@@ -72,11 +72,6 @@ function EndgameScreen() {
     router.replace(`/scout-match/teleop/${sessionKey}`);
   };
 
-  const handleNavigateDone = () => {
-    saveData();
-    router.replace(`/`);
-  };
-
   const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/final/${sessionKey}`);
@@ -117,10 +112,8 @@ function EndgameScreen() {
 
       <Navigation
         previousLabel="Teleop"
-        doneLabel="Done"
         nextLabel="Final"
         onPrevious={() => handleNavigatePrevious()}
-        onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}
       />
     </View>

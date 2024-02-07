@@ -1,8 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
-import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Styles from "@/constants/Styles";
 
 import MetricCount from "@/app/components/MetricCount";

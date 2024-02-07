@@ -68,11 +68,6 @@ function FinalScreen() {
     router.replace(`/scout-match/endgame/${sessionKey}`);
   };
 
-  const handleNavigateDone = () => {
-    saveData();
-    router.replace(`/`);
-  };
-
   const handleNavigateNext = () => {
     saveData();
     router.replace(`/`);
@@ -124,10 +119,8 @@ function FinalScreen() {
 
       <Navigation
         previousLabel="Final"
-        doneLabel=""
         nextLabel="Done"
         onPrevious={() => handleNavigatePrevious()}
-        onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}
       />
     </View>
