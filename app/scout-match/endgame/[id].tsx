@@ -107,14 +107,12 @@ function EndgameScreen() {
           checked={didRobotHang}
           onToggle={() => handleDidRobotHang(!didRobotHang)}
         />
-        {didRobotHang && (
-          <OptionSelect
-            label="Harmony"
-            options={["0", "1", "2"]}
-            value={harmonyScore}
-            onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
-          />
-        )}
+        <OptionSelect
+          label="Harmony"
+          options={["0", "1", "2"]}
+          value={harmonyScore}
+          onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
+        />
       </ContainerGroup>
 
       <Navigation

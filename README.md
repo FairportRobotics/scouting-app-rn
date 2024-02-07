@@ -91,10 +91,13 @@ https://docs.expo.dev/versions/latest/sdk/sqlite/
 
 App:
 
-- [ ] Create a better TextInput with a clear icon and use that in place of existing TextInput.
-- [ ] Do we want a whole-app header?
+- [N] Create a better TextInput with a clear icon and use that in place of existing TextInput.
+- [N] Do we want a whole-app header?
 - [N] For QR of JSON and CSV, should we use Stack navigation so the QR image modal close button just returns to the triggering location?
 - [x] For Share of JSON and CSV, just call into a global function and pass the key and string content.
+- [ ] The API returns all the Matches and Pits scouted. We can save those keys and use them in the UI to provide a visual indicator about which features have been scouted, even if by others on the team.
+- [ ] Should Pit scouting collect the name of the person scouting or will we be okay with just using the assignment sheet(s).
+- [ ] Format the tabs better. Come up with icons. Column direction. Colors. Badges.
 
 Match Scouting:
 
@@ -103,18 +106,29 @@ Match Scouting:
 - [?] Retain tab visibility? Is this desirable or possible?
 - [ ] Total score should not be -/+.
 - [ ] Change option buttons to opaque and not a different color from primary.
+- [ ] Why does Endgame sometimes have an issue with the Option component when the next screen does not. I suspect it's due to the logic that hides/shows the component based on the checkbox but I'm not sure. I need to figure this out because we cannot have that bug show up at a competition. Maybe instead of visible, it's disabled... Not sure yet.
+- [ ] When we check, "Did hang", we should default to "0" and require a value. We should not be able to deselect the seleted value... only select a new value.
+- [ ] Nice to have: When selecting a match to scout, if you made a mistake and made no changes, going back will delete the session? Maybe the session is only created when you click Next/Auo from the Confirm screen.
+- [ ] When flowing through Match Scouting, we will want a header and the header color should match the color of the Alliance. We also want the team number very prominently displayed so the scouter can very easily be reminded who they are scouting.
+- [ ] Penalties UI should be reworked so we use the color of the opposing Alliance in addition to whatever guidance text we come up with.
+- [ ] Confirm Screen: Change "Select Team" to "Back".
+- [ ] Navigation should have only 2 buttons. Originally, I thought the "Done" might help when editing a session but we decided it introduces to omuch confusion.
+- [ ] Look into being able to hide the keyboard on the Confirm screen and Final screen so the user can see the buttons after they have entered text.
+- [ ] Incorporate the list of keys returned from the API. When a key exists for the Match on the device, display a tablet icon. When a key exists for the Match that is not on the device, display user-group icon.
+- [ ] When tapping Final > Done, automatically upload.
 
 Match Results:
 
 - [ ] All Upload
 - [x] All Share JSON
-- [ ] All Share CSV
+- [N] All Share CSV
 - [x] Match Upload
 - [x] Match JSON QR
-- [ ] Match CSV QR
+- [N] Match CSV QR
 - [x] Match Share JSON
-- [ ] Match Share CSV
+- [N] Match Share CSV
 - [?] Retain tab visibility? Is this desirable or possible?
+- [ ] Badge to represent the number of scouting sessions yet to be uploaded.
 
 Pit Scouting:
 
@@ -122,15 +136,18 @@ Pit Scouting:
 - [ ] Better navigation UI
 - [ ] All Upload
 - [x] All Share JSON
-- [ ] All Share CSV
+- [N] All Share CSV
 - [x] Scout Upload
 - [x] Scout JSON QR
-- [ ] Scout CSV QR
+- [N] Scout CSV QR
 - [x] Scout Share JSON
-- [ ] Scout Share CSV
+- [N] Scout Share CSV
 - [ ] Disable share/QR buttons if the team has not been scouted.
 - [ ] Change opacity on buttons where the function has been triggered.
 - [?] Retain tab visibility? Is this desirable or possible?
+- [ ] If a team has not yet been scouted, suppress or disable the other buttons.
+- [ ] Badge to represent the number of scouting sessions yet to be uploaded.
+- [ ] When tapping Done, automatically upload.
 
 Settings:
 
@@ -139,7 +156,7 @@ Settings:
 Fairport Robotics Settings:
 
 - [x] Save endpoint
-- [ ] Retrieve endpoint?
+- [N] Retrieve endpoint?
 
 The Blue Alliance Settigns:
 
