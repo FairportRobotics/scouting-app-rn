@@ -2,18 +2,23 @@ import { ScrollView, View, Share, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import { PitScoutingSession, Team } from "@/constants/Types";
+import { PitScoutingSession, Team, UploadedKey } from "@/constants/Types";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
-import axios from "axios";
+
+export type ReportRecord = {
+  key: string;
+  teamNumber: string;
+  nickname: string;
+  sessionKey: string | undefined;
+  uploadedKey: string | undefined;
+};
 
 function ScoutPitScreen() {
   const router = useRouter();
 
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
-  const [sessions, setSessions] = useState<Array<PitScoutingSession>>([]);
-  const [uploadedKeys, setUploadedKeys] = useState<Array<string>>([]);
+  const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
 
@@ -33,12 +38,26 @@ function ScoutPitScreen() {
       if (dtoSessions === undefined) return;
       if (dtoUploadedTeamKeys === undefined) return;
 
+      const teamRecords: Array<ReportRecord> = [];
+      dtoTeams.forEach((dtoTeam) => {
+        let newRecord = {
+          key: dtoTeam.key,
+          teamNumber: dtoTeam.teamNumber,
+          nickname: dtoTeam.nickname,
+          sessionKey: dtoSessions.find((session) => session.key === dtoTeam.key)
+            ?.key,
+          uploadedKey: dtoUploadedTeamKeys.find(
+            (uploaded) => uploaded.key === dtoTeam.key
+          )?.key,
+        } as ReportRecord;
+
+        teamRecords.push(newRecord);
+      });
+
       // Set State.
-      setEventTeams(dtoTeams);
-      setSessions(dtoSessions);
-      setUploadedKeys(uploadedKeys);
+      setReportRecords(teamRecords);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -68,34 +87,9 @@ function ScoutPitScreen() {
   };
 
   const handleUploadSession = async (key: string) => {
-    const session = sessions.find((session) => session.key === key);
+    const session = await Database.getPitScoutingSession(key);
     if (session === undefined) return;
     await postPitScoutingSession(session);
-
-    // const devUri =
-    //   "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
-
-    // const prodUri =
-    //   "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
-
-    // const postData = {
-    //   type: "pit",
-    //   data: JSON.stringify(session),
-    // };
-
-    // console.log("POST URL:", devUri);
-    // console.log("postData", postData);
-
-    // axios
-    //   .post(devUri, postData)
-    //   .then((response) => {
-    //     // Handle success
-    //     console.log("Response:", JSON.stringify(response.data, null, 2));
-    //   })
-    //   .catch((error) => {
-    //     // Handle error
-    //     console.error("Error:", error);
-    //   });
   };
 
   const handleShowSessionJsonQR = async (key: string) => {
@@ -122,14 +116,6 @@ function ScoutPitScreen() {
     await Share.share(shareOptions);
 
     loadData();
-  };
-
-  const sessionExistsLocally = (key: string): boolean => {
-    return sessions.find((session) => session.key == key) !== undefined;
-  };
-
-  const sessionWasUploaded = (key: string): boolean => {
-    return uploadedKeys.find((uploadedKey) => uploadedKey == key) !== undefined;
   };
 
   if (showQrCode) {
@@ -176,7 +162,7 @@ function ScoutPitScreen() {
           </View>
         </View>
       </ContainerGroup>
-      {eventTeams.map((item, index) => (
+      {reportRecords.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
           key={index}
@@ -193,30 +179,31 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
-              active={!sessionWasUploaded(item.key)}
+              active={item.sessionKey === undefined}
+              disabled={
+                item.sessionKey === undefined && item.uploadedKey !== undefined
+              }
               onPress={() => handlePitScoutTeam(item.key)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
-              active={
-                sessionExistsLocally(item.key) && sessionWasUploaded(item.key)
-              }
-              disabled={!sessionExistsLocally(item.key)}
+              active={item.uploadedKey === undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleUploadSession(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
-              active={sessionExistsLocally(item.key)}
-              disabled={!sessionExistsLocally(item.key)}
+              active={item.sessionKey !== undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleShowSessionJsonQR(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
-              active={sessionExistsLocally(item.key)}
-              disabled={!sessionExistsLocally(item.key)}
+              active={item.sessionKey !== undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleShareSessionJson(item.key)}
             />
           </View>

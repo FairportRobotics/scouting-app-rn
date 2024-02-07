@@ -1,5 +1,5 @@
 import type {
-  PitScoutingSessionAction,
+  UploadedKey,
   TbaEvent,
   TbaMatch,
   TbaTeam,
@@ -617,7 +617,7 @@ export const getMatchScoutingSessionKeys = async (): Promise<Array<string>> => {
   try {
     const query =
       "\
-      SELECT * FROM team_match_scouting_session_keys \
+      SELECT key FROM team_match_scouting_session_keys \
       ";
     return ((await executeSql(query, [])) as Array<string>) || [];
   } catch (error) {
@@ -757,13 +757,15 @@ export const savePitScoutingSessionKeys = async (teamKeys: Array<string>) => {
   });
 };
 
-export const getPitScoutingSessionKeys = async (): Promise<Array<string>> => {
+export const getPitScoutingSessionKeys = async (): Promise<
+  Array<UploadedKey>
+> => {
   try {
     const query =
       "\
-      SELECT * FROM team_pit_scouting_session_keys \
+      SELECT key FROM team_pit_scouting_session_keys \
       ";
-    return ((await executeSql(query, [])) as Array<string>) || [];
+    return (await executeSql(query, [])) as Array<UploadedKey>;
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];
