@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import axios from "axios";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -88,9 +89,7 @@ export default function MatchResultsScreen() {
     }
   };
 
-  const handleUploadAllSessions = () => {
-    console.log("Session Upload All");
-  };
+  const handleUploadAllSessions = () => {};
 
   const handleShareAllSessionsJson = async () => {
     const json = JSON.stringify(sessions);
@@ -102,13 +101,36 @@ export default function MatchResultsScreen() {
     await Share.share(shareOptions);
   };
 
-  const handleShareAllSessionsCsv = () => {
-    console.log("Session Share CSB for All");
-  };
+  const handleShareAllSessionsCsv = () => {};
 
   const handleUploadSession = async (sessionKey: string) => {
     await Database.saveMatchScoutingSessionUploadedDate(sessionKey);
     loadData();
+
+    const session = sessions.find((session) => session.key === sessionKey);
+    if (session === undefined) return;
+
+    const devUri =
+      "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
+
+    const prodUri =
+      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
+
+    const postData = {
+      type: "match",
+      data: JSON.stringify(session),
+    };
+
+    axios
+      .post(prodUri, postData)
+      .then((response) => {
+        // Handle success
+        console.log("Response:", JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error:", error);
+      });
   };
 
   const handleShowSessionJsonQR = async (sessionKey: string) => {
@@ -124,8 +146,6 @@ export default function MatchResultsScreen() {
   };
 
   const handleShowSessionCsvQR = async (sessionKey: string) => {
-    console.log(sessionKey, ": Session QR CSV");
-
     await Database.saveMatchScoutingSessionQrCsvDate(sessionKey);
     loadData();
   };

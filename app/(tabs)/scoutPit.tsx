@@ -1,10 +1,4 @@
-import {
-  ScrollView,
-  View,
-  ActivityIndicator,
-  RefreshControl,
-  Share,
-} from "react-native";
+import { ScrollView, View, Share } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
@@ -15,6 +9,7 @@ import {
 } from "@/constants/Types";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import axios from "axios";
 
 function ScoutPitScreen() {
   const router = useRouter();
@@ -44,7 +39,6 @@ function ScoutPitScreen() {
 
       const dtoSessions = await Database.getPitScoutingSessions();
       if (dtoSessions !== undefined) {
-        console.log(dtoSessions);
         setSessions(dtoSessions);
       }
     } catch (error) {
@@ -56,9 +50,7 @@ function ScoutPitScreen() {
     loadData();
   }, []);
 
-  const handleUploadAllPitResults = () => {
-    console.log("ScoutPitScreen handleUploadAllPitResults...");
-  };
+  const handleUploadAllPitResults = () => {};
 
   const handleShareAllPitResultsJson = async () => {
     const sessions = await Database.getPitScoutingSessions();
@@ -75,17 +67,40 @@ function ScoutPitScreen() {
     loadData();
   };
 
-  const handleShareAllPitResultsCsv = () => {
-    console.log("ScoutPitScreen handleShareAllPitResultsCsv...");
-  };
+  const handleShareAllPitResultsCsv = () => {};
 
-  const handleEditSession = (key: string) => {
+  const handlePitScoutTeam = (key: string) => {
     router.replace(`/scout-pit/${key}`);
   };
 
   const handleUploadSession = async (key: string) => {
     await Database.savePitScoutingSessionUploadedDate(key);
     loadData();
+
+    const session = sessions.find((session) => session.key === key);
+    if (session === undefined) return;
+
+    const devUri =
+      "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
+
+    const prodUri =
+      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
+
+    const postData = {
+      type: "pit",
+      data: JSON.stringify(session),
+    };
+
+    axios
+      .post(prodUri, postData)
+      .then((response) => {
+        // Handle success
+        console.log("Response:", JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error:", error);
+      });
   };
 
   const handleShowSessionJsonQR = async (key: string) => {
@@ -193,7 +208,7 @@ function ScoutPitScreen() {
               label="Scout"
               faIcon="edit"
               styles={{ opacity: item.wasScouted ? 0.5 : 1.0 }}
-              onPress={() => handleEditSession(item.key)}
+              onPress={() => handlePitScoutTeam(item.key)}
             />
             <ResultsButton
               label="Upload"

@@ -64,6 +64,7 @@ export type Team = {
 export type MatchScoutingSession = {
   // Root properties.
   key: string;
+  eventKey: string;
   matchKey: string;
   matchNumber: number;
   alliance: string;
@@ -160,6 +161,7 @@ export default function getDefaultMatchScoutingSession() {
 export type PitScoutingSession = {
   // Root properties.
   key: string;
+  eventKey: string;
   canAchieveHarmony: string;
   canFitOnStage: string;
   canFitUnderStage: string;
@@ -175,8 +177,8 @@ export type PitScoutingSession = {
   numberOfAutoMethods: string;
   planOnClimbing: string;
   planOnScoringTrap: string;
-  robotDimenions: string;
-  teamExperiance: string;
+  robotDimensions: string;
+  teamExperience: string;
 };
 
 export type PitScoutingSessionAction = {

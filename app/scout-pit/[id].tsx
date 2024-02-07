@@ -11,6 +11,7 @@ function ScoutPitScreen() {
 
   const defaultSession = {
     key: id,
+    eventKey: "2023nyrr", // TODO: Do not hard code this.
     canAchieveHarmony: "",
     canFitOnStage: "",
     canFitUnderStage: "",
@@ -26,8 +27,8 @@ function ScoutPitScreen() {
     numberOfAutoMethods: "",
     planOnClimbing: "",
     planOnScoringTrap: "",
-    robotDimenions: "",
-    teamExperiance: "",
+    robotDimensions: "",
+    teamExperience: "",
   } as PitScoutingSession;
 
   // Support for state.
@@ -58,9 +59,6 @@ function ScoutPitScreen() {
       // Retrieve from the database.
       const dtoSession = await Database.getPitScoutingSession(id);
 
-      // Validate.
-      if (dtoSession === undefined) return;
-
       // Set State.
       setCurrentSession(dtoSession || defaultSession);
     } catch (error) {
@@ -71,7 +69,7 @@ function ScoutPitScreen() {
   const saveData = async () => {
     try {
       // Save to database.
-      await Database.updatePitScoutingSession(currentSession);
+      await Database.initializePitScoutingSession(currentSession);
     } catch (error) {
       console.error(error);
     }
@@ -175,7 +173,7 @@ function ScoutPitScreen() {
       </ContainerGroup>
       <ContainerGroup title="What experiance does your Drive Team have?">
         <OptionGroup
-          value={currentSession?.teamExperiance || ""}
+          value={currentSession?.teamExperience || ""}
           options={[
             "All New",
             "Mostly New",
@@ -183,7 +181,7 @@ function ScoutPitScreen() {
             "Mostly Veterans",
             "All Veterans",
           ]}
-          onChange={(value) => handleChange("teamExperiance", value)}
+          onChange={(value) => handleChange("teamExperience", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Is your robot ready now?">
@@ -202,9 +200,9 @@ function ScoutPitScreen() {
       </ContainerGroup>
       <ContainerGroup title="What are the dimentions of your Robot?">
         <OptionGroup
-          value={currentSession?.robotDimenions || ""}
+          value={currentSession?.robotDimensions || ""}
           options={["Do Later"]}
-          onChange={(value) => handleChange("robotDimenions", value)}
+          onChange={(value) => handleChange("robotDimensions", value)}
         />
       </ContainerGroup>
 

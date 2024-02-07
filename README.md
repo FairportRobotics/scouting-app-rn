@@ -101,13 +101,15 @@ Match Scouting:
 - [?] Header
 - [ ] Better navigation UI
 - [?] Retain tab visibility? Is this desirable or possible?
+- [ ] Total score should not be -/+.
+- [ ] Change option buttons to opaque and not a different color from primary.
 
 Match Results:
 
 - [ ] All Upload
 - [x] All Share JSON
 - [ ] All Share CSV
-- [ ] Match Upload
+- [x] Match Upload
 - [x] Match JSON QR
 - [ ] Match CSV QR
 - [x] Match Share JSON
@@ -121,7 +123,7 @@ Pit Scouting:
 - [ ] All Upload
 - [x] All Share JSON
 - [ ] All Share CSV
-- [ ] Scout Upload
+- [x] Scout Upload
 - [x] Scout JSON QR
 - [ ] Scout CSV QR
 - [x] Scout Share JSON

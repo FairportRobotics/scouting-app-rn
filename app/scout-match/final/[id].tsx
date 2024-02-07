@@ -124,8 +124,8 @@ function FinalScreen() {
 
       <Navigation
         previousLabel="Final"
-        doneLabel="Done"
-        nextLabel="Start Over"
+        doneLabel=""
+        nextLabel="Done"
         onPrevious={() => handleNavigatePrevious()}
         onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}

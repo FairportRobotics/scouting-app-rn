@@ -15,7 +15,6 @@ export default async (session: MatchScoutingSession) => {
 
   // Post.
   const response = await axios.post(appSettings.saveUri, payload);
-  console.log(response);
 
   return response;
 };
