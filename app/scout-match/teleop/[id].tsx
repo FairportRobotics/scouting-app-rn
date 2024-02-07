@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, MinusPlusPair } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Navigation from "../Navigation";
+import Header from "../Header";
 
 function TeleopScreen() {
   const router = useRouter();
@@ -81,6 +82,7 @@ function TeleopScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Header sessionKey={sessionKey} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"

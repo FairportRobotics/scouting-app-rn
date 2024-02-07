@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, ScrollView, Button } from "react-native";
+import { View } from "react-native";
 import { Check, MinusPlusPair, ContainerGroup } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Navigation from "../Navigation";
+import Header from "../Header";
 
 function AutoScreen() {
   const router = useRouter();
@@ -85,6 +86,7 @@ function AutoScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Header sessionKey={sessionKey} />
       <ContainerGroup title="Start">
         <View
           style={{

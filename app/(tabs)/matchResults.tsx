@@ -144,7 +144,7 @@ export default function MatchResultsScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, padding: 10 }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
