@@ -5,6 +5,7 @@ import { ContainerGroup, MinusPlusPair, OptionSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 import Navigation from "../Navigation";
+import Header from "../Header";
 
 function FinalScreen() {
   const router = useRouter();
@@ -75,6 +76,7 @@ function FinalScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Header sessionKey={sessionKey} />
       <ContainerGroup title="Alliance">
         <MinusPlusPair
           label="Total Score"

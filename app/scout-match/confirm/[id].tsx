@@ -7,6 +7,7 @@ import Navigation from "../Navigation";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
+import Header from "../Header";
 
 function ConfirmScreen() {
   const router = useRouter();
@@ -107,6 +108,7 @@ function ConfirmScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Header sessionKey={sessionKey} />
       <ContainerGroup title="Scouter Name (required)" style={{}}>
         <TextInput
           style={Styles.textInput}
@@ -116,7 +118,7 @@ function ConfirmScreen() {
         />
       </ContainerGroup>
       <ContainerGroup title="Confirm Team to be Scouted" style={{}}>
-        <Text>
+        <Text style={{ fontSize: 24 }}>
           {scoutedTeam?.teamNumber} - {scoutedTeam?.nickname}
         </Text>
         <Text>

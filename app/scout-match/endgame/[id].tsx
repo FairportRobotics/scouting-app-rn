@@ -9,6 +9,7 @@ import {
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Navigation from "../Navigation";
+import Header from "../Header";
 
 function EndgameScreen() {
   const router = useRouter();
@@ -79,6 +80,7 @@ function EndgameScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Header sessionKey={sessionKey} />
       <ContainerGroup title="Stage">
         <MinusPlusPair
           label="Trap"
