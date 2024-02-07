@@ -100,11 +100,6 @@ function ConfirmScreen() {
     router.replace(`/`);
   };
 
-  const handleNavigateDone = () => {
-    saveData();
-    router.replace(`/`);
-  };
-
   const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/auto/${sessionKey}`);
@@ -157,11 +152,9 @@ function ConfirmScreen() {
         ))}
       </ContainerGroup>
       <Navigation
-        previousLabel="Select Team"
-        doneLabel="Done"
+        previousLabel="Back"
         nextLabel="Auto"
         onPrevious={() => handleNavigatePrevious()}
-        onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}
       />
     </View>

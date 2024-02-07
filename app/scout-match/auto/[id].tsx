@@ -78,11 +78,6 @@ function AutoScreen() {
     router.replace(`/scout-match/confirm/${sessionKey}`);
   };
 
-  const handleNavigateDone = () => {
-    saveData();
-    router.replace(`/`);
-  };
-
   const handleNavigateNext = () => {
     saveData();
     router.replace(`/scout-match/teleop/${sessionKey}`);
@@ -147,10 +142,8 @@ function AutoScreen() {
       </ContainerGroup>
       <Navigation
         previousLabel="Confirm"
-        doneLabel="Done"
         nextLabel="Teleop"
         onPrevious={() => handleNavigatePrevious()}
-        onDone={() => handleNavigateDone()}
         onNext={() => handleNavigateNext()}
       />
     </View>

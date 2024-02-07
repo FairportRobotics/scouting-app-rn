@@ -102,7 +102,7 @@ App:
 Match Scouting:
 
 - [?] Header
-- [ ] Better navigation UI
+- [x] Better navigation UI
 - [?] Retain tab visibility? Is this desirable or possible?
 - [ ] Total score should not be -/+.
 - [ ] Change option buttons to opaque and not a different color from primary.
@@ -111,8 +111,8 @@ Match Scouting:
 - [ ] Nice to have: When selecting a match to scout, if you made a mistake and made no changes, going back will delete the session? Maybe the session is only created when you click Next/Auo from the Confirm screen.
 - [ ] When flowing through Match Scouting, we will want a header and the header color should match the color of the Alliance. We also want the team number very prominently displayed so the scouter can very easily be reminded who they are scouting.
 - [ ] Penalties UI should be reworked so we use the color of the opposing Alliance in addition to whatever guidance text we come up with.
-- [ ] Confirm Screen: Change "Select Team" to "Back".
-- [ ] Navigation should have only 2 buttons. Originally, I thought the "Done" might help when editing a session but we decided it introduces to omuch confusion.
+- [x] Confirm Screen: Change "Select Team" to "Back".
+- [x] Navigation should have only 2 buttons. Originally, I thought the "Done" might help when editing a session but we decided it introduces to omuch confusion.
 - [ ] Look into being able to hide the keyboard on the Confirm screen and Final screen so the user can see the buttons after they have entered text.
 - [ ] Incorporate the list of keys returned from the API. When a key exists for the Match on the device, display a tablet icon. When a key exists for the Match that is not on the device, display user-group icon.
 - [ ] When tapping Final > Done, automatically upload.
@@ -133,7 +133,7 @@ Match Results:
 Pit Scouting:
 
 - [ ] Header
-- [ ] Better navigation UI
+- [x] Better navigation UI
 - [ ] All Upload
 - [x] All Share JSON
 - [N] All Share CSV
@@ -145,9 +145,9 @@ Pit Scouting:
 - [ ] Disable share/QR buttons if the team has not been scouted.
 - [ ] Change opacity on buttons where the function has been triggered.
 - [?] Retain tab visibility? Is this desirable or possible?
-- [ ] If a team has not yet been scouted, suppress or disable the other buttons.
+- [x] If a team has not yet been scouted, suppress or disable the other buttons.
 - [ ] Badge to represent the number of scouting sessions yet to be uploaded.
-- [ ] When tapping Done, automatically upload.
+- [x] When tapping Done, automatically upload.
 
 Settings:
 
