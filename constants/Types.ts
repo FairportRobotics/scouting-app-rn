@@ -207,6 +207,6 @@ export type RootStackParamList = {
   ScoutMatchEditScreen: { id: string; returnTo: string };
 };
 
-export type UploadedKey = {
+export type ItemKey = {
   key: string;
 };

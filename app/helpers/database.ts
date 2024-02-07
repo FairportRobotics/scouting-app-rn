@@ -1,9 +1,4 @@
-import type {
-  UploadedKey,
-  TbaEvent,
-  TbaMatch,
-  TbaTeam,
-} from "@/constants/Types";
+import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -589,13 +584,13 @@ export const getMatchScoutingSession = async (
   }
 };
 
-export const getMatchScoutingKeys = async (): Promise<Array<UploadedKey>> => {
+export const getMatchScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
     const query =
       "\
       SELECT key FROM match_scouting_sessions \
       ";
-    return ((await executeSql(query, [])) as Array<UploadedKey>) || [];
+    return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];
@@ -627,14 +622,14 @@ export const saveMatchScoutingSessionKeys = async (
 };
 
 export const getUploadedMatchScoutingKeys = async (): Promise<
-  Array<UploadedKey>
+  Array<ItemKey>
 > => {
   try {
     const query =
       "\
       SELECT key FROM team_match_scouting_session_keys \
       ";
-    return ((await executeSql(query, [])) as Array<UploadedKey>) || [];
+    return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];
@@ -772,15 +767,13 @@ export const savePitScoutingSessionKeys = async (teamKeys: Array<string>) => {
   });
 };
 
-export const getUploadedPitScoutingKeys = async (): Promise<
-  Array<UploadedKey>
-> => {
+export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
     const query =
       "\
       SELECT key FROM team_pit_scouting_session_keys \
       ";
-    return (await executeSql(query, [])) as Array<UploadedKey> | [];
+    return (await executeSql(query, [])) as Array<ItemKey> | [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];

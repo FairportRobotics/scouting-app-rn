@@ -11,7 +11,6 @@ interface MatchTeamSelectProps {
   alliance: string;
   allianceTeam: number;
   onSelect: () => void;
-  style?: {};
 }
 
 const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
@@ -21,7 +20,6 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   alliance,
   allianceTeam,
   onSelect,
-  style,
 }) => {
   const handleOnPress = () => {
     onSelect();
