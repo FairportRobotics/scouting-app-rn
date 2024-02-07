@@ -8,6 +8,7 @@ import getDefaultMatchScoutingSession, {
 } from "@/constants/Types";
 import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import Constants from "expo-constants";
 
 function IndexScreen() {
   const router = useRouter();

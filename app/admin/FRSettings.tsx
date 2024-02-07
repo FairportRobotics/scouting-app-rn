@@ -6,11 +6,24 @@ import ContainerGroup from "@/app/components/ContainerGroup";
 import Styles from "@/constants/Styles";
 import * as Database from "@/app/helpers/database";
 
+const settings = {
+  dev: {
+    tbaKey: "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs",
+    saveUri:
+      "https://dev-r3-sync.azurewebsites.net/api/v1?code=cTLmtCoMrQE_HyCtUXhMD2MsgsMGYiDyVheoF6GCFx6_AzFu2CuY5g==",
+  },
+  prod: {
+    tbaKey: "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs",
+    saveUri:
+      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==",
+  },
+};
+
 export default function FRSettings() {
   const isFocused = useIsFocused();
 
   const [appSettings, setAppSettings] = useState<AppSettings>({
-    key: "dev",
+    key: "app",
     tbaKey: "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs",
     saveUri:
       "https://dev-r3-sync.azurewebsites.net/api/v1?code=cTLmtCoMrQE_HyCtUXhMD2MsgsMGYiDyVheoF6GCFx6_AzFu2CuY5g==",

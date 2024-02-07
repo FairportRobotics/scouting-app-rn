@@ -1,9 +1,4 @@
-import type {
-  PitScoutingSessionAction,
-  TbaEvent,
-  TbaMatch,
-  TbaTeam,
-} from "@/constants/Types";
+import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -52,6 +47,8 @@ export function initializeDatabase(
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_session_actions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_session_actions");
+      tx.executeSql("DELETE FROM team_match_scouting_session_keys");
+      tx.executeSql("DELETE FROM team_pit_scouting_session_keys");
     });
   }
 
@@ -62,9 +59,9 @@ export function initializeDatabase(
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
       tx.executeSql("DELETE FROM match_scouting_sessions");
-      tx.executeSql("DELETE FROM match_scouting_session_actions");
+      tx.executeSql("DELETE FROM team_match_scouting_session_keys");
       tx.executeSql("DELETE FROM pit_scouting_sessions");
-      tx.executeSql("DELETE FROM pit_scouting_session_actions");
+      tx.executeSql("DELETE FROM team_pit_scouting_session_keys");
     });
   }
 
@@ -102,11 +99,6 @@ export function initializeDatabase(
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS match_scouting_session_actions \
-      (key TEXT PRIMARY KEY, uploadedDate TEXT, qrJsonDate TEXT, qrCsvDate TEXT, shareJsonDate TEXT, shareCsvDate TEXT)"
-    );
-
-    tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
       (key TEXT PRIMARY KEY, eventKey TEXT, canAchieveHarmony TEXT, \
         canFitOnStage TEXT, canFitUnderStage TEXT, canGetFromSource TEXT, canGetOnStage TEXT, canPark TEXT, canPickUpNoteFromGround TEXT, \
@@ -115,8 +107,13 @@ export function initializeDatabase(
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS pit_scouting_session_actions \
-      (key TEXT PRIMARY KEY, uploadedDate TEXT, qrJsonDate TEXT, qrCsvDate TEXT, shareJsonDate TEXT, shareCsvDate TEXT)"
+      "CREATE TABLE IF NOT EXISTS team_match_scouting_session_keys \
+      (key TEXT PRIMARY KEY)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS team_pit_scouting_session_keys \
+      (key TEXT PRIMARY KEY)"
     );
   });
 }
@@ -587,112 +584,56 @@ export const getMatchScoutingSession = async (
   }
 };
 
-export const saveMatchScoutingSessionUploadedDate = async (
-  sessionKey: string
+export const getMatchScoutingKeys = async (): Promise<Array<ItemKey>> => {
+  try {
+    const query =
+      "\
+      SELECT key FROM match_scouting_sessions \
+      ";
+    return ((await executeSql(query, [])) as Array<ItemKey>) || [];
+  } catch (error) {
+    console.error("Error fetching Match Session Keys:", error);
+    return [];
+  }
+};
+
+//=================================================================================================
+// Team Match Scouting Keys data access.
+//=================================================================================================
+export const saveMatchScoutingSessionKeys = async (
+  sessionKeys: Array<string>
 ) => {
   db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_scouting_session_actions \
-        (key, uploadedDate) \
-      VALUES \
-        (:key, :uploadedDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        uploadedDate = excluded.uploadedDate \
-      ",
-      [sessionKey, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
+    sessionKeys.forEach((sessionKey) => {
+      tx.executeSql(
+        "INSERT INTO team_match_scouting_session_keys \
+        (key) \
+        VALUES (:key) \
+        ON CONFLICT (key) DO NOTHING",
+        [sessionKey],
+        (txObj, resultSet) => {},
+        (txObj, error) => {
+          console.error(error);
+          return false;
+        }
+      );
+    });
   });
 };
 
-export const saveMatchScoutingSessionQrJsonDate = async (
-  sessionKey: string
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_scouting_session_actions \
-        (key, qrJsonDate) \
-      VALUES \
-        (:key, :qrJsonDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        qrJsonDate = excluded.qrJsonDate \
-      ",
-      [sessionKey, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const saveMatchScoutingSessionQrCsvDate = async (sessionKey: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_scouting_session_actions \
-        (key, qrCsvDate) \
-      VALUES \
-        (:key, :qrCsvDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        qrCsvDate = excluded.qrCsvDate \
-      ",
-      [sessionKey, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const saveMatchScoutingSessionShareJsonDate = async (
-  sessionKey: string
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_scouting_session_actions \
-        (key, shareJsonDate) \
-      VALUES \
-        (:key, :shareJsonDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        shareJsonDate = excluded.shareJsonDate \
-      ",
-      [sessionKey, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const saveMatchScoutingSessionShareCsvDate = async (
-  sessionKey: string
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_scouting_session_actions \
-        (key, shareCsvDate) \
-      VALUES \
-        (:key, :shareCsvDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        shareCsvDate = excluded.shareCsvDate \
-      ",
-      [sessionKey, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
+export const getUploadedMatchScoutingKeys = async (): Promise<
+  Array<ItemKey>
+> => {
+  try {
+    const query =
+      "\
+      SELECT key FROM team_match_scouting_session_keys \
+      ";
+    return ((await executeSql(query, [])) as Array<ItemKey>) || [];
+  } catch (error) {
+    console.error("Error fetching Match Session Keys:", error);
+    return [];
+  }
 };
 
 //=================================================================================================
@@ -722,7 +663,7 @@ export const getPitScoutingSessions = async (): Promise<
 > => {
   try {
     const query = "SELECT * FROM pit_scouting_sessions";
-    return (await executeSql(query, [])) as Array<PitScoutingSession>;
+    return ((await executeSql(query, [])) as Array<PitScoutingSession>) || [];
   } catch (error) {
     console.error("Error fetching user data:", error);
     return [];
@@ -804,129 +745,37 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
   });
 };
 
-export const getPitScoutingSessionActions = async (): Promise<
-  Array<PitScoutingSessionAction>
-> => {
+//=================================================================================================
+// Team Pit Scouting Keys data access.
+//=================================================================================================
+export const savePitScoutingSessionKeys = async (teamKeys: Array<string>) => {
+  db.transaction((tx) => {
+    teamKeys.forEach((teamKey) => {
+      tx.executeSql(
+        "INSERT INTO team_pit_scouting_session_keys \
+        (key) \
+        VALUES (:key) \
+        ON CONFLICT (key) DO NOTHING",
+        [teamKey],
+        (txObj, resultSet) => {},
+        (txObj, error) => {
+          console.error(error);
+          return false;
+        }
+      );
+    });
+  });
+};
+
+export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
     const query =
       "\
-      SELECT \
-        t.key, \
-        t.teamNumber, \
-        t.nickname, \
-        CASE WHEN s.key IS NULL THEN 0 ELSE 1 END wasScouted, \
-        a.uploadedDate, \
-        a.qrJsonDate, \
-        a.qrCsvDate, \
-        a.shareJsonDate, \
-        a.shareCsvDate \
-      FROM event_teams t \
-      LEFT OUTER JOIN pit_scouting_sessions s ON t.key = s.key \
-      LEFT OUTER JOIN pit_scouting_session_actions a ON t.key = a.key \
+      SELECT key FROM team_pit_scouting_session_keys \
       ";
-    return (await executeSql(query, [])) as Array<PitScoutingSessionAction>;
+    return (await executeSql(query, [])) as Array<ItemKey> | [];
   } catch (error) {
-    console.error("Error fetching PitScoutingSession:", error);
+    console.error("Error fetching Match Session Keys:", error);
     return [];
   }
-};
-
-export const savePitScoutingSessionUploadedDate = async (key: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_session_actions \
-        (key, uploadedDate) \
-      VALUES \
-        (:key, :uploadedDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        uploadedDate = excluded.uploadedDate \
-      ",
-      [key, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const savePitScoutingSessionQrJsonDate = async (key: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_session_actions \
-        (key, qrJsonDate) \
-      VALUES \
-        (:key, :qrJsonDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        qrJsonDate = excluded.qrJsonDate \
-      ",
-      [key, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const savePitScoutingSessionQrCsvDate = async (key: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_session_actions \
-        (key, qrCsvDate) \
-      VALUES \
-        (:key, :qrCsvDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        qrCsvDate = excluded.qrCsvDate \
-      ",
-      [key, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const savePitScoutingSessionShareJsonDate = async (key: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_session_actions \
-        (key, shareJsonDate) \
-      VALUES \
-        (:key, :shareJsonDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        shareJsonDate = excluded.shareJsonDate \
-      ",
-      [key, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const savePitScoutingSessionShareCsvDate = async (key: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_session_actions \
-        (key, shareCsvDate) \
-      VALUES \
-        (:key, :shareCsvDate) \
-      ON CONFLICT (key) DO UPDATE SET \
-        shareCsvDate = excluded.shareCsvDate \
-      ",
-      [key, new Date().toISOString()],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
 };

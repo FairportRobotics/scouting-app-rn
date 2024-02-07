@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Match, MatchScoutingSession, Team } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import axios from "axios";
+import postMatchSession from "../helpers/postMatchSession";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -104,33 +104,9 @@ export default function MatchResultsScreen() {
   const handleShareAllSessionsCsv = () => {};
 
   const handleUploadSession = async (sessionKey: string) => {
-    await Database.saveMatchScoutingSessionUploadedDate(sessionKey);
-    loadData();
-
     const session = sessions.find((session) => session.key === sessionKey);
     if (session === undefined) return;
-
-    const devUri =
-      "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
-
-    const prodUri =
-      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
-
-    const postData = {
-      type: "match",
-      data: JSON.stringify(session),
-    };
-
-    axios
-      .post(prodUri, postData)
-      .then((response) => {
-        // Handle success
-        console.log("Response:", JSON.stringify(response.data, null, 2));
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error:", error);
-      });
+    await postMatchSession(session);
   };
 
   const handleShowSessionJsonQR = async (sessionKey: string) => {
@@ -140,15 +116,9 @@ export default function MatchResultsScreen() {
     const json = JSON.stringify(session);
     setQrCodeText(json);
     setShowQrCode(true);
-
-    await Database.saveMatchScoutingSessionQrJsonDate(sessionKey);
-    loadData();
   };
 
-  const handleShowSessionCsvQR = async (sessionKey: string) => {
-    await Database.saveMatchScoutingSessionQrCsvDate(sessionKey);
-    loadData();
-  };
+  const handleShowSessionCsvQR = async (sessionKey: string) => {};
 
   const handleShareSessionJson = async (sessionKey: string) => {
     const session = sessions.find((session) => session.key == sessionKey);
@@ -160,15 +130,9 @@ export default function MatchResultsScreen() {
     };
 
     await Share.share(shareOptions);
-
-    await Database.saveMatchScoutingSessionShareJsonDate(sessionKey);
-    loadData();
   };
 
-  const handleShareSessionCsv = async (sessionKey: string) => {
-    await Database.saveMatchScoutingSessionShareCsvDate(sessionKey);
-    loadData();
-  };
+  const handleShareSessionCsv = async (sessionKey: string) => {};
 
   if (showQrCode) {
     return (

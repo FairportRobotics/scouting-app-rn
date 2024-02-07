@@ -1,48 +1,72 @@
-import { ScrollView, View, Share } from "react-native";
+import { ScrollView, View, Share, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import {
-  PitScoutingSessionAction,
-  Match,
-  PitScoutingSession,
-} from "@/constants/Types";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import axios from "axios";
+import postPitScoutingSession from "../helpers/postPitScoutingSession";
+
+export type ReportRecord = {
+  key: string;
+  teamNumber: string;
+  nickname: string;
+  sessionKey: string | undefined;
+  uploadedKey: string | undefined;
+};
 
 function ScoutPitScreen() {
   const router = useRouter();
 
-  const [matches, setMatches] = useState<Array<Match>>([]);
-  const [actions, setActions] = useState<Array<PitScoutingSessionAction>>([]);
-  const [sessions, setSessions] = useState<Array<PitScoutingSession>>([]);
+  const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const onRefresh = () => {
-    loadData();
+  const onRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const loadData = async () => {
     try {
       // Load data from database.
-      const dtoMatches = await Database.getMatches();
-      const dtoActions = await Database.getPitScoutingSessionActions();
+      const dtoTeams = await Database.getTeams();
+      const dtoSessions = await Database.getPitScoutingSessions();
+      const dtoUploadedKeys = await Database.getUploadedPitScoutingKeys();
 
       // Validate.
-      if (dtoMatches === undefined) return;
-      if (dtoActions === undefined) return;
+      if (dtoTeams === undefined) return;
+      if (dtoSessions === undefined) return;
+      if (dtoUploadedKeys === undefined) return;
 
-      setMatches(matches);
-      setActions(dtoActions);
+      // Build a Model to encapsulate properties from multiple sources so we can
+      // more easily display the rows.
+      const teamRecords: Array<ReportRecord> = [];
+      dtoTeams.forEach((dtoTeam) => {
+        let newRecord = {
+          key: dtoTeam.key,
+          teamNumber: dtoTeam.teamNumber,
+          nickname: dtoTeam.nickname,
+          sessionKey: dtoSessions.find((session) => session.key === dtoTeam.key)
+            ?.key,
+          uploadedKey: dtoUploadedKeys.find(
+            (uploaded) => uploaded.key === dtoTeam.key
+          )?.key,
+        } as ReportRecord;
 
-      const dtoSessions = await Database.getPitScoutingSessions();
-      if (dtoSessions !== undefined) {
-        setSessions(dtoSessions);
-      }
+        teamRecords.push(newRecord);
+      });
+
+      // Set State.
+      setReportRecords(teamRecords);
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -67,44 +91,17 @@ function ScoutPitScreen() {
     loadData();
   };
 
-  const handleShareAllPitResultsCsv = () => {};
-
   const handlePitScoutTeam = (key: string) => {
     router.replace(`/scout-pit/${key}`);
   };
 
   const handleUploadSession = async (key: string) => {
-    await Database.savePitScoutingSessionUploadedDate(key);
-    loadData();
-
-    const session = sessions.find((session) => session.key === key);
+    const session = await Database.getPitScoutingSession(key);
     if (session === undefined) return;
-
-    const devUri =
-      "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
-
-    const prodUri =
-      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
-
-    const postData = {
-      type: "pit",
-      data: JSON.stringify(session),
-    };
-
-    axios
-      .post(prodUri, postData)
-      .then((response) => {
-        // Handle success
-        console.log("Response:", JSON.stringify(response.data, null, 2));
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error:", error);
-      });
+    await postPitScoutingSession(session);
   };
 
   const handleShowSessionJsonQR = async (key: string) => {
-    await Database.savePitScoutingSessionQrJsonDate(key);
     loadData();
 
     const session = await Database.getPitScoutingSession(key);
@@ -113,11 +110,6 @@ function ScoutPitScreen() {
     const json = JSON.stringify(session);
     setQrCodeText(json);
     setShowQrCode(true);
-  };
-
-  const handleShowSessionCsvQR = async (key: string) => {
-    await Database.savePitScoutingSessionQrCsvDate(key);
-    loadData();
   };
 
   const handleShareSessionJson = async (key: string) => {
@@ -132,14 +124,6 @@ function ScoutPitScreen() {
 
     await Share.share(shareOptions);
 
-    await Database.savePitScoutingSessionShareJsonDate(key);
-
-    loadData();
-  };
-
-  const handleShareSessionCsv = async (key: string) => {
-    await Database.savePitScoutingSessionShareCsvDate(key);
-
     loadData();
   };
 
@@ -153,7 +137,12 @@ function ScoutPitScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+      }
+    >
       <ContainerGroup title="All Match Data">
         <View
           style={{
@@ -175,22 +164,19 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Upload"
               faIcon="upload"
+              active={true}
               onPress={() => handleUploadAllPitResults()}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
+              active={true}
               onPress={() => handleShareAllPitResultsJson()}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="share"
-              onPress={() => handleShareAllPitResultsCsv()}
             />
           </View>
         </View>
       </ContainerGroup>
-      {actions.map((item, index) => (
+      {reportRecords.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
           key={index}
@@ -207,38 +193,32 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
-              styles={{ opacity: item.wasScouted ? 0.5 : 1.0 }}
+              active={item.sessionKey === undefined}
+              disabled={
+                item.sessionKey === undefined && item.uploadedKey !== undefined
+              }
               onPress={() => handlePitScoutTeam(item.key)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
-              styles={{ opacity: item.uploadedDate ? 0.5 : 1.0 }}
+              active={item.uploadedKey === undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleUploadSession(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
-              styles={{ opacity: item.qrJsonDate ? 0.5 : 1.0 }}
+              active={item.sessionKey !== undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleShowSessionJsonQR(item.key)}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="qr"
-              styles={{ opacity: item.qrCsvDate ? 0.5 : 1.0 }}
-              onPress={() => handleShowSessionCsvQR(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
-              styles={{ opacity: item.shareJsonDate ? 0.5 : 1.0 }}
+              active={item.sessionKey !== undefined}
+              disabled={item.sessionKey === undefined}
               onPress={() => handleShareSessionJson(item.key)}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="share"
-              styles={{ opacity: item.shareCsvDate ? 0.5 : 1.0 }}
-              onPress={() => handleShareSessionCsv(item.key)}
             />
           </View>
         </ContainerGroup>
