@@ -1,8 +1,7 @@
-import { ScrollView, View, Share, Text } from "react-native";
+import { ScrollView, View, Share, RefreshControl } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import { PitScoutingSession, Team, UploadedKey } from "@/constants/Types";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
@@ -21,9 +20,17 @@ function ScoutPitScreen() {
   const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const onRefresh = () => {
-    loadData();
+  const onRefresh = async () => {
+    try {
+      setIsRefreshing(true);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const loadData = async () => {
@@ -128,7 +135,12 @@ function ScoutPitScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+      }
+    >
       <ContainerGroup title="All Match Data">
         <View
           style={{
