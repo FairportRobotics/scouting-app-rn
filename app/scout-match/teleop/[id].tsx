@@ -48,7 +48,7 @@ function TeleopScreen() {
       setAmpMiss(dtoSession.teleopAmpMiss ?? 0);
       setPass(dtoSession.teleopRelayPass ?? 0);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

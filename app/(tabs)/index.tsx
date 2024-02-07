@@ -75,6 +75,7 @@ function IndexScreen() {
       if (session === undefined) {
         session = getDefaultMatchScoutingSession() as MatchScoutingSession;
         session.key = sessionKey;
+        session.eventKey = dtoEvent.key;
         session.matchKey = matchKey;
         session.matchNumber = match.matchNumber;
         session.alliance = alliance;

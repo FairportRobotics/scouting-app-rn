@@ -94,7 +94,7 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
-      (key TEXT PRIMARY KEY, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
+      (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
         autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, \
         teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
         endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
@@ -108,10 +108,10 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
-      (key TEXT PRIMARY KEY, teamKey TEXT, canAchieveHarmony TEXT, \
+      (key TEXT PRIMARY KEY, eventKey TEXT, canAchieveHarmony TEXT, \
         canFitOnStage TEXT, canFitUnderStage TEXT, canGetFromSource TEXT, canGetOnStage TEXT, canPark TEXT, canPickUpNoteFromGround TEXT, \
         canRobotRecover TEXT, canScoreAmp TEXT, canScoreSpeaker TEXT, canScoreTrap TEXT, isRobotReady TEXT, numberOfAutoMethods TEXT, planOnClimbing TEXT, \
-        planOnScoringTrap TEXT, robotDimenions TEXT, teamExperiance TEXT)"
+        planOnScoringTrap TEXT, robotDimensions TEXT, teamExperience TEXT)"
     );
 
     tx.executeSql(
@@ -321,11 +321,12 @@ export const saveMatchScoutingSession = async (
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO match_scouting_sessions \
-      (key, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
-      VALUES (:key, :matchKey, :matchNumber, :alliance, :allianceTeam, :scheduledTeamKey, :scoutedTeamKey) \
+      (key, eventKey, matchKey, matchNumber, alliance, allianceTeam, scheduledTeamKey, scoutedTeamKey) \
+      VALUES (:key, :eventKey, :matchKey, :matchNumber, :alliance, :allianceTeam, :scheduledTeamKey, :scoutedTeamKey) \
       ON CONFLICT (key) DO NOTHING",
       [
         session.key,
+        session.eventKey,
         session.matchKey,
         session.matchNumber,
         session.alliance,
@@ -703,10 +704,10 @@ export const initializePitScoutingSession = async (
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO pit_scouting_sessions(key) \
-      VALUES(:key) \
+      "INSERT INTO pit_scouting_sessions(key, eventKey) \
+      VALUES(:key, :eventKey) \
       ON CONFLICT (key) DO NOTHING",
-      [session.key],
+      [session.key, session.eventKey],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
@@ -751,9 +752,9 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
-      (key, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimenions, teamExperiance) \
+      (key, eventKey, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimensions, teamExperience) \
       VALUES \
-      (:key, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimenions, :teamExperiance) \
+      (:key, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
       ON CONFLICT (key) DO UPDATE SET \
         canAchieveHarmony = excluded.canAchieveHarmony, \
         canFitOnStage = excluded.canFitOnStage, \
@@ -770,11 +771,12 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
         numberOfAutoMethods = excluded.numberOfAutoMethods, \
         planOnClimbing = excluded.planOnClimbing, \
         planOnScoringTrap = excluded.planOnScoringTrap, \
-        robotDimenions = excluded.robotDimenions, \
-        teamExperiance = excluded.teamExperiance \
+        robotDimensions = excluded.robotDimensions, \
+        teamExperience = excluded.teamExperience \
       ",
       [
         session.key,
+        session.eventKey,
         session.canAchieveHarmony,
         session.canFitOnStage,
         session.canFitUnderStage,
@@ -790,8 +792,8 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
         session.numberOfAutoMethods,
         session.planOnClimbing,
         session.planOnScoringTrap,
-        session.robotDimenions,
-        session.teamExperiance,
+        session.robotDimensions,
+        session.teamExperience,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
