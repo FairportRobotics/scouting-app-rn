@@ -589,6 +589,19 @@ export const getMatchScoutingSession = async (
   }
 };
 
+export const getMatchScoutingKeys = async (): Promise<Array<UploadedKey>> => {
+  try {
+    const query =
+      "\
+      SELECT key FROM match_scouting_sessions \
+      ";
+    return ((await executeSql(query, [])) as Array<UploadedKey>) || [];
+  } catch (error) {
+    console.error("Error fetching Match Session Keys:", error);
+    return [];
+  }
+};
+
 //=================================================================================================
 // Team Match Scouting Keys data access.
 //=================================================================================================
@@ -613,13 +626,15 @@ export const saveMatchScoutingSessionKeys = async (
   });
 };
 
-export const getMatchScoutingSessionKeys = async (): Promise<Array<string>> => {
+export const getUploadedMatchScoutingKeys = async (): Promise<
+  Array<UploadedKey>
+> => {
   try {
     const query =
       "\
       SELECT key FROM team_match_scouting_session_keys \
       ";
-    return ((await executeSql(query, [])) as Array<string>) || [];
+    return ((await executeSql(query, [])) as Array<UploadedKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];
@@ -757,7 +772,7 @@ export const savePitScoutingSessionKeys = async (teamKeys: Array<string>) => {
   });
 };
 
-export const getPitScoutingSessionKeys = async (): Promise<
+export const getUploadedPitScoutingKeys = async (): Promise<
   Array<UploadedKey>
 > => {
   try {
@@ -765,7 +780,7 @@ export const getPitScoutingSessionKeys = async (): Promise<
       "\
       SELECT key FROM team_pit_scouting_session_keys \
       ";
-    return (await executeSql(query, [])) as Array<UploadedKey>;
+    return (await executeSql(query, [])) as Array<UploadedKey> | [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
     return [];

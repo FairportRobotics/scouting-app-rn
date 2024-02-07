@@ -38,13 +38,15 @@ function ScoutPitScreen() {
       // Load data from database.
       const dtoTeams = await Database.getTeams();
       const dtoSessions = await Database.getPitScoutingSessions();
-      const dtoUploadedTeamKeys = await Database.getPitScoutingSessionKeys();
+      const dtoUploadedKeys = await Database.getUploadedPitScoutingKeys();
 
       // Validate.
       if (dtoTeams === undefined) return;
       if (dtoSessions === undefined) return;
-      if (dtoUploadedTeamKeys === undefined) return;
+      if (dtoUploadedKeys === undefined) return;
 
+      // Build a Model to encapsulate properties from multiple sources so we can
+      // more easily display the rows.
       const teamRecords: Array<ReportRecord> = [];
       dtoTeams.forEach((dtoTeam) => {
         let newRecord = {
@@ -53,7 +55,7 @@ function ScoutPitScreen() {
           nickname: dtoTeam.nickname,
           sessionKey: dtoSessions.find((session) => session.key === dtoTeam.key)
             ?.key,
-          uploadedKey: dtoUploadedTeamKeys.find(
+          uploadedKey: dtoUploadedKeys.find(
             (uploaded) => uploaded.key === dtoTeam.key
           )?.key,
         } as ReportRecord;
