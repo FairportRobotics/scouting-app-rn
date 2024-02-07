@@ -1,22 +1,19 @@
-import { ScrollView, View, Share } from "react-native";
+import { ScrollView, View, Share, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
-import {
-  PitScoutingSessionAction,
-  Match,
-  PitScoutingSession,
-} from "@/constants/Types";
+import { PitScoutingSession, Team } from "@/constants/Types";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import postPitScoutingSession from "../helpers/postPitScoutingSession";
 import axios from "axios";
 
 function ScoutPitScreen() {
   const router = useRouter();
 
-  const [matches, setMatches] = useState<Array<Match>>([]);
-  const [actions, setActions] = useState<Array<PitScoutingSessionAction>>([]);
+  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
   const [sessions, setSessions] = useState<Array<PitScoutingSession>>([]);
+  const [uploadedKeys, setUploadedKeys] = useState<Array<string>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
 
@@ -27,20 +24,19 @@ function ScoutPitScreen() {
   const loadData = async () => {
     try {
       // Load data from database.
-      const dtoMatches = await Database.getMatches();
-      const dtoActions = await Database.getPitScoutingSessionActions();
+      const dtoTeams = await Database.getTeams();
+      const dtoSessions = await Database.getPitScoutingSessions();
+      const dtoUploadedTeamKeys = await Database.getPitScoutingSessionKeys();
 
       // Validate.
-      if (dtoMatches === undefined) return;
-      if (dtoActions === undefined) return;
+      if (dtoTeams === undefined) return;
+      if (dtoSessions === undefined) return;
+      if (dtoUploadedTeamKeys === undefined) return;
 
-      setMatches(matches);
-      setActions(dtoActions);
-
-      const dtoSessions = await Database.getPitScoutingSessions();
-      if (dtoSessions !== undefined) {
-        setSessions(dtoSessions);
-      }
+      // Set State.
+      setEventTeams(dtoTeams);
+      setSessions(dtoSessions);
+      setUploadedKeys(uploadedKeys);
     } catch (error) {
       console.error(error);
     }
@@ -67,44 +63,42 @@ function ScoutPitScreen() {
     loadData();
   };
 
-  const handleShareAllPitResultsCsv = () => {};
-
   const handlePitScoutTeam = (key: string) => {
     router.replace(`/scout-pit/${key}`);
   };
 
   const handleUploadSession = async (key: string) => {
-    await Database.savePitScoutingSessionUploadedDate(key);
-    loadData();
-
     const session = sessions.find((session) => session.key === key);
     if (session === undefined) return;
+    await postPitScoutingSession(session);
 
-    const devUri =
-      "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
+    // const devUri =
+    //   "https://dev-r3-sync.azurewebsites.net/api/v1?code=n5IRNj-ytnYspnd3d5G8w_iBqkq3YM6NxXkVzk9jCj4dAzFue0si_g==";
 
-    const prodUri =
-      "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
+    // const prodUri =
+    //   "https://r3-sync.azurewebsites.net/api/v1?code=xMdUNvQ4L_bfuMJYpScpqWoxFj61g7YMo0e5puskG6E9AzFuVgcpQw==";
 
-    const postData = {
-      type: "pit",
-      data: JSON.stringify(session),
-    };
+    // const postData = {
+    //   type: "pit",
+    //   data: JSON.stringify(session),
+    // };
 
-    axios
-      .post(prodUri, postData)
-      .then((response) => {
-        // Handle success
-        console.log("Response:", JSON.stringify(response.data, null, 2));
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error:", error);
-      });
+    // console.log("POST URL:", devUri);
+    // console.log("postData", postData);
+
+    // axios
+    //   .post(devUri, postData)
+    //   .then((response) => {
+    //     // Handle success
+    //     console.log("Response:", JSON.stringify(response.data, null, 2));
+    //   })
+    //   .catch((error) => {
+    //     // Handle error
+    //     console.error("Error:", error);
+    //   });
   };
 
   const handleShowSessionJsonQR = async (key: string) => {
-    await Database.savePitScoutingSessionQrJsonDate(key);
     loadData();
 
     const session = await Database.getPitScoutingSession(key);
@@ -113,11 +107,6 @@ function ScoutPitScreen() {
     const json = JSON.stringify(session);
     setQrCodeText(json);
     setShowQrCode(true);
-  };
-
-  const handleShowSessionCsvQR = async (key: string) => {
-    await Database.savePitScoutingSessionQrCsvDate(key);
-    loadData();
   };
 
   const handleShareSessionJson = async (key: string) => {
@@ -132,15 +121,15 @@ function ScoutPitScreen() {
 
     await Share.share(shareOptions);
 
-    await Database.savePitScoutingSessionShareJsonDate(key);
-
     loadData();
   };
 
-  const handleShareSessionCsv = async (key: string) => {
-    await Database.savePitScoutingSessionShareCsvDate(key);
+  const sessionExistsLocally = (key: string): boolean => {
+    return sessions.find((session) => session.key == key) !== undefined;
+  };
 
-    loadData();
+  const sessionWasUploaded = (key: string): boolean => {
+    return uploadedKeys.find((uploadedKey) => uploadedKey == key) !== undefined;
   };
 
   if (showQrCode) {
@@ -175,22 +164,19 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Upload"
               faIcon="upload"
+              active={true}
               onPress={() => handleUploadAllPitResults()}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
+              active={true}
               onPress={() => handleShareAllPitResultsJson()}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="share"
-              onPress={() => handleShareAllPitResultsCsv()}
             />
           </View>
         </View>
       </ContainerGroup>
-      {actions.map((item, index) => (
+      {eventTeams.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
           key={index}
@@ -207,38 +193,31 @@ function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
-              styles={{ opacity: item.wasScouted ? 0.5 : 1.0 }}
+              active={!sessionWasUploaded(item.key)}
               onPress={() => handlePitScoutTeam(item.key)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
-              styles={{ opacity: item.uploadedDate ? 0.5 : 1.0 }}
+              active={
+                sessionExistsLocally(item.key) && sessionWasUploaded(item.key)
+              }
+              disabled={!sessionExistsLocally(item.key)}
               onPress={() => handleUploadSession(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
-              styles={{ opacity: item.qrJsonDate ? 0.5 : 1.0 }}
+              active={sessionExistsLocally(item.key)}
+              disabled={!sessionExistsLocally(item.key)}
               onPress={() => handleShowSessionJsonQR(item.key)}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="qr"
-              styles={{ opacity: item.qrCsvDate ? 0.5 : 1.0 }}
-              onPress={() => handleShowSessionCsvQR(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
-              styles={{ opacity: item.shareJsonDate ? 0.5 : 1.0 }}
+              active={sessionExistsLocally(item.key)}
+              disabled={!sessionExistsLocally(item.key)}
               onPress={() => handleShareSessionJson(item.key)}
-            />
-            <ResultsButton
-              label="CSV"
-              faIcon="share"
-              styles={{ opacity: item.shareCsvDate ? 0.5 : 1.0 }}
-              onPress={() => handleShareSessionCsv(item.key)}
             />
           </View>
         </ContainerGroup>
