@@ -8,8 +8,6 @@ import getDefaultMatchScoutingSession, {
 } from "@/constants/Types";
 import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Constants from "expo-constants";
-import SelectGroup from "../components/SelectGroup";
 
 function IndexScreen() {
   const router = useRouter();
@@ -68,6 +66,7 @@ function IndexScreen() {
       const dtoEvent = await Database.getEvent();
       const match = eventMatches.find((match: Match) => match.key === matchKey);
 
+      // Validate.
       if (dtoEvent == undefined) return;
       if (match == undefined) return;
 
@@ -89,7 +88,7 @@ function IndexScreen() {
       // Save to DB.
       await Database.saveMatchScoutingSession(session);
 
-      router.replace(`/scout-match/confirm/${sessionKey}`);
+      router.replace(`/(scout-match)/confirm/${sessionKey}`);
     } catch (error) {
       console.error(error);
     }

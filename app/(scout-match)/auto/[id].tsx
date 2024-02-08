@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View } from "react-native";
-import { Check, MinusPlusPair, ContainerGroup } from "@/app/components";
+import { View, Text } from "react-native";
+import {
+  Check,
+  MinusPlusPair,
+  ContainerGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
+import { MatchScoutingSession } from "@/constants/Types";
 
 function AutoScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [startedWithNote, setStartedWithNote] = useState<boolean>(false);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
@@ -28,6 +34,7 @@ function AutoScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
+      setSession(dtoSession);
       setStartedWithNote(dtoSession.autoStartedWithNote ?? false);
       setLeftStartArea(dtoSession.autoLeftStartArea ?? false);
       setSpeakerScore(dtoSession.autoSpeakerScore ?? 0);
@@ -76,17 +83,25 @@ function AutoScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/confirm/${sessionKey}`);
+    router.replace(`/(scout-match)/confirm/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${sessionKey}`);
   };
+
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Start">
         <View
           style={{
@@ -142,7 +157,7 @@ function AutoScreen() {
           onChange={(delta) => setAmpMiss(ampMiss + delta)}
         />
       </ContainerGroup>
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Confirm"
         nextLabel="Teleop"
         onPrevious={() => handleNavigatePrevious()}

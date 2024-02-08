@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ContainerGroup, MinusPlusPair, SelectGroup } from "@/app/components";
+import {
+  ContainerGroup,
+  MinusPlusPair,
+  SelectGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
-import Navigation from "../Navigation";
-import Header from "../Header";
 import { MatchScoutingSession } from "@/constants/Types";
 import { Alliance } from "@/constants/Enums";
 
@@ -13,8 +17,8 @@ function FinalScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [sessionKey, setSessionKey] = useState<string>(id);
   const [session, setSession] = useState<MatchScoutingSession>();
+  const [sessionKey, setSessionKey] = useState<string>(id);
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
@@ -80,7 +84,7 @@ function FinalScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/(scout-match)/endgame/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
@@ -99,9 +103,17 @@ function FinalScreen() {
     }
   };
 
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 1 }}>
@@ -156,7 +168,7 @@ function FinalScreen() {
         />
       </ContainerGroup>
 
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Final"
         nextLabel="Done"
         onPrevious={() => handleNavigatePrevious()}

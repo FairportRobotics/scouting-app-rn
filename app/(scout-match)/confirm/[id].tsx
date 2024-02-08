@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Team } from "@/constants/Types";
-import { ContainerGroup } from "@/app/components";
-import Navigation from "../Navigation";
+import { MatchScoutingSession, Team } from "@/constants/Types";
+import {
+  ContainerGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
-import Header from "../Header";
 
 function ConfirmScreen() {
+  console.log("ConfirmScreen...");
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [scouterName, setScouterName] = useState<string>("");
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
@@ -49,6 +53,7 @@ function ConfirmScreen() {
       if (dtoTeams === undefined) return;
 
       // Set State.
+      setSession(dtoSession);
       setScouterName(dtoSession.scouterName ?? "");
       setAllTeams(dtoTeams);
       setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
@@ -103,12 +108,20 @@ function ConfirmScreen() {
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${sessionKey}`);
   };
+
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
           style={Styles.textInput}
@@ -137,7 +150,7 @@ function ConfirmScreen() {
               width: "100%",
               backgroundColor: Colors.appBackground,
               borderRadius: 6,
-              padding: 10,
+              padding: 20,
               marginBottom: 8,
             }}
             key={team.key}
@@ -153,7 +166,7 @@ function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Back"
         nextLabel="Auto"
         onPrevious={() => handleNavigatePrevious()}

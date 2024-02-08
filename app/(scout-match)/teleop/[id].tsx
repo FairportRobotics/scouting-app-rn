@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ContainerGroup, MinusPlusPair } from "@/app/components";
+import {
+  ContainerGroup,
+  MinusPlusPair,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
+import { MatchScoutingSession } from "@/constants/Types";
 
 function TeleopScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
   const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
@@ -42,6 +47,7 @@ function TeleopScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
+      setSession(dtoSession);
       setSpeakerScore(dtoSession.teleopSpeakerScore ?? 0);
       setSpeakerScoreAmplified(dtoSession.teleopSpeakerScoreAmplified ?? 0);
       setSpeakerMiss(dtoSession.teleopSpeakerMiss ?? 0);
@@ -72,17 +78,25 @@ function TeleopScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/(scout-match)/endgame/${sessionKey}`);
   };
+
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
@@ -122,7 +136,7 @@ function TeleopScreen() {
         />
       </ContainerGroup>
 
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Auto"
         nextLabel="Endgame"
         onPrevious={() => handleNavigatePrevious()}

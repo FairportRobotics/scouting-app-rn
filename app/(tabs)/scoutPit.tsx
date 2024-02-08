@@ -66,7 +66,7 @@ function ScoutPitScreen() {
       // Set State.
       setReportRecords(teamRecords);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

@@ -106,6 +106,10 @@ export type MatchScoutingSession = {
   finalViolations: string;
   finalPenalties: number;
   finalNotes: string;
+
+  // For Display
+  teamNumber: number;
+  teamNickname: string;
 };
 
 export default function getDefaultMatchScoutingSession() {

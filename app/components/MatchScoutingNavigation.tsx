@@ -1,18 +1,18 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { ContainerGroup } from "@/app/components";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import Styles from "@/constants/Styles";
+import ContainerGroup from "./ContainerGroup";
 
-interface NavigationProps {
+interface MatchScoutingNavigationProps {
   previousLabel: string;
   nextLabel: string;
   onPrevious: () => void;
   onNext: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({
+const MatchScoutingNavigation: React.FC<MatchScoutingNavigationProps> = ({
   previousLabel,
   nextLabel,
   onPrevious,
@@ -28,7 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <View style={{ flex: 1, justifyContent: "flex-end" }}>
-      <ContainerGroup title="" style={{}}>
+      <ContainerGroup title="">
         <View
           style={{
             width: "100%",
@@ -87,4 +87,4 @@ const Navigation: React.FC<NavigationProps> = ({
   );
 };
 
-export default Navigation;
+export default MatchScoutingNavigation;

@@ -13,10 +13,6 @@ export default async (session: PitScoutingSession) => {
 
     const response = await axios.post(saveUri, postData);
     const uploadedKeys = (response.data.data_for as Array<string>) || [];
-    console.log(
-      "Pit Scouting Keys Uploaded:",
-      JSON.stringify(uploadedKeys, null, 2)
-    );
     await Database.savePitScoutingSessionKeys(uploadedKeys);
   } catch (error) {
     console.error(error);

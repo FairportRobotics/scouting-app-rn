@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
   ContainerGroup,
   MinusPlusPair,
   SelectGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
+import { MatchScoutingSession } from "@/constants/Types";
 
 function EndgameScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [trapScore, setTrapScore] = useState<number>(0);
   const [microphoneScore, setMicrophoneScore] = useState<number>(0);
@@ -39,6 +41,7 @@ function EndgameScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
+      setSession(dtoSession);
       setTrapScore(dtoSession?.endgameTrapScore ?? 0);
       setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? 0);
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
@@ -70,17 +73,25 @@ function EndgameScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/final/${sessionKey}`);
+    router.replace(`/(scout-match)/final/${sessionKey}`);
   };
+
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Stage">
         <MinusPlusPair
           label="Trap"
@@ -114,7 +125,7 @@ function EndgameScreen() {
         />
       </ContainerGroup>
 
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Teleop"
         nextLabel="Final"
         onPrevious={() => handleNavigatePrevious()}
