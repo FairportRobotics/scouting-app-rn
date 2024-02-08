@@ -166,7 +166,7 @@ export default function MatchResultsScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
-        <ContainerGroup title="All Match Data">
+        {/* <ContainerGroup title="All Match Data">
           <View
             style={{
               flex: 1,
@@ -201,11 +201,11 @@ export default function MatchResultsScreen() {
               />
             </View>
           </View>
-        </ContainerGroup>
+        </ContainerGroup> */}
         {reportModels.map((match, index) => (
           <ContainerGroup
-            title={`Match ${match.matchNumber}: ${match.alliance} ${match.allianceTeam}: ${match.scoutedTeamNumber} - ${match.scoutedTeamNickname}`}
             key={index}
+            title={`Match ${match.matchNumber}: ${match.alliance} ${match.allianceTeam}: ${match.scoutedTeamNumber} - ${match.scoutedTeamNickname}`}
           >
             <View
               style={{
@@ -227,19 +227,9 @@ export default function MatchResultsScreen() {
                 onPress={() => handleShowSessionJsonQR(match.sessionKey)}
               />
               <ResultsButton
-                label="CSV"
-                faIcon="qr"
-                onPress={() => handleShowSessionCsvQR(match.sessionKey)}
-              />
-              <ResultsButton
                 label="JSON"
                 faIcon="share"
                 onPress={() => handleShareSessionJson(match.sessionKey)}
-              />
-              <ResultsButton
-                label="CSV"
-                faIcon="share"
-                onPress={() => handleShareSessionCsv(match.sessionKey)}
               />
             </View>
           </ContainerGroup>

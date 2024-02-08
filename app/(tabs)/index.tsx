@@ -21,7 +21,7 @@ function IndexScreen() {
 
   const loadData = async () => {
     try {
-      // Retrieve data in parallel using Promise.all().
+      // Retrieve data.
       Promise.all([
         Database.getEvent() as Promise<Event>,
         Database.getMatches() as Promise<Array<Match>>,
@@ -97,8 +97,8 @@ function IndexScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
-        {matchModels.map((matchModel) => (
-          <ContainerGroup title="" key={matchModel.key}>
+        {matchModels.map((matchModel, index) => (
+          <ContainerGroup title="" key={index}>
             <ScoutingMatchSelect
               matchModel={matchModel}
               onSelect={(matchModel, teamModel) =>

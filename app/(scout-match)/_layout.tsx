@@ -21,10 +21,10 @@ export default function TabLayout() {
         options={{
           title: "Confirm",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faSquareCheck}
-              size={32}
+              size={size}
               style={{ color: color }}
             />
           ),
@@ -36,10 +36,10 @@ export default function TabLayout() {
         options={{
           title: "Auto",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faRobot}
-              size={32}
+              size={size}
               style={{ color: color }}
             />
           ),
@@ -51,10 +51,10 @@ export default function TabLayout() {
         options={{
           title: "Teleop",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faTowerBroadcast}
-              size={32}
+              size={size}
               style={{ color: color }}
             />
           ),
@@ -66,10 +66,10 @@ export default function TabLayout() {
         options={{
           title: "Endgame",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faHourglassEnd}
-              size={32}
+              size={size}
               style={{ color: color }}
             />
           ),
@@ -81,8 +81,12 @@ export default function TabLayout() {
         options={{
           title: "Final",
           headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesomeIcon icon={faList} size={32} style={{ color: color }} />
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesomeIcon
+              icon={faList}
+              size={size}
+              style={{ color: color }}
+            />
           ),
         }}
       />
