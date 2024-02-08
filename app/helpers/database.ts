@@ -276,19 +276,19 @@ export function saveTeams(teams: Array<TbaTeam>) {
   });
 }
 
-export const getEvent = async (): Promise<Event | undefined> => {
+export const getEvent = async (): Promise<Event> => {
   try {
     const query = "SELECT * FROM events LIMIT 1";
     const results = (await executeSql(query, [])) as Event[];
 
     if (results.length > 0) {
-      return results[0];
+      return results[0] as Event;
     } else {
-      return undefined;
+      return {} as Event;
     }
   } catch (error) {
     console.error("Error fetching match scouting session:", error);
-    return undefined;
+    return {} as Event;
   }
 };
 

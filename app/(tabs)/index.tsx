@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, View } from "react-native";
 import { useRouter } from "expo-router";
 import getDefaultMatchScoutingSession, {
+  Event,
   Match,
-  MatchScoutingSession,
   Team,
+  ItemKey,
+  MatchScoutingSession,
+  MatchModel,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import getMatchSelectModels from "../helpers/getMatchSelectModels";
 
 function IndexScreen() {
   const router = useRouter();
@@ -15,6 +19,7 @@ function IndexScreen() {
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
+  const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
   const loadData = async () => {
     try {
@@ -34,6 +39,34 @@ function IndexScreen() {
       setSessions(dtoSessions);
     } catch (error) {
       console.error(error);
+    }
+
+    try {
+      // Retrieve data in parallel using Promise.all().
+      Promise.all([
+        Database.getEvent() as Promise<Event>,
+        Database.getMatches() as Promise<Array<Match>>,
+        Database.getTeams() as Promise<Array<Team>>,
+        Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
+        Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
+      ])
+        .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
+          // Build the Match Models.
+          const matchModels = getMatchSelectModels(
+            dtoEvent,
+            dtoMatches,
+            dtoTeams,
+            sessionKeys,
+            uploadedKeys
+          );
+
+          setMatchModels(matchModels);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } catch (error) {
+      console.log("Something went horribly wrong.");
     }
   };
 

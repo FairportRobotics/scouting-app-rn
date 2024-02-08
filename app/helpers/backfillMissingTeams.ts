@@ -1,7 +1,7 @@
 import axios from "axios";
+import { TbaTeam } from "@/constants/Types";
 import type { Team } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
-import { TbaTeam } from "./tbaTypes";
 
 let tbaKey = "x8rBFFn8bO55wh2IfDAxZgDX0FBdT13jIuWpcAzQbPntINbK74CRw2WuXPfhOJcs";
 
