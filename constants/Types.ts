@@ -204,6 +204,7 @@ export type AppSettings = {
 };
 
 export type MatchModel = {
+  key: string;
   eventKey: string;
   matchKey: string;
   matchNumber: number;
@@ -213,6 +214,8 @@ export type MatchModel = {
 
 export type TeamModel = {
   sessionKey: string;
+  alliance: string;
+  allianceTeam: number;
   teamKey: string;
   teamNumber: string;
   sessionExists: boolean;

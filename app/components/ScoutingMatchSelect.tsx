@@ -1,148 +1,91 @@
 import React from "react";
 import { View, Text } from "react-native";
-import type { Match, MatchScoutingSession, Team } from "@/constants/Types";
+import type { MatchModel, TeamModel } from "@/constants/Types";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
 import MatchTeamSelect from "./MatchTeamSelect";
 
 interface ScoutingMatchSelectProps {
-  match: Match;
-  eventTeams: Array<Team>;
-  sessions: Array<MatchScoutingSession>;
-  onSelect: (
-    matchKey: string,
-    alliance: string,
-    allianceTeam: number,
-    teamKey: string
-  ) => void;
+  matchModel: MatchModel;
+  onSelect: (matchModel: MatchModel, teamModel: TeamModel) => void;
 }
 
 const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
-  match,
-  eventTeams,
-  sessions,
+  matchModel,
   onSelect,
 }) => {
-  const handleOnSelect = (
-    matchKey: string,
-    alliance: string,
-    allianceTeam: number,
-    teamKey: string
-  ) => {
-    onSelect(matchKey, alliance, allianceTeam, teamKey);
+  const handleOnSelect = (teamModel: TeamModel) => {
+    onSelect(matchModel, teamModel);
   };
 
   return (
     <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
       <View style={{ marginRight: 20, width: 100 }}>
-        {match.matchNumber === 0 && (
+        {matchModel.matchNumber === 0 && (
           <View>
             <Text style={{ fontSize: 18 }}>Practice</Text>
             <Text>Anytime</Text>
           </View>
         )}
-        {match.matchNumber !== 0 && (
+        {matchModel.matchNumber !== 0 && (
           <View>
-            <Text style={{ fontSize: 18 }}>Match {match.matchNumber}</Text>
-            <Text>{new Date(match.predictedTime).toLocaleTimeString()}</Text>
+            <Text style={{ fontSize: 18 }}>Match {matchModel.matchNumber}</Text>
+            <Text>
+              {new Date(matchModel.predictedTime).toLocaleTimeString()}
+            </Text>
           </View>
         )}
       </View>
       <View
         style={{
           flex: 1,
+          width: "100%",
+          gap: 4,
           flexDirection: "row",
           justifyContent: "space-between",
         }}
       >
         <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Blue}
-          allianceTeam={AllianceTeam.One}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Blue,
-              AllianceTeam.One,
-              match.blue1TeamKey
-            )
+          teamModel={
+            matchModel.alliances[Alliance.Blue][AllianceTeam.One] ??
+            ({} as TeamModel)
           }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
         <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Blue}
-          allianceTeam={AllianceTeam.Two}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Blue,
-              AllianceTeam.Two,
-              match.blue2TeamKey
-            )
+          teamModel={
+            matchModel.alliances[Alliance.Blue][AllianceTeam.Two] ??
+            ({} as TeamModel)
           }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
         <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Blue}
-          allianceTeam={AllianceTeam.Three}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Blue,
-              AllianceTeam.Three,
-              match.blue3TeamKey
-            )
+          teamModel={
+            matchModel.alliances[Alliance.Blue][AllianceTeam.Three] ??
+            ({} as TeamModel)
           }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
+        />
+
+        <MatchTeamSelect
+          teamModel={
+            matchModel.alliances[Alliance.Red][AllianceTeam.One] ??
+            ({} as TeamModel)
+          }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
         <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Red}
-          allianceTeam={AllianceTeam.One}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Red,
-              AllianceTeam.One,
-              match.red1TeamKey
-            )
+          teamModel={
+            matchModel.alliances[Alliance.Red][AllianceTeam.Two] ??
+            ({} as TeamModel)
           }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
         <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Red}
-          allianceTeam={AllianceTeam.Two}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Red,
-              AllianceTeam.Two,
-              match.red2TeamKey
-            )
+          teamModel={
+            matchModel.alliances[Alliance.Red][AllianceTeam.Three] ??
+            ({} as TeamModel)
           }
-        />
-        <MatchTeamSelect
-          match={match}
-          eventTeams={eventTeams}
-          sessions={sessions}
-          alliance={Alliance.Red}
-          allianceTeam={AllianceTeam.Three}
-          onSelect={() =>
-            handleOnSelect(
-              match.key,
-              Alliance.Red,
-              AllianceTeam.Three,
-              match.red3TeamKey
-            )
-          }
+          onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
       </View>
     </View>

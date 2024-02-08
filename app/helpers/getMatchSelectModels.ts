@@ -35,6 +35,8 @@ const getTeamModel = (
   const sessionKey = `${event.key}__${match.key}__${alliance}__${allianceTeam}`;
   let teamModel = {
     sessionKey: sessionKey,
+    alliance: alliance,
+    allianceTeam: allianceTeam,
     teamKey: team.key,
     teamNumber: team.teamNumber,
     sessionExists: sessionKeys.find((session) => session.key === sessionKey)
