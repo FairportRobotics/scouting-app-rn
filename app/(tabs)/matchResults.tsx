@@ -48,8 +48,6 @@ export default function MatchResultsScreen() {
       if (dtoTeams === undefined) return;
       if (dtoSessions === undefined) return;
 
-      console.log("Validated...");
-
       // Create a Matches dictionary for faster lookups.
       let matchesDictionary: Record<string, Match> = {};
       dtoMatches.forEach((match) => {
