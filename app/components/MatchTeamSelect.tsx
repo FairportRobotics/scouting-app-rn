@@ -37,7 +37,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
             borderRadius: 15,
             backgroundColor: "white",
             borderWidth: 2,
-            borderColor: "darkgray",
+            borderColor: "#696969",
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -45,7 +45,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
           <FontAwesomeIcon
             icon={teamModel.sessionExists ? faTabletScreenButton : faUserGroup}
             size={20}
-            style={{ color: "black" }}
+            style={{ color: "#696969" }}
           />
         </View>
       );
@@ -55,12 +55,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      onPress={() => handleOnPress()}
-      style={{
-        flex: 1,
-      }}
-    >
+    <TouchableOpacity onPress={() => handleOnPress()} style={{ flex: 1 }}>
       {renderBadge()}
       <View
         style={[
@@ -71,7 +66,7 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
             width: "100%",
             flexDirection: "column",
             opacity:
-              teamModel.sessionExists || teamModel.uploadExists ? 0.5 : 1.0,
+              teamModel.sessionExists || teamModel.uploadExists ? 0.6 : 1.0,
           },
         ]}
       >
