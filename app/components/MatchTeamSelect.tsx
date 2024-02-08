@@ -1,101 +1,84 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Alliance, AllianceTeam } from "@/constants/Enums";
-import type { Match, MatchScoutingSession, Team } from "@/constants/Types";
+import { Alliance } from "@/constants/Enums";
+import type { TeamModel } from "@/constants/Types";
 import Styles from "@/constants/Styles";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  faTabletScreenButton,
+  faUserGroup,
+} from "@fortawesome/free-solid-svg-icons";
+import Colors from "@/constants/Colors";
 
 interface MatchTeamSelectProps {
-  match: Match;
-  eventTeams: Array<Team>;
-  sessions: Array<MatchScoutingSession>;
-  alliance: string;
-  allianceTeam: number;
-  onSelect: () => void;
+  teamModel: TeamModel;
+  onSelect: (teamModel: TeamModel) => void;
 }
 
 const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
-  match,
-  eventTeams,
-  sessions,
-  alliance,
-  allianceTeam,
+  teamModel,
   onSelect,
 }) => {
   const handleOnPress = () => {
-    onSelect();
+    onSelect(teamModel);
   };
 
-  const lookupTeam = (alliance: string, allianceTeam: number) => {
-    // Obtain the Team key.
-    let teamKey: string = "";
-    if (alliance === Alliance.Blue) {
-      switch (allianceTeam) {
-        case AllianceTeam.One:
-          teamKey = match.blue1TeamKey;
-          break;
-        case AllianceTeam.Two:
-          teamKey = match.blue2TeamKey;
-          break;
-        case AllianceTeam.Three:
-          teamKey = match.blue3TeamKey;
-          break;
-        default:
-          teamKey = "";
-      }
-    } else if (alliance === Alliance.Red) {
-      switch (allianceTeam) {
-        case AllianceTeam.One:
-          teamKey = match.red1TeamKey;
-          break;
-        case AllianceTeam.Two:
-          teamKey = match.red2TeamKey;
-          break;
-        case AllianceTeam.Three:
-          teamKey = match.red3TeamKey;
-          break;
-        default:
-          teamKey = "";
-      }
+  const renderBadge = () => {
+    if (teamModel.sessionExists || teamModel.uploadExists) {
+      return (
+        <View
+          style={{
+            zIndex: 100,
+            position: "absolute",
+            top: -3,
+            right: -3,
+            width: 30,
+            height: 30,
+            borderRadius: 15,
+            backgroundColor: "white",
+            borderWidth: 2,
+            borderColor: "darkgray",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <FontAwesomeIcon
+            icon={teamModel.sessionExists ? faTabletScreenButton : faUserGroup}
+            size={20}
+            style={{ color: "black" }}
+          />
+        </View>
+      );
+    } else {
+      return <></>;
     }
-
-    // Lookup the actual Team based on the teamKey.
-    let team: Team | undefined = eventTeams.find(
-      (team: Team) => team.key === teamKey
-    );
-    if (team === undefined) return "?";
-    else return team.teamNumber;
-  };
-
-  const opacity = () => {
-    const session = sessions.find(
-      (session) =>
-        session.matchKey == match.key &&
-        session.alliance == alliance &&
-        session.allianceTeam == allianceTeam
-    );
-
-    return session ? 0.5 : 1.0;
   };
 
   return (
     <TouchableOpacity
       onPress={() => handleOnPress()}
-      style={{ opacity: opacity() }}
+      style={{
+        flex: 1,
+      }}
     >
+      {renderBadge()}
       <View
         style={[
-          alliance === Alliance.Blue
+          teamModel.alliance === Alliance.Blue
             ? Styles.allianceBlueButton
             : Styles.allianceRedButton,
-          { flexDirection: "column", width: 90 },
+          {
+            width: "100%",
+            flexDirection: "column",
+            opacity:
+              teamModel.sessionExists || teamModel.uploadExists ? 0.5 : 1.0,
+          },
         ]}
       >
         <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
-          {allianceTeam}
+          {teamModel.allianceTeam}
         </Text>
-        <Text style={{ color: "white" }}>
-          {lookupTeam(alliance, allianceTeam)}
-        </Text>
+        <Text style={{ color: "white" }}>{teamModel.teamNumber}</Text>
       </View>
     </TouchableOpacity>
   );

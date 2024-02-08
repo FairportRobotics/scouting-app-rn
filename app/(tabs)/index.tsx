@@ -2,38 +2,50 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, View } from "react-native";
 import { useRouter } from "expo-router";
 import getDefaultMatchScoutingSession, {
+  Event,
   Match,
-  MatchScoutingSession,
   Team,
+  ItemKey,
+  MatchScoutingSession,
+  MatchModel,
+  TeamModel,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import getMatchSelectModels from "../helpers/getMatchSelectModels";
 
 function IndexScreen() {
   const router = useRouter();
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
-  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
-  const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
+  const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
   const loadData = async () => {
     try {
-      // Load data from database.
-      const dtoMatches = await Database.getMatches();
-      const dtoTeams = await Database.getTeams();
-      const dtoSessions = await Database.getMatchScoutingSessions();
+      // Retrieve data in parallel using Promise.all().
+      Promise.all([
+        Database.getEvent() as Promise<Event>,
+        Database.getMatches() as Promise<Array<Match>>,
+        Database.getTeams() as Promise<Array<Team>>,
+        Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
+        Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
+      ])
+        .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
+          // Build the Match Models.
+          const matchModels = getMatchSelectModels(
+            dtoEvent,
+            dtoMatches,
+            dtoTeams,
+            sessionKeys,
+            uploadedKeys
+          );
 
-      // Validate.
-      if (dtoMatches === undefined) return;
-      if (dtoTeams === undefined) return;
-      if (dtoSessions === undefined) return;
-
-      // Set State.
-      setEventMatches(dtoMatches);
-      setEventTeams(dtoTeams);
-      setSessions(dtoSessions);
+          setMatchModels(matchModels);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     } catch (error) {
-      console.error(error);
+      console.log("Something went horribly wrong.");
     }
   };
 
@@ -47,47 +59,30 @@ function IndexScreen() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    const loadData = async () => {
-      setEventMatches(await Database.getMatches());
-      setEventTeams(await Database.getTeams());
-    };
-    loadData();
-  }, []);
-
   const handleOnSelect = async (
-    matchKey: string,
-    alliance: string,
-    allianceTeam: number,
-    teamKey: string
+    matchModel: MatchModel,
+    teamModel: TeamModel
   ) => {
     try {
-      // Initialize the Match Scouting Session properties.
-      const dtoEvent = await Database.getEvent();
-      const match = eventMatches.find((match: Match) => match.key === matchKey);
-
-      // Validate.
-      if (dtoEvent == undefined) return;
-      if (match == undefined) return;
-
       // Attempt to retrieve existing session.
-      let sessionKey = `${dtoEvent.key}__${matchKey}__${alliance}__${allianceTeam}`;
+      let sessionKey = teamModel.sessionKey;
       let session = await Database.getMatchScoutingSession(sessionKey);
+
+      // If the session does not exist, we will initialize it.
       if (session === undefined) {
         session = getDefaultMatchScoutingSession() as MatchScoutingSession;
         session.key = sessionKey;
-        session.eventKey = dtoEvent.key;
-        session.matchKey = matchKey;
-        session.matchNumber = match.matchNumber;
-        session.alliance = alliance;
-        session.allianceTeam = allianceTeam;
-        session.scheduledTeamKey = teamKey;
-        session.scoutedTeamKey = teamKey;
+        session.eventKey = matchModel.eventKey;
+        session.matchKey = matchModel.matchKey;
+        session.matchNumber = matchModel.matchNumber;
+        session.alliance = teamModel.alliance;
+        session.allianceTeam = teamModel.allianceTeam;
+        session.scheduledTeamKey = teamModel.teamKey;
+        session.scoutedTeamKey = teamModel.teamKey;
       }
 
       // Save to DB.
       await Database.saveMatchScoutingSession(session);
-
       router.replace(`/(scout-match)/confirm/${sessionKey}`);
     } catch (error) {
       console.error(error);
@@ -102,14 +97,12 @@ function IndexScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
-        {eventMatches.map((match) => (
-          <ContainerGroup title="" key={match.key}>
+        {matchModels.map((matchModel) => (
+          <ContainerGroup title="" key={matchModel.key}>
             <ScoutingMatchSelect
-              match={match}
-              eventTeams={eventTeams}
-              sessions={sessions}
-              onSelect={(matchKey, alliance, allianceTeam, teamKey) =>
-                handleOnSelect(matchKey, alliance, allianceTeam, teamKey)
+              matchModel={matchModel}
+              onSelect={(matchModel, teamModel) =>
+                handleOnSelect(matchModel, teamModel)
               }
             />
           </ContainerGroup>

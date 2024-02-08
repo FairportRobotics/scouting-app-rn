@@ -203,6 +203,25 @@ export type AppSettings = {
   saveUri: string;
 };
 
+export type MatchModel = {
+  key: string;
+  eventKey: string;
+  matchKey: string;
+  matchNumber: number;
+  predictedTime: string;
+  alliances: Record<string, Record<number, TeamModel | undefined>>;
+};
+
+export type TeamModel = {
+  sessionKey: string;
+  alliance: string;
+  allianceTeam: number;
+  teamKey: string;
+  teamNumber: string;
+  sessionExists: boolean;
+  uploadExists: boolean;
+};
+
 //=================================================================================================
 // The Blue Alliance types
 //=================================================================================================
