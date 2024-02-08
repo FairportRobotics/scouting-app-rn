@@ -640,24 +640,6 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
 // Pit Scouting data access.
 //=================================================================================================
 
-export const initializePitScoutingSession = async (
-  session: PitScoutingSession
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_sessions(key, eventKey) \
-      VALUES(:key, :eventKey) \
-      ON CONFLICT (key) DO NOTHING",
-      [session.key, session.eventKey],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
 export const getPitScoutingSessions = async (): Promise<
   Array<PitScoutingSession>
 > => {
@@ -677,6 +659,7 @@ export const getPitScoutingSession = async (
     const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
     const results = (await executeSql(query, params)) as PitScoutingSession[];
+    console.log("getPitScoutingSession results:", results);
 
     if (results.length > 0) {
       return results[0];
@@ -690,13 +673,15 @@ export const getPitScoutingSession = async (
 };
 
 export const updatePitScoutingSession = async (session: PitScoutingSession) => {
+  console.log("updatePitScoutingSession session:", session);
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
       (key, eventKey, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimensions, teamExperience) \
       VALUES \
-      (:key, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
+      (:key, :eventKey, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
       ON CONFLICT (key) DO UPDATE SET \
+        eventKey = excluded.eventKey, \
         canAchieveHarmony = excluded.canAchieveHarmony, \
         canFitOnStage = excluded.canFitOnStage, \
         canFitUnderStage = excluded.canFitUnderStage, \

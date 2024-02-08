@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Team } from "@/constants/Types";
-import { ContainerGroup, ResultsButton } from "@/app/components";
+import { ContainerGroup } from "@/app/components";
 import Navigation from "../Navigation";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
@@ -109,7 +109,7 @@ function ConfirmScreen() {
   return (
     <View style={{ flex: 1 }}>
       <Header sessionKey={sessionKey} />
-      <ContainerGroup title="Scouter Name (required)" style={{}}>
+      <ContainerGroup title="Scouter Name (required)">
         <TextInput
           style={Styles.textInput}
           value={scouterName}
@@ -117,7 +117,7 @@ function ConfirmScreen() {
           placeholder="My name is..."
         />
       </ContainerGroup>
-      <ContainerGroup title="Confirm Team to be Scouted" style={{}}>
+      <ContainerGroup title="Confirm Team to be Scouted">
         <Text style={{ fontSize: 24 }}>
           {scoutedTeam?.teamNumber} - {scoutedTeam?.nickname}
         </Text>
