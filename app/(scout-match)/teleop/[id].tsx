@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Button, ScrollView } from "react-native";
+import { View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ContainerGroup, MinusPlusPair } from "@/app/components";
+import {
+  ContainerGroup,
+  MinusPlusPair,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
 
 function TeleopScreen() {
   const router = useRouter();
@@ -72,17 +75,17 @@ function TeleopScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/endgame/${sessionKey}`);
+    router.replace(`/(scout-match)/endgame/${sessionKey}`);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader sessionKey={sessionKey} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
@@ -122,7 +125,7 @@ function TeleopScreen() {
         />
       </ContainerGroup>
 
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Auto"
         nextLabel="Endgame"
         onPrevious={() => handleNavigatePrevious()}

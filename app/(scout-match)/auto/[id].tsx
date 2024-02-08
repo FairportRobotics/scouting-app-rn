@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { View } from "react-native";
-import { Check, MinusPlusPair, ContainerGroup } from "@/app/components";
+import {
+  Check,
+  MinusPlusPair,
+  ContainerGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
 
 function AutoScreen() {
   const router = useRouter();
@@ -76,17 +80,17 @@ function AutoScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/confirm/${sessionKey}`);
+    router.replace(`/(scout-match)/confirm/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${sessionKey}`);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader sessionKey={sessionKey} />
       <ContainerGroup title="Start">
         <View
           style={{
@@ -142,7 +146,7 @@ function AutoScreen() {
           onChange={(delta) => setAmpMiss(ampMiss + delta)}
         />
       </ContainerGroup>
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Confirm"
         nextLabel="Teleop"
         onPrevious={() => handleNavigatePrevious()}

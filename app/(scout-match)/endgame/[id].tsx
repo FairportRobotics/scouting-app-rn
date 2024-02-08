@@ -6,10 +6,10 @@ import {
   ContainerGroup,
   MinusPlusPair,
   SelectGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import Navigation from "../Navigation";
-import Header from "../Header";
 
 function EndgameScreen() {
   const router = useRouter();
@@ -70,17 +70,17 @@ function EndgameScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/scout-match/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${sessionKey}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/final/${sessionKey}`);
+    router.replace(`/(scout-match)/final/${sessionKey}`);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader sessionKey={sessionKey} />
       <ContainerGroup title="Stage">
         <MinusPlusPair
           label="Trap"
@@ -114,7 +114,7 @@ function EndgameScreen() {
         />
       </ContainerGroup>
 
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Teleop"
         nextLabel="Final"
         onPrevious={() => handleNavigatePrevious()}

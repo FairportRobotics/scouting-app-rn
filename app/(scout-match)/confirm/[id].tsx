@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Team } from "@/constants/Types";
-import { ContainerGroup } from "@/app/components";
-import Navigation from "../Navigation";
+import {
+  ContainerGroup,
+  MatchScoutingNavigation,
+  MatchScoutingHeader,
+} from "@/app/components";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
-import Header from "../Header";
 
 function ConfirmScreen() {
   const router = useRouter();
@@ -103,12 +105,12 @@ function ConfirmScreen() {
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/scout-match/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${sessionKey}`);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <Header sessionKey={sessionKey} />
+      <MatchScoutingHeader sessionKey={sessionKey} />
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
           style={Styles.textInput}
@@ -137,7 +139,7 @@ function ConfirmScreen() {
               width: "100%",
               backgroundColor: Colors.appBackground,
               borderRadius: 6,
-              padding: 10,
+              padding: 20,
               marginBottom: 8,
             }}
             key={team.key}
@@ -153,7 +155,7 @@ function ConfirmScreen() {
           </TouchableOpacity>
         ))}
       </ContainerGroup>
-      <Navigation
+      <MatchScoutingNavigation
         previousLabel="Back"
         nextLabel="Auto"
         onPrevious={() => handleNavigatePrevious()}

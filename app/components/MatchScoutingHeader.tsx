@@ -5,11 +5,13 @@ import { Alliance } from "@/constants/Enums";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 
-interface HeaderProps {
+interface MatchScoutingHeaderProps {
   sessionKey: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ sessionKey }) => {
+const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({
+  sessionKey,
+}) => {
   const [session, setSession] = useState<MatchScoutingSession>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
 
@@ -53,7 +55,9 @@ const Header: React.FC<HeaderProps> = ({ sessionKey }) => {
     <View
       style={{
         backgroundColor: allianceColor(),
-        padding: 20,
+        paddingTop: 40,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
         flexDirection: "row",
         justifyContent: "space-between",
       }}
@@ -71,4 +75,4 @@ const Header: React.FC<HeaderProps> = ({ sessionKey }) => {
   );
 };
 
-export default Header;
+export default MatchScoutingHeader;

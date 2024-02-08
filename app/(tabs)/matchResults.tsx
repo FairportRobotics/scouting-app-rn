@@ -43,6 +43,13 @@ export default function MatchResultsScreen() {
       const dtoTeams = await Database.getTeams();
       const dtoSessions = await Database.getMatchScoutingSessions();
 
+      // Validate
+      if (dtoMatches === undefined) return;
+      if (dtoTeams === undefined) return;
+      if (dtoSessions === undefined) return;
+
+      console.log("Validated...");
+
       // Create a Matches dictionary for faster lookups.
       let matchesDictionary: Record<string, Match> = {};
       dtoMatches.forEach((match) => {
@@ -55,29 +62,39 @@ export default function MatchResultsScreen() {
         teamsDictionary[team.key] = team;
       });
 
-      const models = dtoSessions.map((session) => {
-        const match = matchesDictionary[session.matchKey];
-        const scheduledTeam = teamsDictionary[session.scheduledTeamKey];
-        const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
+      // Build the array of MatchResultModel.
+      let models: Array<MatchResultModel> = [];
+      dtoSessions.map((session) => {
+        try {
+          // Retrieve the needed objects from the dictionaries.
+          const match = matchesDictionary[session.matchKey];
+          const scheduledTeam = teamsDictionary[session.scheduledTeamKey];
+          const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
 
-        const model = {
-          sessionKey: session.key,
-          matchNumber: match.matchNumber,
-          alliance: session.alliance,
-          allianceTeam: session.allianceTeam,
-        } as MatchResultModel;
+          // Initialize the model.
+          const model = {
+            sessionKey: session.key,
+            matchNumber: match.matchNumber,
+            alliance: session.alliance,
+            allianceTeam: session.allianceTeam,
+          } as MatchResultModel;
 
-        if (scheduledTeam !== undefined) {
-          model.scheduledTeamNumber = scheduledTeam.teamNumber;
-          model.scheduledTeamNickname = scheduledTeam.nickname;
+          // Assign the scheduled team.
+          if (scheduledTeam !== undefined) {
+            model.scheduledTeamNumber = scheduledTeam.teamNumber;
+            model.scheduledTeamNickname = scheduledTeam.nickname;
+          }
+
+          // Assign the scouted team.
+          if (scoutedTeam !== undefined) {
+            model.scoutedTeamNumber = scoutedTeam.teamNumber;
+            model.scoutedTeamNickname = scoutedTeam.nickname;
+          }
+
+          models.push(model);
+        } catch (error) {
+          console.error(error);
         }
-
-        if (scoutedTeam !== undefined) {
-          model.scoutedTeamNumber = scoutedTeam.teamNumber;
-          model.scoutedTeamNickname = scoutedTeam.nickname;
-        }
-
-        return model;
       });
 
       setReportModels(models);
