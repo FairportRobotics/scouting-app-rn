@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Team } from "@/constants/Types";
 import { ContainerGroup } from "@/app/components";
@@ -96,6 +102,10 @@ function ConfirmScreen() {
     saveData();
   };
 
+  const handleScouterNameDone = () => {
+    Keyboard.dismiss();
+  };
+
   const handleNavigatePrevious = () => {
     saveData();
     router.replace(`/`);
@@ -114,6 +124,7 @@ function ConfirmScreen() {
           style={Styles.textInput}
           value={scouterName}
           onChangeText={(text) => setScouterName(text)}
+          onEndEditing={() => handleScouterNameDone()}
           placeholder="My name is..."
         />
       </ContainerGroup>
