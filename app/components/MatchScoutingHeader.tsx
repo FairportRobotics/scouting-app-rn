@@ -6,40 +6,12 @@ import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 
 interface MatchScoutingHeaderProps {
-  sessionKey: string;
+  session: MatchScoutingSession;
 }
 
 const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({
-  sessionKey,
+  session,
 }) => {
-  const [session, setSession] = useState<MatchScoutingSession>();
-  const [scoutedTeam, setScoutedTeam] = useState<Team>();
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-      const dtoTeams = await Database.getTeams();
-      const dtoTeam = dtoTeams.find(
-        (team) => team.key === dtoSession?.scoutedTeamKey
-      );
-
-      // Validate.
-      if (dtoSession === undefined) return;
-      if (dtoTeam === undefined) return;
-
-      // Set State.
-      setSession(dtoSession);
-      setScoutedTeam(dtoTeam);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const allianceColor = (): ColorValue => {
     switch (session?.alliance) {
       case Alliance.Blue:
@@ -63,13 +35,13 @@ const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({
       }}
     >
       <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
-        Match {session?.matchNumber}
+        Match {session.matchNumber}
       </Text>
       <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
-        Team {scoutedTeam?.teamNumber}
+        Team {session.teamNumber}
       </Text>
       <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
-        {session?.alliance} {session?.allianceTeam}
+        {session.alliance} {session.allianceTeam}
       </Text>
     </View>
   );

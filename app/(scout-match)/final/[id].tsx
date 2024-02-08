@@ -17,8 +17,8 @@ function FinalScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [sessionKey, setSessionKey] = useState<string>(id);
   const [session, setSession] = useState<MatchScoutingSession>();
+  const [sessionKey, setSessionKey] = useState<string>(id);
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
@@ -103,9 +103,17 @@ function FinalScreen() {
     }
   };
 
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <MatchScoutingHeader sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 1 }}>

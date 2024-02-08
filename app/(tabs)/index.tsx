@@ -66,6 +66,7 @@ function IndexScreen() {
       const dtoEvent = await Database.getEvent();
       const match = eventMatches.find((match: Match) => match.key === matchKey);
 
+      // Validate.
       if (dtoEvent == undefined) return;
       if (match == undefined) return;
 

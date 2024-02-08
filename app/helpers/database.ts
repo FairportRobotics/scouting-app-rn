@@ -22,7 +22,10 @@ const executeSql = (query: string, params: Array<any> = []) => {
           query,
           params,
           (_, { rows }) => resolve(rows._array),
-          (_, error) => false
+          (_, error) => {
+            console.error(error);
+            return false;
+          }
         );
       },
       (error) => reject(error)
@@ -574,7 +577,11 @@ export const getMatchScoutingSessions = async (): Promise<
   Array<MatchScoutingSession>
 > => {
   try {
-    const query = "SELECT * FROM match_scouting_sessions ORDER BY matchNumber";
+    const query =
+      "SELECT s.*, t.teamNumber, t.nickname teamNickname \
+      FROM match_scouting_sessions s \
+      INNER JOIN event_teams t on s.scoutedTeamKey = t.key \
+      ORDER BY matchNumber";
     return (await executeSql(query, [])) as Array<MatchScoutingSession>;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -586,7 +593,11 @@ export const getMatchScoutingSession = async (
   sessionKey: string
 ): Promise<MatchScoutingSession | undefined> => {
   try {
-    const query = "SELECT * FROM match_scouting_sessions WHERE key = ? LIMIT 1";
+    const query =
+      "SELECT s.*, t.teamNumber, t.nickname as teamNickname \
+      FROM match_scouting_sessions s \
+      INNER JOIN event_teams t on s.scoutedTeamKey = t.key \
+      WHERE s.key = ? LIMIT 1";
     const params = [sessionKey];
     const results = (await executeSql(query, params)) as MatchScoutingSession[];
 

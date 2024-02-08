@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -8,11 +8,13 @@ import {
   MatchScoutingHeader,
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
+import { MatchScoutingSession } from "@/constants/Types";
 
 function TeleopScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
+  const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
   const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
@@ -45,6 +47,7 @@ function TeleopScreen() {
       if (dtoSession === undefined) return;
 
       // Set State.
+      setSession(dtoSession);
       setSpeakerScore(dtoSession.teleopSpeakerScore ?? 0);
       setSpeakerScoreAmplified(dtoSession.teleopSpeakerScoreAmplified ?? 0);
       setSpeakerMiss(dtoSession.teleopSpeakerMiss ?? 0);
@@ -83,9 +86,17 @@ function TeleopScreen() {
     router.replace(`/(scout-match)/endgame/${sessionKey}`);
   };
 
+  if (session === undefined) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <MatchScoutingHeader sessionKey={sessionKey} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"
