@@ -2,10 +2,9 @@ import { Text } from "react-native";
 
 interface MetricLabelProps {
   label: string | "";
-  style?: {};
 }
 
-const MetricLabel: React.FC<MetricLabelProps> = ({ label, style }) => {
+const MetricLabel: React.FC<MetricLabelProps> = ({ label }) => {
   return <Text style={{ fontSize: 14, color: "darkgray" }}>{label}</Text>;
 };
 

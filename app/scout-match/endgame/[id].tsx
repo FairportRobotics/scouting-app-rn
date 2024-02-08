@@ -5,7 +5,7 @@ import {
   Check,
   ContainerGroup,
   MinusPlusPair,
-  OptionSelect,
+  SelectGroup,
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import Navigation from "../Navigation";
@@ -65,7 +65,7 @@ function EndgameScreen() {
 
   const handleDidRobotHang = (value: boolean) => {
     setDidRobotHang(value);
-    if (!value) setHarmonyScore("");
+    setHarmonyScore("0");
   };
 
   const handleNavigatePrevious = () => {
@@ -104,9 +104,11 @@ function EndgameScreen() {
           checked={didRobotHang}
           onToggle={() => handleDidRobotHang(!didRobotHang)}
         />
-        <OptionSelect
-          label="Harmony"
+        <SelectGroup
+          title="Harmony"
           options={["0", "1", "2"]}
+          required={true}
+          disabled={!didRobotHang}
           value={harmonyScore}
           onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
         />

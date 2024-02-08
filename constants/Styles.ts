@@ -22,17 +22,13 @@ export default StyleSheet.create({
     marginBottom: 10,
     gap: 10,
   },
-  inputGroup: {
-    backgroundColor: Colors.containerBackground,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
-    borderRadius: 10,
-    marginBottom: 10,
-    gap: 10,
-  },
   containerGroupTitle: {
     fontSize: 24,
     marginBottom: 8,
+  },
+  selectGroupTitle: {
+    fontSize: 20,
+    marginBottom: 6,
   },
   baseButton: {
     borderRadius: 8,

@@ -308,6 +308,23 @@ export const getTeams = async (): Promise<Array<Team>> => {
   }
 };
 
+export const getTeam = async (teamKey: string): Promise<Team | undefined> => {
+  try {
+    const query = "SELECT * FROM event_teams WHERE key = ? LIMIT 1";
+    const params = [teamKey];
+    const results = (await executeSql(query, params)) as Team[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error fetching event_teams", error);
+    return undefined;
+  }
+};
+
 //=================================================================================================
 // Match Scouting data access.
 //=================================================================================================
@@ -586,10 +603,7 @@ export const getMatchScoutingSession = async (
 
 export const getMatchScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
-    const query =
-      "\
-      SELECT key FROM match_scouting_sessions \
-      ";
+    const query = "SELECT key FROM match_scouting_sessions";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
@@ -625,10 +639,7 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
   Array<ItemKey>
 > => {
   try {
-    const query =
-      "\
-      SELECT key FROM team_match_scouting_session_keys \
-      ";
+    const query = "SELECT key FROM team_match_scouting_session_keys";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
@@ -639,24 +650,6 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
 //=================================================================================================
 // Pit Scouting data access.
 //=================================================================================================
-
-export const initializePitScoutingSession = async (
-  session: PitScoutingSession
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO pit_scouting_sessions(key, eventKey) \
-      VALUES(:key, :eventKey) \
-      ON CONFLICT (key) DO NOTHING",
-      [session.key, session.eventKey],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
 
 export const getPitScoutingSessions = async (): Promise<
   Array<PitScoutingSession>
@@ -695,8 +688,9 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
       "INSERT INTO pit_scouting_sessions \
       (key, eventKey, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimensions, teamExperience) \
       VALUES \
-      (:key, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
+      (:key, :eventKey, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
       ON CONFLICT (key) DO UPDATE SET \
+        eventKey = excluded.eventKey, \
         canAchieveHarmony = excluded.canAchieveHarmony, \
         canFitOnStage = excluded.canFitOnStage, \
         canFitUnderStage = excluded.canFitUnderStage, \

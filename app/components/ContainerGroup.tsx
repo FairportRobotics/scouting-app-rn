@@ -4,14 +4,9 @@ import Styles from "@/constants/Styles";
 interface ContainerGroupProps {
   title: string | "";
   children: any;
-  style?: {};
 }
 
-const ContainerGroup: React.FC<ContainerGroupProps> = ({
-  title,
-  children,
-  style,
-}) => {
+const ContainerGroup: React.FC<ContainerGroupProps> = ({ title, children }) => {
   return (
     <View style={Styles.containerGroup}>
       {title && <Text style={Styles.containerGroupTitle}>{title}</Text>}
