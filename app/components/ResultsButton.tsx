@@ -10,10 +10,10 @@ import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
 interface ResultsButtonProps {
-  label: string | "";
+  label: string;
   faIcon: "edit" | "upload" | "qr" | "share";
-  active?: boolean | true;
-  disabled?: boolean | false;
+  active?: boolean | undefined;
+  disabled?: boolean | undefined;
   styles?: {};
   onPress: () => void;
 }
@@ -26,6 +26,9 @@ const ResultsButton: React.FC<ResultsButtonProps> = ({
   styles,
   onPress,
 }) => {
+  active = active ?? true;
+  disabled = disabled ?? false;
+
   const iconLookup = {
     edit: faEdit,
     upload: faCloudArrowUp,
