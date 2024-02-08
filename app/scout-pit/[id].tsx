@@ -100,21 +100,21 @@ function ScoutPitScreen() {
       </ContainerGroup>
       <ContainerGroup title="Can your robot receive Notes from the Source?">
         <SelectGroup
-          value={currentSession?.canGetFromSource || ""}
+          value={currentSession?.canGetFromSource}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canGetFromSource", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can you score in the Amp?">
         <SelectGroup
-          value={currentSession?.canScoreAmp || ""}
+          value={currentSession?.canScoreAmp}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreAmp", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can you score in the Speaker?">
         <SelectGroup
-          value={currentSession?.canScoreSpeaker || ""}
+          value={currentSession?.canScoreSpeaker}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreSpeaker", value)}
         />
@@ -122,14 +122,14 @@ function ScoutPitScreen() {
 
       <ContainerGroup title="Can you score in the Trap?">
         <SelectGroup
-          value={currentSession?.canScoreTrap || ""}
+          value={currentSession?.canScoreTrap}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canScoreTrap", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Do you plan on scoring in the Trap?">
         <SelectGroup
-          value={currentSession?.planOnScoringTrap || ""}
+          value={currentSession?.planOnScoringTrap}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("planOnScoringTrap", value)}
         />
@@ -137,21 +137,21 @@ function ScoutPitScreen() {
 
       <ContainerGroup title="Can you get Onstage?">
         <SelectGroup
-          value={currentSession?.canGetOnStage || ""}
+          value={currentSession?.canGetOnStage}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canGetOnStage", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Do you plan on getting Onstage?">
         <SelectGroup
-          value={currentSession?.planOnClimbing || ""}
+          value={currentSession?.planOnClimbing}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("planOnClimbing", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="How many of your robot can fit Onstage at the same time?">
         <SelectGroup
-          value={currentSession?.canFitOnStage || ""}
+          value={currentSession?.canFitOnStage}
           options={["1", "2", "3"]}
           onChange={(value) => handleChange("canFitOnStage", value)}
         />
@@ -160,21 +160,21 @@ function ScoutPitScreen() {
       <ContainerGroup title="Can you park?">
         <SelectGroup
           options={["Yes", "No"]}
-          value={currentSession?.canPark || ""}
+          value={currentSession?.canPark}
           onChange={(value) => handleChange("canPark", value)}
         />
       </ContainerGroup>
 
       <ContainerGroup title="Can you achieve Harmony?">
         <SelectGroup
-          value={currentSession?.canAchieveHarmony || ""}
+          value={currentSession?.canAchieveHarmony}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canAchieveHarmony", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="What experiance does your Drive Team have?">
         <SelectGroup
-          value={currentSession?.teamExperience || ""}
+          value={currentSession?.teamExperience}
           options={[
             "All New",
             "Mostly New",
@@ -188,20 +188,20 @@ function ScoutPitScreen() {
       <ContainerGroup title="Is your robot ready now?">
         <SelectGroup
           options={["Yes", "No"]}
-          value={currentSession?.isRobotReady || ""}
+          value={currentSession?.isRobotReady}
           onChange={(value) => handleChange("isRobotReady", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="Can your Robot recover if a Note gets improperly attached to it?">
         <SelectGroup
           options={["Yes", "No"]}
-          value={currentSession?.canRobotRecover || ""}
+          value={currentSession?.canRobotRecover}
           onChange={(value) => handleChange("canRobotRecover", value)}
         />
       </ContainerGroup>
       <ContainerGroup title="What are the dimentions of your Robot?">
         <SelectGroup
-          value={currentSession?.robotDimensions || ""}
+          value={currentSession?.robotDimensions}
           options={["Do Later"]}
           onChange={(value) => handleChange("robotDimensions", value)}
         />
@@ -209,7 +209,7 @@ function ScoutPitScreen() {
 
       <ContainerGroup title="Can your Robot fit under the Stage?">
         <SelectGroup
-          value={currentSession?.canFitUnderStage || ""}
+          value={currentSession?.canFitUnderStage}
           options={["Yes", "No"]}
           onChange={(value) => handleChange("canFitUnderStage", value)}
         />

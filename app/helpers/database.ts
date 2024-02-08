@@ -586,10 +586,7 @@ export const getMatchScoutingSession = async (
 
 export const getMatchScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
-    const query =
-      "\
-      SELECT key FROM match_scouting_sessions \
-      ";
+    const query = "SELECT key FROM match_scouting_sessions";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
@@ -625,10 +622,7 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
   Array<ItemKey>
 > => {
   try {
-    const query =
-      "\
-      SELECT key FROM team_match_scouting_session_keys \
-      ";
+    const query = "SELECT key FROM team_match_scouting_session_keys";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
@@ -659,7 +653,6 @@ export const getPitScoutingSession = async (
     const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
     const results = (await executeSql(query, params)) as PitScoutingSession[];
-    console.log("getPitScoutingSession results:", results);
 
     if (results.length > 0) {
       return results[0];
@@ -673,7 +666,6 @@ export const getPitScoutingSession = async (
 };
 
 export const updatePitScoutingSession = async (session: PitScoutingSession) => {
-  console.log("updatePitScoutingSession session:", session);
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
