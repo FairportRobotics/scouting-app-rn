@@ -12,7 +12,6 @@ import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 
 function ConfirmScreen() {
-  console.log("ConfirmScreen...");
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
