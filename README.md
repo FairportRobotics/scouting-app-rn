@@ -104,18 +104,18 @@ Match Scouting:
 - [?] Header
 - [x] Better navigation UI
 - [?] Retain tab visibility? Is this desirable or possible?
-- [ ] Total score should not be -/+.
-- [ ] Change option buttons to opaque and not a different color from primary.
-- [ ] Why does Endgame sometimes have an issue with the Option component when the next screen does not. I suspect it's due to the logic that hides/shows the component based on the checkbox but I'm not sure. I need to figure this out because we cannot have that bug show up at a competition. Maybe instead of visible, it's disabled... Not sure yet.
-- [ ] When we check, "Did hang", we should default to "0" and require a value. We should not be able to deselect the seleted value... only select a new value.
+- [x] Total score should not be -/+.
+- [x] Change option buttons to opaque and not a different color from primary.
+- [x] Why does Endgame sometimes have an issue with the Option component when the next screen does not. I suspect it's due to the logic that hides/shows the component based on the checkbox but I'm not sure. I need to figure this out because we cannot have that bug show up at a competition. Maybe instead of visible, it's disabled... Not sure yet.
+- [x] When we check, "Did hang", we should default to "0" and require a value. We should not be able to deselect the seleted value... only select a new value.
 - [ ] Nice to have: When selecting a match to scout, if you made a mistake and made no changes, going back will delete the session? Maybe the session is only created when you click Next/Auo from the Confirm screen.
 - [x] When flowing through Match Scouting, we will want a header and the header color should match the color of the Alliance. We also want the team number very prominently displayed so the scouter can very easily be reminded who they are scouting.
-- [ ] Penalties UI should be reworked so we use the color of the opposing Alliance in addition to whatever guidance text we come up with.
+- [x] Penalties UI should be reworked so we use the color of the opposing Alliance in addition to whatever guidance text we come up with.
 - [x] Confirm Screen: Change "Select Team" to "Back".
 - [x] Navigation should have only 2 buttons. Originally, I thought the "Done" might help when editing a session but we decided it introduces to omuch confusion.
-- [ ] Look into being able to hide the keyboard on the Confirm screen and Final screen so the user can see the buttons after they have entered text.
+- [x] Look into being able to hide the keyboard on the Confirm screen and Final screen so the user can see the buttons after they have entered text.
 - [ ] Incorporate the list of keys returned from the API. When a key exists for the Match on the device, display a tablet icon. When a key exists for the Match that is not on the device, display user-group icon.
-- [ ] When tapping Final > Done, automatically upload.
+- [x] When tapping Final > Done, automatically upload.
 
 Match Results:
 
