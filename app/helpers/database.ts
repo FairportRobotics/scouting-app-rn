@@ -308,6 +308,23 @@ export const getTeams = async (): Promise<Array<Team>> => {
   }
 };
 
+export const getTeam = async (teamKey: string): Promise<Team | undefined> => {
+  try {
+    const query = "SELECT * FROM event_teams WHERE key = ? LIMIT 1";
+    const params = [teamKey];
+    const results = (await executeSql(query, params)) as Team[];
+
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error fetching event_teams", error);
+    return undefined;
+  }
+};
+
 //=================================================================================================
 // Match Scouting data access.
 //=================================================================================================
