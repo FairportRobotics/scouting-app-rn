@@ -194,11 +194,6 @@ export default function MatchResultsScreen() {
                 faIcon="share"
                 onPress={() => handleShareAllSessionsJson()}
               />
-              <ResultsButton
-                label="CSV"
-                faIcon="share"
-                onPress={() => handleShareAllSessionsCsv()}
-              />
             </View>
           </View>
         </ContainerGroup> */}
