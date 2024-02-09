@@ -19,8 +19,8 @@ const QrCodeModal: React.FC<QrCodeModalProps> = ({ value, onPressClose }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        width: "100%",
         gap: 10,
+        margin: 30,
       }}
     >
       <TouchableOpacity
