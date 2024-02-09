@@ -6,7 +6,7 @@ import Styles from "@/constants/Styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faTabletScreenButton,
-  faUserGroup,
+  faCloud,
 } from "@fortawesome/free-solid-svg-icons";
 import Colors from "@/constants/Colors";
 
@@ -24,28 +24,36 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
   };
 
   const renderBadge = () => {
-    if (teamModel.sessionExists || teamModel.uploadExists) {
+    if (teamModel.sessionExists) {
       return (
         <View
           style={{
             zIndex: 100,
             position: "absolute",
-            top: -3,
-            right: -3,
+            top: -2,
+            right: -2,
             width: 30,
             height: 30,
             borderRadius: 15,
-            backgroundColor: "white",
+            backgroundColor:
+              teamModel.sessionExists && teamModel.uploadExists
+                ? Colors.uploaded
+                : Colors.notUploaded,
             borderWidth: 2,
-            borderColor: "#696969",
+            borderColor:
+              teamModel.sessionExists && teamModel.uploadExists
+                ? Colors.uploaded
+                : Colors.notUploaded,
             justifyContent: "center",
             alignItems: "center",
           }}
         >
           <FontAwesomeIcon
-            icon={teamModel.sessionExists ? faTabletScreenButton : faUserGroup}
-            size={20}
-            style={{ color: "#696969" }}
+            icon={teamModel.uploadExists ? faCloud : faTabletScreenButton}
+            size={18}
+            style={{
+              color: "white",
+            }}
           />
         </View>
       );

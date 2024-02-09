@@ -4,14 +4,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSquare } from "@fortawesome/free-regular-svg-icons/faSquare";
 import { faSquareCheck } from "@fortawesome/free-regular-svg-icons/faSquareCheck";
 
-interface CheckProps {
+type CheckProps = {
   label: string;
   checked: boolean | false;
   onToggle: () => void;
   style?: {};
-}
+};
 
-const Check: React.FC<CheckProps> = ({ label, checked, onToggle, style }) => {
+export default function Check({ label, checked, onToggle, style }: CheckProps) {
   const handleToggle = () => {
     onToggle();
   };
@@ -36,6 +36,4 @@ const Check: React.FC<CheckProps> = ({ label, checked, onToggle, style }) => {
       <Text style={{ fontSize: 24 }}>{label}</Text>
     </TouchableOpacity>
   );
-};
-
-export default Check;
+}

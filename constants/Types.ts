@@ -185,18 +185,6 @@ export type PitScoutingSession = {
   teamExperience: string;
 };
 
-export type PitScoutingSessionAction = {
-  key: string;
-  teamNumber: string;
-  nickname: string;
-  wasScouted: boolean;
-  uploadedDate: Date | null;
-  qrJsonDate: Date | null;
-  qrCsvDate: Date | null;
-  shareJsonDate: Date | null;
-  shareCsvDate: Date | null;
-};
-
 export type AppSettings = {
   key: string;
   tbaKey: string;
@@ -222,14 +210,14 @@ export type TeamModel = {
   uploadExists: boolean;
 };
 
+export type ItemKey = {
+  key: string;
+};
+
 //=================================================================================================
-// The Blue Alliance types
+// Support for Props
 //=================================================================================================
 export type RootStackParamList = {
   ScoutMatchScreen: undefined;
   ScoutMatchEditScreen: { id: string; returnTo: string };
-};
-
-export type ItemKey = {
-  key: string;
 };

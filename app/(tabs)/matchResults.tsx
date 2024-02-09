@@ -1,7 +1,7 @@
 import { RefreshControl, View, ScrollView, Share } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { Match, MatchScoutingSession, Team } from "@/constants/Types";
+import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postMatchSession from "../helpers/postMatchSession";
@@ -11,15 +11,12 @@ export type MatchResultModel = {
   matchNumber: number;
   alliance: string;
   allianceTeam: number;
-  scheduledTeamNumber: string;
-  scheduledTeamNickname: string;
   scoutedTeamNumber: string;
   scoutedTeamNickname: string;
+  uploadExists: boolean;
 };
 
 export default function MatchResultsScreen() {
-  const router = useRouter();
-
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
@@ -38,85 +35,82 @@ export default function MatchResultsScreen() {
 
   const loadData = async () => {
     try {
-      // Retrieve from the database.
-      const dtoMatches = await Database.getMatches();
-      const dtoTeams = await Database.getTeams();
-      const dtoSessions = await Database.getMatchScoutingSessions();
-
-      // Validate
-      if (dtoMatches === undefined) return;
-      if (dtoTeams === undefined) return;
-      if (dtoSessions === undefined) return;
-
-      // Create a Matches dictionary for faster lookups.
-      let matchesDictionary: Record<string, Match> = {};
-      dtoMatches.forEach((match) => {
-        matchesDictionary[match.key] = match;
-      });
-
-      // Retrieve Teams and produce a Dictionary.
-      let teamsDictionary: Record<string, Team> = {};
-      dtoTeams.forEach((team) => {
-        teamsDictionary[team.key] = team;
-      });
-
-      // Build the array of MatchResultModel.
-      let models: Array<MatchResultModel> = [];
-      dtoSessions.map((session) => {
-        try {
-          // Retrieve the needed objects from the dictionaries.
-          const match = matchesDictionary[session.matchKey];
-          const scheduledTeam = teamsDictionary[session.scheduledTeamKey];
-          const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
-
-          // Initialize the model.
-          const model = {
-            sessionKey: session.key,
-            matchNumber: match.matchNumber,
-            alliance: session.alliance,
-            allianceTeam: session.allianceTeam,
-          } as MatchResultModel;
-
-          // Assign the scheduled team.
-          if (scheduledTeam !== undefined) {
-            model.scheduledTeamNumber = scheduledTeam.teamNumber;
-            model.scheduledTeamNickname = scheduledTeam.nickname;
-          }
-
-          // Assign the scouted team.
-          if (scoutedTeam !== undefined) {
-            model.scoutedTeamNumber = scoutedTeam.teamNumber;
-            model.scoutedTeamNickname = scoutedTeam.nickname;
-          }
-
-          models.push(model);
-        } catch (error) {
-          console.error(error);
-        }
-      });
-
-      setReportModels(models);
-      setSessions(dtoSessions);
-
-      setIsRefreshing(false);
+      try {
+        // Retrieve data.
+        Promise.all([
+          // Retrieve from the database.
+          Database.getMatches() as Promise<Array<Match>>,
+          Database.getTeams() as Promise<Array<Team>>,
+          Database.getMatchScoutingSessions() as Promise<
+            Array<MatchScoutingSession>
+          >,
+          Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
+        ])
+          .then(([dtoMatches, dtoTeams, dtoSessions, uploadedKeys]) => {
+            buildModels(dtoMatches, dtoTeams, dtoSessions, uploadedKeys);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } catch (error) {
+        console.log("Something went horribly wrong.");
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleUploadAllSessions = () => {};
+  const buildModels = (
+    matches: Array<Match>,
+    teams: Array<Team>,
+    sessions: Array<MatchScoutingSession>,
+    uploadedKeys: Array<ItemKey>
+  ) => {
+    // Create Matches dictionary.
+    let matchesDictionary: Record<string, Match> = {};
+    matches.forEach((match) => {
+      matchesDictionary[match.key] = match;
+    });
 
-  const handleShareAllSessionsJson = async () => {
-    const json = JSON.stringify(sessions);
-    const shareOptions = {
-      message: json,
-      type: "application/json",
-    };
+    // Create Teams dictionary.
+    let teamsDictionary: Record<string, Team> = {};
+    teams.forEach((team) => {
+      teamsDictionary[team.key] = team;
+    });
 
-    await Share.share(shareOptions);
+    // Build the array of MatchResultModel.
+    let models: Array<MatchResultModel> = [];
+    sessions.map((session) => {
+      try {
+        // Retrieve the needed objects from the dictionaries.
+        const match = matchesDictionary[session.matchKey];
+        const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
+
+        // Initialize the model.
+        const model = {
+          sessionKey: session.key,
+          matchNumber: match.matchNumber,
+          alliance: session.alliance,
+          allianceTeam: session.allianceTeam,
+        } as MatchResultModel;
+
+        // Assign the scouted team.
+        if (scoutedTeam !== undefined) {
+          model.scoutedTeamNumber = scoutedTeam.teamNumber;
+          model.scoutedTeamNickname = scoutedTeam.nickname;
+        }
+
+        models.push(model);
+      } catch (error) {
+        console.error(error);
+      }
+    });
+
+    setReportModels(models);
+    setSessions(sessions);
+
+    setIsRefreshing(false);
   };
-
-  const handleShareAllSessionsCsv = () => {};
 
   const handleUploadSession = async (sessionKey: string) => {
     const session = sessions.find((session) => session.key === sessionKey);
@@ -133,8 +127,6 @@ export default function MatchResultsScreen() {
     setShowQrCode(true);
   };
 
-  const handleShowSessionCsvQR = async (sessionKey: string) => {};
-
   const handleShareSessionJson = async (sessionKey: string) => {
     const session = sessions.find((session) => session.key == sessionKey);
     if (session === undefined) return;
@@ -146,8 +138,6 @@ export default function MatchResultsScreen() {
 
     await Share.share(shareOptions);
   };
-
-  const handleShareSessionCsv = async (sessionKey: string) => {};
 
   if (showQrCode) {
     return (
@@ -166,37 +156,6 @@ export default function MatchResultsScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
-        {/* <ContainerGroup title="All Match Data">
-          <View
-            style={{
-              flex: 1,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                gap: 10,
-              }}
-            >
-              <ResultsButton
-                label="Upload"
-                faIcon="upload"
-                onPress={() => handleUploadAllSessions()}
-              />
-              <ResultsButton
-                label="JSON"
-                faIcon="share"
-                onPress={() => handleShareAllSessionsJson()}
-              />
-            </View>
-          </View>
-        </ContainerGroup> */}
         {reportModels.map((match, index) => (
           <ContainerGroup
             key={index}
