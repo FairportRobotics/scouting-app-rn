@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { MatchScoutingSession, Team } from "@/constants/Types";
 import {
@@ -41,6 +47,22 @@ function ConfirmScreen() {
     saveData();
   }, [scouterName, scoutedTeam]);
 
+  useEffect(() => {
+    // Convert the filter text to lower case.
+    const value = filterText.toLowerCase();
+
+    // Find matching teams where the filter text is part of the team
+    // number of nickname.
+    let filtered = allTeams.filter(
+      (team) =>
+        value.length > 0 &&
+        (team.teamNumber.toString().includes(value) ||
+          team.nickname.toLowerCase().includes(value))
+    );
+
+    setFilteredTeams(filtered);
+  }, [filterText]);
+
   const loadData = async () => {
     try {
       // Retrieve from the database.
@@ -74,22 +96,6 @@ function ConfirmScreen() {
     } catch (error) {
       console.error(error);
     }
-  };
-
-  const handleChangeFilterText = (value: string) => {
-    // Convert the filter text to lower case.
-    value = value.toLowerCase();
-
-    // Find matching teams where the filter text is part of the team
-    // number of nickname.
-    let filtered = allTeams.filter(
-      (team) =>
-        value.length > 0 &&
-        (team.teamNumber.toString().includes(value) ||
-          team.nickname.toLowerCase().includes(value))
-    );
-
-    setFilteredTeams(filtered);
   };
 
   const handleChangeScoutedTeam = (value: string) => {
@@ -140,30 +146,32 @@ function ConfirmScreen() {
         <TextInput
           style={Styles.textInput}
           value={filterText}
-          onChangeText={(text) => handleChangeFilterText(text)}
+          onChangeText={(text) => setFilterText(text)}
           placeholder="I actually need to scout..."
         />
-        {filteredTeams.map((team) => (
-          <TouchableOpacity
-            style={{
-              width: "100%",
-              backgroundColor: Colors.appBackground,
-              borderRadius: 6,
-              padding: 20,
-              marginBottom: 8,
-            }}
-            key={team.key}
-            onPress={() => handleChangeScoutedTeam(team.key)}
-          >
-            <Text
+        <ScrollView style={{ width: "100%" }}>
+          {filteredTeams.map((team) => (
+            <TouchableOpacity
               style={{
-                fontSize: 20,
+                width: "100%",
+                backgroundColor: Colors.appBackground,
+                borderRadius: 6,
+                padding: 20,
+                marginBottom: 8,
               }}
+              key={team.key}
+              onPress={() => handleChangeScoutedTeam(team.key)}
             >
-              {team.teamNumber} {team.nickname}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={{
+                  fontSize: 20,
+                }}
+              >
+                {team.teamNumber} {team.nickname}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </ContainerGroup>
       <MatchScoutingNavigation
         previousLabel="Back"

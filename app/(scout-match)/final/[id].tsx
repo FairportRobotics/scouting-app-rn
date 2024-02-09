@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, KeyboardAvoidingView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -136,6 +136,7 @@ function FinalScreen() {
           </View>
         </View>
       </ContainerGroup>
+
       <ContainerGroup title="Overall">
         <SelectGroup
           title=""
@@ -150,6 +151,7 @@ function FinalScreen() {
           onChange={(value) => setViolations(value ?? "NONE_SELECTED")}
         />
       </ContainerGroup>
+
       <ContainerGroup title={penaltiesLabel()}>
         <MinusPlusPair
           label="Penalties"
@@ -157,16 +159,18 @@ function FinalScreen() {
           onChange={(delta) => setPenalties(penalties + delta)}
         />
       </ContainerGroup>
-      <ContainerGroup title="Notes">
-        <TextInput
-          multiline
-          maxLength={1024}
-          style={[Styles.textInput, { height: 100 }]}
-          value={notes}
-          onChangeText={(text) => setNotes(text)}
-          placeholder="Anything interesting happen?"
-        />
-      </ContainerGroup>
+      <KeyboardAvoidingView behavior="position">
+        <ContainerGroup title="Notes">
+          <TextInput
+            multiline
+            maxLength={1024}
+            style={[Styles.textInput, { height: 100 }]}
+            value={notes}
+            onChangeText={(text) => setNotes(text)}
+            placeholder="Anything interesting happen?"
+          />
+        </ContainerGroup>
+      </KeyboardAvoidingView>
 
       <MatchScoutingNavigation
         previousLabel="Final"
