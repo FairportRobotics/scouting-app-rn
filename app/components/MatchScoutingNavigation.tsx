@@ -1,23 +1,22 @@
-import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import ContainerGroup from "@/app/components/ContainerGroup";
 import Styles from "@/constants/Styles";
-import ContainerGroup from "./ContainerGroup";
 
-interface MatchScoutingNavigationProps {
+type MatchScoutingNavigationProps = {
   previousLabel: string;
   nextLabel: string;
   onPrevious: () => void;
   onNext: () => void;
-}
+};
 
-const MatchScoutingNavigation: React.FC<MatchScoutingNavigationProps> = ({
+export default function MatchScoutingNavigation({
   previousLabel,
   nextLabel,
   onPrevious,
   onNext,
-}) => {
+}: MatchScoutingNavigationProps) {
   const handleOnPrevious = () => {
     onPrevious();
   };
@@ -85,6 +84,4 @@ const MatchScoutingNavigation: React.FC<MatchScoutingNavigationProps> = ({
       </ContainerGroup>
     </View>
   );
-};
-
-export default MatchScoutingNavigation;
+}

@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
 import { View, Text, ColorValue } from "react-native";
-import { MatchScoutingSession, Team } from "@/constants/Types";
+import { MatchScoutingSession } from "@/constants/Types";
 import { Alliance } from "@/constants/Enums";
 import Colors from "@/constants/Colors";
-import * as Database from "@/app/helpers/database";
 
-interface MatchScoutingHeaderProps {
+type MatchScoutingHeaderProps = {
   session: MatchScoutingSession;
-}
+};
 
-const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({
+export default function MatchScoutingHeader({
   session,
-}) => {
+}: MatchScoutingHeaderProps) {
   const allianceColor = (): ColorValue => {
     switch (session?.alliance) {
       case Alliance.Blue:
@@ -45,6 +43,4 @@ const MatchScoutingHeader: React.FC<MatchScoutingHeaderProps> = ({
       </Text>
     </View>
   );
-};
-
-export default MatchScoutingHeader;
+}

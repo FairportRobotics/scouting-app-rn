@@ -1,18 +1,18 @@
 import React from "react";
 import { View, Text } from "react-native";
-import type { MatchModel, TeamModel } from "@/constants/Types";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
-import MatchTeamSelect from "./MatchTeamSelect";
+import MatchTeamSelect from "@/app/components/MatchTeamSelect";
+import type { MatchModel, TeamModel } from "@/constants/Types";
 
-interface ScoutingMatchSelectProps {
+type ScoutingMatchSelectProps = {
   matchModel: MatchModel;
   onSelect: (matchModel: MatchModel, teamModel: TeamModel) => void;
-}
+};
 
-const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
+export default function ScoutingMatchSelect({
   matchModel,
   onSelect,
-}) => {
+}: ScoutingMatchSelectProps) {
   const handleOnSelect = (teamModel: TeamModel) => {
     onSelect(matchModel, teamModel);
   };
@@ -90,6 +90,4 @@ const ScoutingMatchSelect: React.FC<ScoutingMatchSelectProps> = ({
       </View>
     </View>
   );
-};
-
-export default ScoutingMatchSelect;
+}

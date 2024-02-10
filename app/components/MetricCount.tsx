@@ -1,11 +1,9 @@
 import { Text } from "react-native";
 
-interface MetricCountProps {
+type MetricCountProps = {
   count: number | 0;
-}
-
-const MetricCount: React.FC<MetricCountProps> = ({ count }) => {
-  return <Text style={{ fontSize: 24, fontWeight: "800" }}>{count}</Text>;
 };
 
-export default MetricCount;
+export default function MetricCount({ count }: MetricCountProps) {
+  return <Text style={{ fontSize: 24, fontWeight: "800" }}>{count}</Text>;
+}
