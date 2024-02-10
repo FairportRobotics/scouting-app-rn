@@ -133,6 +133,7 @@ function ConfirmScreen() {
           value={scouterName}
           onChangeText={(text) => setScouterName(text)}
           placeholder="My name is..."
+          placeholderTextColor={Colors.placeholder}
         />
       </ContainerGroup>
       <ContainerGroup title="Confirm Team to be Scouted">
@@ -147,6 +148,7 @@ function ConfirmScreen() {
           style={Styles.textInput}
           value={filterText}
           onChangeText={(text) => setFilterText(text)}
+          placeholderTextColor={Colors.placeholder}
           placeholder="I actually need to scout..."
         />
         <ScrollView style={{ width: "100%" }}>
