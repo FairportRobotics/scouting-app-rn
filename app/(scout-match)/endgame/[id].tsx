@@ -19,8 +19,8 @@ function EndgameScreen() {
 
   const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
-  const [trapScore, setTrapScore] = useState<number>(0);
-  const [microphoneScore, setMicrophoneScore] = useState<number>(0);
+  const [trapScore, setTrapScore] = useState<string>("0");
+  const [microphoneScore, setMicrophoneScore] = useState<string>("0");
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
   const [didRobotHang, setDidRobotHang] = useState<boolean>(false);
   const [harmonyScore, setHarmonyScore] = useState<string>("NONE_SELECTED");
@@ -43,8 +43,8 @@ function EndgameScreen() {
 
       // Set State.
       setSession(dtoSession);
-      setTrapScore(dtoSession?.endgameTrapScore ?? 0);
-      setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? 0);
+      setTrapScore(dtoSession?.endgameTrapScore ?? "0");
+      setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? "0");
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
       setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
       setHarmonyScore(dtoSession?.endgameHarmony ?? "NONE_SELECTED");
@@ -58,8 +58,8 @@ function EndgameScreen() {
       // Save to database.
       await Database.saveMatchScoutingSessionEndgame(
         sessionKey,
-        trapScore,
-        microphoneScore,
+        trapScore ?? "0",
+        microphoneScore ?? "0",
         didRobotPark,
         didRobotHang,
         harmonyScore ?? ""
@@ -74,8 +74,15 @@ function EndgameScreen() {
     } catch (error) {}
   };
 
+  const handleDidRobotPark = (value: boolean) => {
+    setDidRobotPark(value);
+    setDidRobotHang(false);
+    setHarmonyScore("0");
+  };
+
   const handleDidRobotHang = (value: boolean) => {
     setDidRobotHang(value);
+    setDidRobotPark(false);
     setHarmonyScore("0");
   };
 
@@ -102,21 +109,25 @@ function EndgameScreen() {
     <View style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Stage">
-        <MinusPlusPair
-          label="Trap"
-          count={trapScore}
-          onChange={(delta) => setTrapScore(trapScore + delta)}
+        <SelectGroup
+          title="Trap"
+          options={["0", "1", "2", "3"]}
+          value={trapScore}
+          required={true}
+          onChange={(value) => setTrapScore(value ?? "0")}
         />
-        <MinusPlusPair
-          label="Microphone"
-          count={microphoneScore}
-          onChange={(delta) => setMicrophoneScore(microphoneScore + delta)}
+        <SelectGroup
+          title="Microphone"
+          options={["0", "1", "2", "3"]}
+          value={microphoneScore}
+          required={true}
+          onChange={(value) => setMicrophoneScore(value ?? "0")}
         />
         <Check
           style={{ marginTop: 18 }}
           label="Did robot Park?"
           checked={didRobotPark}
-          onToggle={() => setDidRobotPark(!didRobotPark)}
+          onToggle={() => handleDidRobotPark(!didRobotPark)}
         />
         <Check
           style={{ marginTop: 18 }}
