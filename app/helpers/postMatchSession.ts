@@ -8,7 +8,7 @@ export default async (session: MatchScoutingSession) => {
 
     const postData = {
       type: "match",
-      data: JSON.stringify(session),
+      data: session,
     };
 
     const response = await axios.post(saveUri, postData);
