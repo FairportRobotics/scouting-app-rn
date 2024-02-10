@@ -86,16 +86,19 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    try {
-      // Save to database.
-      await Database.saveMatchScoutingSessionConfirm(
-        sessionKey,
-        scoutedTeamKey,
-        scouterName
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    const timeoutId = setTimeout(() => {
+      try {
+        // Save to database.
+        Database.saveMatchScoutingSessionConfirm(
+          sessionKey,
+          scoutedTeamKey,
+          scouterName
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId);
   };
 
   const handleChangeScoutedTeam = (value: string) => {
