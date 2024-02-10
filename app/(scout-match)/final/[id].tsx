@@ -12,6 +12,7 @@ import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 import { MatchScoutingSession } from "@/constants/Types";
 import { Alliance } from "@/constants/Enums";
+import Colors from "@/constants/Colors";
 
 function FinalScreen() {
   const router = useRouter();
@@ -171,6 +172,7 @@ function FinalScreen() {
             value={notes}
             onChangeText={(text) => setNotes(text)}
             placeholder="Anything interesting happen?"
+            placeholderTextColor={Colors.placeholder}
           />
         </ContainerGroup>
       </KeyboardAvoidingView>
