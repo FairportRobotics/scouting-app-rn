@@ -97,7 +97,7 @@ export function initializeDatabase(
       (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
         autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, \
         teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
-        endgameTrapScore INTEGER, endgameMicrophoneScore INTEGER, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
+        endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
         finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT)"
     );
 
@@ -484,8 +484,8 @@ export const saveMatchScoutingSessionTeleop = async (
 
 export const saveMatchScoutingSessionEndgame = async (
   sessionKey: string,
-  trapScore: number,
-  microphoneScore: number,
+  trapScore: string,
+  microphoneScore: string,
   didRobotPark: boolean,
   didRobotHang: boolean,
   harmonyScore: string

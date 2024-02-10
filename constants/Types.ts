@@ -93,8 +93,8 @@ export type MatchScoutingSession = {
   teleopRelayPass: number;
 
   // Endgame
-  endgameTrapScore: number;
-  endgameMicrophoneScore: number;
+  endgameTrapScore: string;
+  endgameMicrophoneScore: string;
   endgameDidRobotPark: boolean;
   endgameDidRobotHang: boolean;
   endgameHarmony: string;
