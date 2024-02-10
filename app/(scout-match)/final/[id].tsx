@@ -56,20 +56,23 @@ function FinalScreen() {
   };
 
   const saveData = async () => {
-    try {
-      // Save to database.
-      await Database.saveMatchScoutingSessionFinal(
-        sessionKey,
-        totalScore,
-        rankingPoints,
-        allianceResult,
-        violations,
-        penalties,
-        notes
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    const timeoutId = setTimeout(() => {
+      try {
+        // Save to database.
+        Database.saveMatchScoutingSessionFinal(
+          sessionKey,
+          totalScore,
+          rankingPoints,
+          allianceResult,
+          violations,
+          penalties,
+          notes
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId);
   };
 
   const handleChangeTotalScore = (value: string) => {
