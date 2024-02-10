@@ -8,7 +8,7 @@ export default async (session: PitScoutingSession) => {
 
     const postData = {
       type: "pit",
-      data: JSON.stringify(session),
+      data: session,
     };
 
     const response = await axios.post(saveUri, postData);
