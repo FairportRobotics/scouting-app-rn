@@ -1,15 +1,15 @@
 import { View, Text, TouchableOpacity } from "react-native";
+import { useWindowDimensions } from "react-native";
 import React from "react";
 import QRCode from "react-native-qrcode-svg";
 import Styles from "@/constants/Styles";
-import { useWindowDimensions } from "react-native";
 
-interface QrCodeModalProps {
+type QrCodeModalProps = {
   value: string;
   onPressClose: () => void;
-}
+};
 
-const QrCodeModal: React.FC<QrCodeModalProps> = ({ value, onPressClose }) => {
+export default function QrCodeModal({ value, onPressClose }: QrCodeModalProps) {
   const { height, width } = useWindowDimensions();
 
   return (
@@ -41,6 +41,4 @@ const QrCodeModal: React.FC<QrCodeModalProps> = ({ value, onPressClose }) => {
       <QRCode value={value} size={width - 20} />
     </View>
   );
-};
-
-export default QrCodeModal;
+}

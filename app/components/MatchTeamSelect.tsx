@@ -1,24 +1,23 @@
-import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Alliance } from "@/constants/Enums";
-import type { TeamModel } from "@/constants/Types";
-import Styles from "@/constants/Styles";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faTabletScreenButton,
   faCloud,
 } from "@fortawesome/free-solid-svg-icons";
+import { Alliance } from "@/constants/Enums";
+import type { TeamModel } from "@/constants/Types";
+import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
-interface MatchTeamSelectProps {
+type MatchTeamSelectProps = {
   teamModel: TeamModel;
   onSelect: (teamModel: TeamModel) => void;
-}
+};
 
-const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
+export default function MatchTeamSelect({
   teamModel,
   onSelect,
-}) => {
+}: MatchTeamSelectProps) {
   const handleOnPress = () => {
     onSelect(teamModel);
   };
@@ -85,6 +84,4 @@ const MatchTeamSelect: React.FC<MatchTeamSelectProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
-
-export default MatchTeamSelect;
+}

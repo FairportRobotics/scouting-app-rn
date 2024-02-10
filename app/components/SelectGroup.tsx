@@ -1,25 +1,24 @@
-import React, { useEffect } from "react";
 import { useState } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import Styles from "@/constants/Styles";
 
-interface SelectGroupProps {
+type SelectGroupProps = {
   title?: string | "";
   value: string;
   options: string[] | [];
   required?: boolean | false;
   disabled?: boolean | false;
   onChange: (option: string) => void;
-}
+};
 
-const SelectGroup: React.FC<SelectGroupProps> = ({
+export default function SelectGroup({
   title,
   value,
   options,
   required,
   disabled,
   onChange,
-}) => {
+}: SelectGroupProps) {
   const [selectedOption, setSelectedOption] = useState<string>(value ?? "");
 
   const handleSelectOption = (option: string) => {
@@ -89,6 +88,4 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
       </View>
     </View>
   );
-};
-
-export default SelectGroup;
+}

@@ -1,18 +1,19 @@
 import { View, Text } from "react-native";
 import Styles from "@/constants/Styles";
 
-interface ContainerGroupProps {
+type ContainerGroupProps = {
   title: string | "";
   children: any;
-}
+};
 
-const ContainerGroup: React.FC<ContainerGroupProps> = ({ title, children }) => {
+export default function ContainerGroup({
+  title,
+  children,
+}: ContainerGroupProps) {
   return (
     <View style={Styles.containerGroup}>
       {title && <Text style={Styles.containerGroupTitle}>{title}</Text>}
       {children}
     </View>
   );
-};
-
-export default ContainerGroup;
+}

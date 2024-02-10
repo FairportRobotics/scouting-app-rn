@@ -1,8 +1,6 @@
-import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faSquare } from "@fortawesome/free-regular-svg-icons/faSquare";
-import { faSquareCheck } from "@fortawesome/free-regular-svg-icons/faSquareCheck";
+import { faSquare, faSquareCheck } from "@fortawesome/free-regular-svg-icons";
 
 type CheckProps = {
   label: string;

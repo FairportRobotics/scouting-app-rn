@@ -9,23 +9,23 @@ import {
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
-interface ResultsButtonProps {
+type ResultsButtonProps = {
   label: string;
   faIcon: "edit" | "upload" | "qr" | "share";
   active?: boolean | undefined;
   disabled?: boolean | undefined;
   styles?: {};
   onPress: () => void;
-}
+};
 
-const ResultsButton: React.FC<ResultsButtonProps> = ({
+export default function ResultsButton({
   label,
   faIcon,
   active,
   disabled,
   styles,
   onPress,
-}) => {
+}: ResultsButtonProps) {
   active = active ?? true;
   disabled = disabled ?? false;
 
@@ -86,6 +86,4 @@ const ResultsButton: React.FC<ResultsButtonProps> = ({
       </Text>
     </TouchableOpacity>
   );
-};
-
-export default ResultsButton;
+}

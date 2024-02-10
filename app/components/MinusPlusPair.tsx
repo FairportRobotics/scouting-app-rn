@@ -2,24 +2,23 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import MetricLabel from "@/app/components/MetricLabel";
+import MetricCount from "@/app/components/MetricCount";
 import Styles from "@/constants/Styles";
 
-import MetricCount from "@/app/components/MetricCount";
-import MetricLabel from "@/app/components/MetricLabel";
-
-interface MinusPlusProps {
+type MinusPlusProps = {
   label: string;
   count: number | 0;
   onChange: (delta: number) => void;
   style?: {};
-}
+};
 
-const MinusPlus: React.FC<MinusPlusProps> = ({
+export default function MinusPlus({
   label,
   count,
   onChange,
   style,
-}) => {
+}: MinusPlusProps) {
   const handleDecrement = () => {
     if (count == 0) onChange(0);
     else onChange(-1);
@@ -56,6 +55,4 @@ const MinusPlus: React.FC<MinusPlusProps> = ({
       </TouchableOpacity>
     </View>
   );
-};
-
-export default MinusPlus;
+}
