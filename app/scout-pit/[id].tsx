@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, SelectGroup } from "@/app/components";
 import { PitScoutingSession, Team } from "@/constants/Types";
+import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
 import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
@@ -63,6 +64,7 @@ function ScoutPitScreen() {
       if (dtoTeam === undefined) return;
       if (dtoSession === undefined) {
         dtoSession = defaultSession as PitScoutingSession;
+        dtoSession.eventKey = dtoEvent.key;
       }
 
       // Set State.
@@ -82,8 +84,19 @@ function ScoutPitScreen() {
     }
   };
 
+  const uploadDate = async () => {
+    try {
+      // Save to database.
+      const session = await Database.getPitScoutingSession(id);
+      if (session !== undefined) postPitScoutingSession(session);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleOnComplete = () => {
     saveData();
+    uploadDate();
     router.replace("/scoutPit");
   };
 

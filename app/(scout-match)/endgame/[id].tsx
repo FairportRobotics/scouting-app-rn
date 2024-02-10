@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -9,8 +9,9 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
-import * as Database from "@/app/helpers/database";
 import { MatchScoutingSession } from "@/constants/Types";
+import postMatchSession from "@/app/helpers/postMatchSession";
+import * as Database from "@/app/helpers/database";
 
 function EndgameScreen() {
   const router = useRouter();
@@ -66,6 +67,13 @@ function EndgameScreen() {
     } catch (error) {}
   };
 
+  const uplodaData = async () => {
+    try {
+      const session = await Database.getMatchScoutingSession(sessionKey);
+      if (session !== undefined) await postMatchSession(session);
+    } catch (error) {}
+  };
+
   const handleDidRobotHang = (value: boolean) => {
     setDidRobotHang(value);
     setHarmonyScore("0");
@@ -78,6 +86,7 @@ function EndgameScreen() {
 
   const handleNavigateNext = () => {
     saveData();
+    uplodaData();
     router.replace(`/(scout-match)/final/${sessionKey}`);
   };
 
