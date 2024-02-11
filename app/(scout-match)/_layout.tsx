@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, useLocalSearchParams, useRouter } from "expo-router";
+import { Tabs, useLocalSearchParams } from "expo-router";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faSquareCheck,
@@ -10,7 +10,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function TabLayout() {
-  const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
   return (
