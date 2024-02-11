@@ -14,7 +14,7 @@ import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "../helpers/getMatchSelectModels";
 
-function IndexScreen() {
+export default function IndexScreen() {
   const router = useRouter();
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
@@ -111,5 +111,3 @@ function IndexScreen() {
     </View>
   );
 }
-
-export default IndexScreen;

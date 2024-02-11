@@ -1,4 +1,10 @@
-import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
+import type {
+  ItemKey,
+  TbaEvent,
+  TbaMatch,
+  TbaTeam,
+  TeamMember,
+} from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -50,8 +56,11 @@ export function initializeDatabase(
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_session_actions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_session_actions");
-      tx.executeSql("DELETE FROM team_match_scouting_session_keys");
-      tx.executeSql("DELETE FROM team_pit_scouting_session_keys");
+      tx.executeSql(
+        "DROP TABLE IF EXISTS uploaded_match_scouting_session_keys"
+      );
+      tx.executeSql("DROP TABLE IF EXISTS uploaded_pit_scouting_session_keys");
+      tx.executeSql("DROP TABLE IF EXISTS team_members");
     });
   }
 
@@ -62,9 +71,10 @@ export function initializeDatabase(
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
       tx.executeSql("DELETE FROM match_scouting_sessions");
-      tx.executeSql("DELETE FROM team_match_scouting_session_keys");
+      tx.executeSql("DELETE FROM uploaded_match_scouting_session_keys");
       tx.executeSql("DELETE FROM pit_scouting_sessions");
-      tx.executeSql("DELETE FROM team_pit_scouting_session_keys");
+      tx.executeSql("DELETE FROM uploaded_pit_scouting_session_keys");
+      tx.executeSql("DELETE FROM team_members");
     });
   }
 
@@ -110,13 +120,18 @@ export function initializeDatabase(
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS team_match_scouting_session_keys \
+      "CREATE TABLE IF NOT EXISTS uploaded_match_scouting_session_keys \
       (key TEXT PRIMARY KEY)"
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS team_pit_scouting_session_keys \
+      "CREATE TABLE IF NOT EXISTS uploaded_pit_scouting_session_keys \
       (key TEXT PRIMARY KEY)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS team_members \
+      (key TEXT PRIMARY KEY, firstName TEXT, lastName TEXT)"
     );
   });
 }
@@ -276,6 +291,36 @@ export function saveTeams(teams: Array<TbaTeam>) {
   });
 }
 
+export const saveTeamMembers = async (teamMembers: Array<TeamMember>) => {
+  db.transaction((tx) => {
+    teamMembers.forEach((teamMember) => {
+      tx.executeSql(
+        "INSERT INTO team_members(key, firstName, lastName) \
+        VALUES(:key, :firstName, :lastName) \
+        ON CONFLICT (key) DO UPDATE SET \
+        firstName = excluded.firstName, \
+        lastName = excluded.lastName \
+      ",
+        [teamMember.key, teamMember.firstName, teamMember.lastName],
+        (txObj, resultSet) => {},
+        (txObj, error) => {
+          console.error(error);
+          return false;
+        }
+      );
+    });
+  });
+};
+
+export const getTeamMembers = async (): Promise<Array<TeamMember>> => {
+  try {
+    const query = "SELECT * FROM team_members";
+    return (await executeSql(query, [])) as Array<TeamMember>;
+  } catch (error) {
+    return [];
+  }
+};
+
 export const getEvent = async (): Promise<Event> => {
   try {
     const query = "SELECT * FROM events LIMIT 1";
@@ -292,7 +337,7 @@ export const getEvent = async (): Promise<Event> => {
   }
 };
 
-export const getMatches = async () => {
+export const getMatches = async (): Promise<Array<Match>> => {
   try {
     const query = "SELECT * FROM event_matches ORDER BY matchNumber";
     return (await executeSql(query, [])) as Array<Match>;
@@ -631,7 +676,7 @@ export const saveMatchScoutingSessionKeys = async (
   db.transaction((tx) => {
     sessionKeys.forEach((sessionKey) => {
       tx.executeSql(
-        "INSERT INTO team_match_scouting_session_keys \
+        "INSERT INTO uploaded_match_scouting_session_keys \
         (key) \
         VALUES (:key) \
         ON CONFLICT (key) DO NOTHING",
@@ -650,7 +695,7 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
   Array<ItemKey>
 > => {
   try {
-    const query = "SELECT key FROM team_match_scouting_session_keys";
+    const query = "SELECT key FROM uploaded_match_scouting_session_keys";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
     console.error("Error fetching Match Session Keys:", error);
@@ -757,7 +802,7 @@ export const savePitScoutingSessionKeys = async (teamKeys: Array<string>) => {
   db.transaction((tx) => {
     teamKeys.forEach((teamKey) => {
       tx.executeSql(
-        "INSERT INTO team_pit_scouting_session_keys \
+        "INSERT INTO uploaded_pit_scouting_session_keys \
         (key) \
         VALUES (:key) \
         ON CONFLICT (key) DO NOTHING",
@@ -776,7 +821,7 @@ export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
   try {
     const query =
       "\
-      SELECT key FROM team_pit_scouting_session_keys \
+      SELECT key FROM uploaded_pit_scouting_session_keys \
       ";
     return (await executeSql(query, [])) as Array<ItemKey> | [];
   } catch (error) {

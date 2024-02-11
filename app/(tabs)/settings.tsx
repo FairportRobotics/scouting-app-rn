@@ -1,18 +1,18 @@
 import { ScrollView, View } from "react-native";
+import Caches from "@/app/admin/caches";
 import FRSettings from "@/app/admin/FRSettings";
 import TBACaches from "@/app/admin/TBACaches";
 import DatabaseSettings from "@/app/admin/DatabaseSettings";
 
-function SettingsScreen() {
+export default function SettingsScreen() {
   return (
     <ScrollView>
       <View style={{ flex: 1 }}>
-        <DatabaseSettings />
+        <Caches />
+        {/* <DatabaseSettings />
         <FRSettings />
-        <TBACaches />
+        <TBACaches /> */}
       </View>
     </ScrollView>
   );
 }
-
-export default SettingsScreen;

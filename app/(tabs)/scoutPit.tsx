@@ -14,7 +14,7 @@ export type ReportRecord = {
   uploadedKey: string | undefined;
 };
 
-function ScoutPitScreen() {
+export default function ScoutPitScreen() {
   const router = useRouter();
 
   const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
@@ -136,43 +136,6 @@ function ScoutPitScreen() {
     );
   }
 
-  // const renderBadge = () => {
-  //   if (teamModel.sessionExists || teamModel.uploadExists) {
-  //     return (
-  //       <View
-  //         style={{
-  //           zIndex: 100,
-  //           position: "absolute",
-  //           top: -2,
-  //           right: -2,
-  //           width: 30,
-  //           height: 30,
-  //           borderRadius: 15,
-  //           backgroundColor: teamModel.uploadExists
-  //             ? Colors.uploaded
-  //             : Colors.notUploaded,
-  //           borderWidth: 2,
-  //           borderColor: teamModel.uploadExists
-  //             ? Colors.uploaded
-  //             : Colors.notUploaded,
-  //           justifyContent: "center",
-  //           alignItems: "center",
-  //         }}
-  //       >
-  //         <FontAwesomeIcon
-  //           icon={teamModel.sessionExists ? faTabletScreenButton : faCloud}
-  //           size={18}
-  //           style={{
-  //             color: "white",
-  //           }}
-  //         />
-  //       </View>
-  //     );
-  //   } else {
-  //     return <></>;
-  //   }
-  // };
-
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -263,5 +226,3 @@ function ScoutPitScreen() {
     </ScrollView>
   );
 }
-
-export default ScoutPitScreen;
