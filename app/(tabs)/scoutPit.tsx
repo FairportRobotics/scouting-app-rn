@@ -5,12 +5,6 @@ import { ContainerGroup } from "../components";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faTabletScreenButton,
-  faCloud,
-} from "@fortawesome/free-solid-svg-icons";
-import Colors from "@/constants/Colors";
 
 export type ReportRecord = {
   key: string;

@@ -1,6 +1,5 @@
 import { RefreshControl, View, ScrollView, Share } from "react-native";
 import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
 import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
