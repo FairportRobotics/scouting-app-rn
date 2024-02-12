@@ -5,13 +5,14 @@ import { ContainerGroup } from "../components";
 import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
+import { ItemKey, PitScoutingSession, Team } from "@/constants/Types";
 
 export type ReportRecord = {
   key: string;
   teamNumber: string;
   nickname: string;
-  sessionKey: string | undefined;
-  uploadedKey: string | undefined;
+  sessionExists: boolean;
+  uploadExists: boolean;
 };
 
 export default function ScoutPitScreen() {
@@ -35,36 +36,41 @@ export default function ScoutPitScreen() {
 
   const loadData = async () => {
     try {
-      // Load data from database.
-      const dtoTeams = await Database.getTeams();
-      const dtoSessions = await Database.getPitScoutingSessions();
-      const dtoUploadedKeys = await Database.getUploadedPitScoutingKeys();
+      // Retrieve data.
+      Promise.all([
+        // Retrieve from the database.
+        Database.getTeams() as Promise<Array<Team>>,
+        Database.getPitScoutingSessions() as Promise<Array<PitScoutingSession>>,
+        Database.getUploadedPitScoutingKeys() as Promise<Array<ItemKey>>,
+      ])
+        .then(([dtoTeams, dtoSessions, uploadedKeys]) => {
+          // Build a Model to encapsulate properties from multiple sources so we can
+          // more easily display the rows.
+          const teamRecords: Array<ReportRecord> = [];
+          dtoTeams.forEach((dtoTeam) => {
+            let newRecord = {
+              key: dtoTeam.key,
+              teamNumber: dtoTeam.teamNumber,
+              nickname: dtoTeam.nickname,
 
-      // Validate.
-      if (dtoTeams === undefined) return;
-      if (dtoSessions === undefined) return;
-      if (dtoUploadedKeys === undefined) return;
+              sessionExists: !!dtoSessions.find(
+                (session) => session.key === dtoTeam.key
+              ),
 
-      // Build a Model to encapsulate properties from multiple sources so we can
-      // more easily display the rows.
-      const teamRecords: Array<ReportRecord> = [];
-      dtoTeams.forEach((dtoTeam) => {
-        let newRecord = {
-          key: dtoTeam.key,
-          teamNumber: dtoTeam.teamNumber,
-          nickname: dtoTeam.nickname,
-          sessionKey: dtoSessions.find((session) => session.key === dtoTeam.key)
-            ?.key,
-          uploadedKey: dtoUploadedKeys.find(
-            (uploaded) => uploaded.key === dtoTeam.key
-          )?.key,
-        } as ReportRecord;
+              uploadExists: !!uploadedKeys.find(
+                (uploaded) => uploaded.key === dtoTeam.key
+              ),
+            } as ReportRecord;
 
-        teamRecords.push(newRecord);
-      });
+            teamRecords.push(newRecord);
+          });
 
-      // Set State.
-      setReportRecords(teamRecords);
+          // Set State.
+          setReportRecords(teamRecords);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     } catch (error) {
       console.error(error);
     }
@@ -144,31 +150,30 @@ export default function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
-              active={item.sessionKey === undefined}
-              disabled={
-                item.sessionKey === undefined && item.uploadedKey !== undefined
-              }
+              active={!item.sessionExists && !item.uploadExists}
+              disabled={!item.sessionExists && item.uploadExists}
               onPress={() => handlePitScoutTeam(item.key)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
-              active={item.uploadedKey === undefined}
-              disabled={item.sessionKey === undefined}
+              active={item.sessionExists && !item.uploadExists}
+              disabled={!item.sessionExists}
+              showUploadExists={item.uploadExists}
               onPress={() => handleUploadSession(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
-              active={item.sessionKey !== undefined}
-              disabled={item.sessionKey === undefined}
+              active={item.sessionExists}
+              disabled={!item.sessionExists}
               onPress={() => handleShowSessionJsonQR(item.key)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
-              active={item.sessionKey !== undefined}
-              disabled={item.sessionKey === undefined}
+              active={item.sessionExists}
+              disabled={!item.sessionExists}
               onPress={() => handleShareSessionJson(item.key)}
             />
           </View>

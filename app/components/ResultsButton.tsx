@@ -37,31 +37,6 @@ export default function ResultsButton({
     share: faShareFromSquare,
   };
 
-  if (disabled) {
-    return (
-      <View
-        style={[
-          Styles.baseButton,
-          {
-            flex: 1,
-            flexDirection: "row",
-            gap: 8,
-            backgroundColor: "darkgray",
-          },
-        ]}
-      >
-        <FontAwesomeIcon
-          icon={iconLookup[faIcon]}
-          size={32}
-          style={{ color: "lightgray" }}
-        />
-        <Text style={{ color: "lightgray", fontSize: 18, fontWeight: "bold" }}>
-          {label}
-        </Text>
-      </View>
-    );
-  }
-
   const renderBadge = () => {
     if (showUploadExists) {
       return (
@@ -94,6 +69,31 @@ export default function ResultsButton({
       return <></>;
     }
   };
+
+  if (disabled) {
+    return (
+      <View
+        style={[
+          Styles.baseButton,
+          {
+            flex: 1,
+            flexDirection: "row",
+            gap: 8,
+            backgroundColor: "darkgray",
+          },
+        ]}
+      >
+        <FontAwesomeIcon
+          icon={iconLookup[faIcon]}
+          size={32}
+          style={{ color: "lightgray" }}
+        />
+        <Text style={{ color: "lightgray", fontSize: 18, fontWeight: "bold" }}>
+          {label}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <TouchableOpacity
