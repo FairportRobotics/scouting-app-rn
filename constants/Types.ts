@@ -208,6 +208,7 @@ export type TeamModel = {
   teamNumber: string;
   sessionExists: boolean;
   uploadExists: boolean;
+  assignedTeamMember: string;
 };
 
 export type ItemKey = {

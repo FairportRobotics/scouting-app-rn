@@ -6,7 +6,7 @@ import DatabaseSettings from "@/app/admin/DatabaseSettings";
 
 export default function SettingsScreen() {
   return (
-    <ScrollView>
+    <ScrollView style={{ padding: 10 }}>
       <View style={{ flex: 1 }}>
         <Caches />
         {/* <DatabaseSettings />

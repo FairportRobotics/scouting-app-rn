@@ -77,7 +77,7 @@ export default function MatchTeamSelect({
           },
         ]}
       >
-        <Text style={{ color: "white", fontSize: 20, fontWeight: "bold" }}>
+        <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
           {teamModel.allianceTeam}
         </Text>
         <Text style={{ color: "white" }}>{teamModel.teamNumber}</Text>
