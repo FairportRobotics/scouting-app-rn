@@ -99,6 +99,12 @@ export default function MatchResultsScreen() {
           model.scoutedTeamNickname = scoutedTeam.nickname;
         }
 
+        // Determine if the upload exists.
+        model.uploadExists =
+          uploadedKeys.find((item) => session.key === item.key) === undefined
+            ? false
+            : true;
+
         models.push(model);
       } catch (error) {
         console.error(error);
@@ -172,6 +178,8 @@ export default function MatchResultsScreen() {
               <ResultsButton
                 label="Upload"
                 faIcon="upload"
+                active={!match.uploadExists}
+                showUploadExists={match.uploadExists}
                 onPress={() => handleUploadSession(match.sessionKey)}
               />
               <ResultsButton
