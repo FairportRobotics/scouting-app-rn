@@ -74,23 +74,6 @@ export default function ScoutPitScreen() {
     loadData();
   }, []);
 
-  const handleUploadAllPitResults = () => {};
-
-  const handleShareAllPitResultsJson = async () => {
-    const sessions = await Database.getPitScoutingSessions();
-    if (sessions === undefined) return;
-    const json = JSON.stringify(sessions);
-
-    const shareOptions = {
-      message: json,
-      type: "application/json",
-    };
-
-    await Share.share(shareOptions);
-
-    loadData();
-  };
-
   const handlePitScoutTeam = (key: string) => {
     router.replace(`/scout-pit/${key}`);
   };
@@ -138,44 +121,12 @@ export default function ScoutPitScreen() {
 
   return (
     <ScrollView
+      style={{ padding: 10 }}
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }
     >
-      <ContainerGroup title="All Match Data">
-        <View
-          style={{
-            flex: 1,
-            width: "100%",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              gap: 10,
-            }}
-          >
-            <ResultsButton
-              label="Upload"
-              faIcon="upload"
-              active={true}
-              onPress={() => handleUploadAllPitResults()}
-            />
-            <ResultsButton
-              label="JSON"
-              faIcon="share"
-              active={true}
-              onPress={() => handleShareAllPitResultsJson()}
-            />
-          </View>
-        </View>
-      </ContainerGroup>
       {reportRecords.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
