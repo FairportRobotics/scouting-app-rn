@@ -47,38 +47,43 @@ export default function TBACaches() {
   };
 
   return (
-    <ContainerGroup title="The Blue Alliance Caches">
-      <View>
-        <View style={{ alignItems: "flex-start", gap: 6 }}>
-          <View>
-            <Button
-              title="Set 2023nyrr : 2023 Ra Cha Cha Ruckus"
-              onPress={() => handleChangeKey("2023nyrr")}
-            />
-          </View>
-          <View>
-            <Button
-              title="Set 2024paca : 2024 Greater Pittsburgh Regional"
-              onPress={() => handleChangeKey("2024paca")}
-            />
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <TextInput
-              onChangeText={handleChangeKey}
-              style={{
-                width: 200,
-                borderWidth: 2,
-                borderColor: "darkgray",
-                padding: 6,
-              }}
-              value={eventKey}
-              placeholder="Event Key..."
-              keyboardType="default"
-            />
-            <Button title="Fill cache for key" onPress={handleFetchEventData} />
+    <View style={{ padding: 10 }}>
+      <ContainerGroup title="The Blue Alliance Caches">
+        <View>
+          <View style={{ alignItems: "flex-start", gap: 6 }}>
+            <View>
+              <Button
+                title="Set 2023nyrr : 2023 Ra Cha Cha Ruckus"
+                onPress={() => handleChangeKey("2023nyrr")}
+              />
+            </View>
+            <View>
+              <Button
+                title="Set 2024paca : 2024 Greater Pittsburgh Regional"
+                onPress={() => handleChangeKey("2024paca")}
+              />
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <TextInput
+                onChangeText={handleChangeKey}
+                style={{
+                  width: 200,
+                  borderWidth: 2,
+                  borderColor: "darkgray",
+                  padding: 6,
+                }}
+                value={eventKey}
+                placeholder="Event Key..."
+                keyboardType="default"
+              />
+              <Button
+                title="Fill cache for key"
+                onPress={handleFetchEventData}
+              />
+            </View>
           </View>
         </View>
-      </View>
-    </ContainerGroup>
+      </ContainerGroup>
+    </View>
   );
 }

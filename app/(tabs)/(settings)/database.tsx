@@ -76,18 +76,20 @@ export default function DatabaseSettings() {
     }
   };
   return (
-    <ContainerGroup title="Database">
-      <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-        <Button title="Share" onPress={handleShare} />
-        <Button
-          title="Delete data and initialize"
-          onPress={handleDeleteAndInitialize}
-        />
-        <Button
-          title="Drop tables and initialize"
-          onPress={handleDropAndInitialize}
-        />
-      </View>
-    </ContainerGroup>
+    <View style={{ padding: 10 }}>
+      <ContainerGroup title="Database">
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <Button title="Share" onPress={handleShare} />
+          <Button
+            title="Delete data and initialize"
+            onPress={handleDeleteAndInitialize}
+          />
+          <Button
+            title="Drop tables and initialize"
+            onPress={handleDropAndInitialize}
+          />
+        </View>
+      </ContainerGroup>
+    </View>
   );
 }

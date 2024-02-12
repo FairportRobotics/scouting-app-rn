@@ -1,14 +1,7 @@
 import { ScrollView, View, Text, Button } from "react-native";
 import { ContainerGroup } from "@/app/components";
 import { useEffect, useState } from "react";
-import {
-  Event,
-  ItemKey,
-  Match,
-  MatchScoutingSession,
-  Team,
-  TeamMember,
-} from "@/constants/Types";
+import { Event, ItemKey, Match, Team, TeamMember } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
 import teamMembers from "@/data/teamMembers";
 
@@ -135,7 +128,7 @@ export default function Caches() {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{ padding: 10 }}>
       <ContainerGroup title="The Blue Alliance">
         <Button
           onPress={() => setShowTbaCaches(!showTbaCaches)}
