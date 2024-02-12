@@ -1,4 +1,4 @@
-import { View, Text, Button } from "react-native";
+import { ScrollView, View, Text, Button } from "react-native";
 import { ContainerGroup } from "@/app/components";
 import { useEffect, useState } from "react";
 import { Event, Match, Team, TeamMember } from "@/constants/Types";
@@ -62,7 +62,7 @@ export default function Caches() {
   };
 
   return (
-    <View>
+    <ScrollView>
       <ContainerGroup title="The Blue Alliance">
         <Button
           onPress={() => setShowTbaCaches(!showTbaCaches)}
@@ -92,6 +92,6 @@ export default function Caches() {
           </View>
         )}
       </ContainerGroup>
-    </View>
+    </ScrollView>
   );
 }

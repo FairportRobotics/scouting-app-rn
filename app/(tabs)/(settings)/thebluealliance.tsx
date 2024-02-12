@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button, View, TextInput, Text } from "react-native";
+import { Button, View, TextInput } from "react-native";
 import type { TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
-import type { Event, Match, Team } from "@/constants/Types";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import fetchEvent from "@/app/helpers/fetchEvent";
 import fetchEventMatches from "@/app/helpers/fetchEventMatches";
@@ -12,16 +11,10 @@ import * as Database from "@/app/helpers/database";
 export default function TBACaches() {
   // Declare the various states that we want to manage.
   const [eventKey, setEventKey] = useState("2023nyrr");
-  const [event, setEvent] = useState<Event>();
-  const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
-  const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
 
   // Support for editing the Event Key
   const handleChangeKey = (key: string) => {
     setEventKey(key);
-    setEvent(undefined);
-    setEventMatches([]);
-    setEventTeams([]);
   };
 
   // Handles fetching and saving all TBA data to the database.
@@ -53,25 +46,19 @@ export default function TBACaches() {
     Database.saveTeams(tbaTeams);
   };
 
-  const handleShowCaheData = async () => {
-    setEvent(await Database.getEvent());
-    setEventMatches(await Database.getMatches());
-    setEventTeams(await Database.getTeams());
-  };
-
   return (
     <ContainerGroup title="The Blue Alliance Caches">
       <View>
         <View style={{ alignItems: "flex-start", gap: 6 }}>
           <View>
             <Button
-              title="2023nyrr : 2023 Ra Cha Cha Ruckus"
+              title="Set 2023nyrr : 2023 Ra Cha Cha Ruckus"
               onPress={() => handleChangeKey("2023nyrr")}
             />
           </View>
           <View>
             <Button
-              title="2024paca : 2024 Greater Pittsburgh Regional"
+              title="Set 2024paca : 2024 Greater Pittsburgh Regional"
               onPress={() => handleChangeKey("2024paca")}
             />
           </View>
@@ -91,15 +78,6 @@ export default function TBACaches() {
             <Button title="Fill cache for key" onPress={handleFetchEventData} />
           </View>
         </View>
-      </View>
-      <View style={{ alignItems: "flex-start" }}>
-        <Button title="Show cache" onPress={handleShowCaheData} />
-        <Text>Event:</Text>
-        <Text>{JSON.stringify(event, null, 2)}</Text>
-        <Text>Matches:</Text>
-        <Text>{JSON.stringify(eventMatches, null, 2)}</Text>
-        <Text>Teams:</Text>
-        <Text>{JSON.stringify(eventTeams, null, 2)}</Text>
       </View>
     </ContainerGroup>
   );
