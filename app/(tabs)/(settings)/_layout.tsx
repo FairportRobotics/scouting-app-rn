@@ -22,6 +22,13 @@ const DrawerLayout = () => {
           headerTitle: "Refresh from The Blue Alliance",
         }}
       />
+      <Drawer.Screen
+        name="assignments"
+        options={{
+          title: "Match Assignments",
+          headerTitle: "Match Assignments",
+        }}
+      />
     </Drawer>
   );
 };

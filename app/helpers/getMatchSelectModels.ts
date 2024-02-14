@@ -5,6 +5,8 @@ import type {
   ItemKey,
   TeamModel,
   MatchModel,
+  TeamMember,
+  MatchAssignment,
 } from "@/constants/Types";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
 
@@ -15,7 +17,9 @@ const getTeamModel = (
   allianceTeam: number,
   teams: Array<Team>,
   sessionKeys: Array<ItemKey>,
-  uploadedKeys: Array<ItemKey>
+  uploadedKeys: Array<ItemKey>,
+  teamMembers: Array<TeamMember>,
+  assignments: Array<MatchAssignment>
 ) => {
   // Create a map so it's easier to retrieve the appropriate key.
   const teamKeyMap = {
@@ -32,22 +36,42 @@ const getTeamModel = (
   const team = teams.find((team) => team.key == teamKey);
   if (team === undefined) return undefined;
 
+  // Build the Session Key.
   const sessionKey = `${event.key}__${match.key}__${alliance}__${allianceTeam}`;
+
+  // Construct the TeamModel.
   let teamModel = {
     sessionKey: sessionKey,
     alliance: alliance,
     allianceTeam: allianceTeam,
     teamKey: team.key,
     teamNumber: team.teamNumber,
+
     sessionExists: sessionKeys.find((session) => session.key === sessionKey)
       ? true
       : false,
+
     uploadExists: uploadedKeys.find(
       (uploadedSession) => uploadedSession.key === sessionKey
     )
       ? true
       : false,
   } as TeamModel;
+
+  // Attempt to determine if there's an assignment for the Match.
+  const assignment = (assignments ?? []).find(
+    (assignment) => assignment.key === sessionKey
+  );
+  if (assignment === undefined) return teamModel;
+
+  // Attempt to retrieve the assigneed team member.
+  const teamMember = (teamMembers || []).find(
+    (teamMember) => teamMember.key === assignment.teamMemberKey
+  );
+  if (teamMember === undefined) return teamModel;
+
+  // Apply the assigned team member to the model.
+  teamModel.assignedTeamMember = `${teamMember.firstName} ${teamMember.lastName[0]}`;
 
   return teamModel;
 };
@@ -57,7 +81,9 @@ export default (
   matches: Array<Match>,
   teams: Array<Team>,
   sessionKeys: Array<ItemKey>,
-  uploadedKeys: Array<ItemKey>
+  uploadedKeys: Array<ItemKey>,
+  teamMembers: Array<TeamMember>,
+  assignments: Array<MatchAssignment>
 ) => {
   // Enumerate of the Matches and begin to produce the MatchModel collection.
   let models: Array<MatchModel> = [];
@@ -80,7 +106,9 @@ export default (
       AllianceTeam.One,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
     model.alliances[Alliance.Blue][AllianceTeam.Two] = getTeamModel(
       event,
@@ -89,7 +117,9 @@ export default (
       AllianceTeam.Two,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
     model.alliances[Alliance.Blue][AllianceTeam.Three] = getTeamModel(
       event,
@@ -98,7 +128,9 @@ export default (
       AllianceTeam.Three,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
 
     model.alliances[Alliance.Red][AllianceTeam.One] = getTeamModel(
@@ -108,7 +140,9 @@ export default (
       AllianceTeam.One,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
     model.alliances[Alliance.Red][AllianceTeam.Two] = getTeamModel(
       event,
@@ -117,7 +151,9 @@ export default (
       AllianceTeam.Two,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
     model.alliances[Alliance.Red][AllianceTeam.Three] = getTeamModel(
       event,
@@ -126,7 +162,9 @@ export default (
       AllianceTeam.Three,
       teams,
       sessionKeys,
-      uploadedKeys
+      uploadedKeys,
+      teamMembers,
+      assignments
     );
 
     models.push(model);

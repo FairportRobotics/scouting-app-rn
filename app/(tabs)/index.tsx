@@ -9,10 +9,12 @@ import getDefaultMatchScoutingSession, {
   MatchScoutingSession,
   MatchModel,
   TeamModel,
+  TeamMember,
+  MatchAssignment,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
-import getMatchSelectModels from "../helpers/getMatchSelectModels";
+import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -28,19 +30,33 @@ export default function IndexScreen() {
         Database.getTeams() as Promise<Array<Team>>,
         Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
         Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
+        Database.getTeamMembers() as Promise<Array<TeamMember>>,
+        Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
-        .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
-          // Build the Match Models.
-          const matchModels = getMatchSelectModels(
+        .then(
+          ([
             dtoEvent,
             dtoMatches,
             dtoTeams,
             sessionKeys,
-            uploadedKeys
-          );
+            uploadedKeys,
+            dtoTeamMembers,
+            dtoAssignments,
+          ]) => {
+            // Build the Match Models.
+            const matchModels = getMatchSelectModels(
+              dtoEvent,
+              dtoMatches,
+              dtoTeams,
+              sessionKeys,
+              uploadedKeys,
+              dtoTeamMembers,
+              dtoAssignments
+            );
 
-          setMatchModels(matchModels);
-        })
+            setMatchModels(matchModels);
+          }
+        )
         .catch((error) => {
           console.error(error);
         });
@@ -80,6 +96,8 @@ export default function IndexScreen() {
         session.scheduledTeamKey = teamModel.teamKey;
         session.scoutedTeamKey = teamModel.teamKey;
       }
+
+      console.log(sessionKey);
 
       // Save to DB.
       await Database.saveMatchScoutingSession(session);

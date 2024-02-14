@@ -221,6 +221,11 @@ export type TeamMember = {
   lastName: string;
 };
 
+export type MatchAssignment = {
+  key: string;
+  teamMemberKey: string;
+};
+
 //=================================================================================================
 // Support for Props
 //=================================================================================================
