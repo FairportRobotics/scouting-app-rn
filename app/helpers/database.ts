@@ -318,9 +318,19 @@ export const saveTeamMembers = async (teamMembers: Array<TeamMember>) => {
   });
 };
 
-export const getTeamMembers = async (): Promise<Array<TeamMember>> => {
+export const getAllTeamMembers = async (): Promise<Array<TeamMember>> => {
   try {
-    const query = "SELECT * FROM team_members";
+    const query = "SELECT * FROM team_members ORDER BY firstName, lastName";
+    return (await executeSql(query, [])) as Array<TeamMember>;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const getScoutTeamMembers = async (): Promise<Array<TeamMember>> => {
+  try {
+    const query =
+      "SELECT * FROM team_members WHERE canScout = 1 ORDER BY firstName, lastName";
     return (await executeSql(query, [])) as Array<TeamMember>;
   } catch (error) {
     return [];
@@ -840,6 +850,40 @@ export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
 // Match Assignments Data Access
 //=================================================================================================
 
+export const saveTeamMemberCanScout = async (
+  teamMemberKey: string,
+  canScout: boolean
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO team_members(key, canScout) \
+        VALUES(:key, :canScout) \
+        ON CONFLICT (key) DO UPDATE SET \
+        canScout = excluded.canScout \
+      ",
+      [teamMemberKey, canScout ? 1 : 0],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+
+    // If the user is being flipped to "No", delete existing assignments.
+    if (!canScout) {
+      tx.executeSql(
+        "DELETE FROM match_assignments WHERE teamMemberKey = ?",
+        [teamMemberKey],
+        (txObj, resultSet) => {},
+        (txObj, error) => {
+          console.error(error);
+          return false;
+        }
+      );
+    }
+  });
+};
+
 export const saveMatchAssignment = async (
   sessionKey: string,
   teamMemberKey: string
@@ -852,9 +896,7 @@ export const saveMatchAssignment = async (
         teamMemberKey = excluded.teamMemberKey \
       ",
       [sessionKey, teamMemberKey],
-      (txObj, resultSet) => {
-        console.log("saveMatchAssignment:", resultSet);
-      },
+      (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
         return false;

@@ -48,104 +48,95 @@ export default function Assignments() {
       Promise.all([
         Database.getEvent() as Promise<Event>,
         Database.getMatches() as Promise<Array<Match>>,
-        Database.getTeams() as Promise<Array<Team>>,
-        Database.getTeamMembers() as Promise<Array<TeamMember>>,
+        Database.getScoutTeamMembers() as Promise<Array<TeamMember>>,
         Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
-        .then(
-          ([
-            dtoEvent,
-            dtoMatches,
-            dtoTeams,
-            dtoTeamMembers,
-            dtoAssignments,
-          ]) => {
-            // Initialize the list of AssignementModel.
-            let assignmentModels: Array<AssignmentModel> = [];
-            dtoMatches.forEach((match) => {
-              let assignment = {
-                eventKey: dtoEvent.key,
-                matchKey: match.key,
-                matchNumber: match.matchNumber,
-                sessions: {},
-              } as AssignmentModel;
+        .then(([dtoEvent, dtoMatches, dtoTeamMembers, dtoAssignments]) => {
+          // Initialize the list of AssignementModel.
+          let assignmentModels: Array<AssignmentModel> = [];
+          dtoMatches.forEach((match) => {
+            let assignment = {
+              eventKey: dtoEvent.key,
+              matchKey: match.key,
+              matchNumber: match.matchNumber,
+              sessions: {},
+            } as AssignmentModel;
 
-              let key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.One}`;
-              let sessionModel = {
-                alliance: Alliance.Blue,
-                allianceTeam: AllianceTeam.One,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            let key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.One}`;
+            let sessionModel = {
+              alliance: Alliance.Blue,
+              allianceTeam: AllianceTeam.One,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Two}`;
-              sessionModel = {
-                alliance: Alliance.Blue,
-                allianceTeam: AllianceTeam.Two,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Two}`;
+            sessionModel = {
+              alliance: Alliance.Blue,
+              allianceTeam: AllianceTeam.Two,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Three}`;
-              sessionModel = {
-                alliance: Alliance.Blue,
-                allianceTeam: AllianceTeam.Three,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Three}`;
+            sessionModel = {
+              alliance: Alliance.Blue,
+              allianceTeam: AllianceTeam.Three,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.One}`;
-              sessionModel = {
-                alliance: Alliance.Red,
-                allianceTeam: AllianceTeam.One,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.One}`;
+            sessionModel = {
+              alliance: Alliance.Red,
+              allianceTeam: AllianceTeam.One,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Two}`;
-              sessionModel = {
-                alliance: Alliance.Red,
-                allianceTeam: AllianceTeam.Two,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Two}`;
+            sessionModel = {
+              alliance: Alliance.Red,
+              allianceTeam: AllianceTeam.Two,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Three}`;
-              sessionModel = {
-                alliance: Alliance.Red,
-                allianceTeam: AllianceTeam.Three,
-                teamNumber: 0,
-                teamMemberKey: "",
-              } as SessionModel;
-              assignment.sessions[key] = sessionModel;
+            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Three}`;
+            sessionModel = {
+              alliance: Alliance.Red,
+              allianceTeam: AllianceTeam.Three,
+              teamNumber: 0,
+              teamMemberKey: "",
+            } as SessionModel;
+            assignment.sessions[key] = sessionModel;
 
-              assignmentModels.push(assignment);
-            });
+            assignmentModels.push(assignment);
+          });
 
-            // Build the list of Team Members and the number of assignments they are currently bound to.
-            let summary: Array<TeamMemberSummary> = [];
-            dtoTeamMembers.forEach((teamMember) => {
-              let tms = {
-                key: teamMember.key,
-                firstName: teamMember.firstName,
-                lastName: teamMember.lastName,
-                assignmentCount: dtoAssignments.filter(
-                  (assignment) => assignment.teamMemberKey === teamMember.key
-                ).length,
-              } as TeamMemberSummary;
+          // Build the list of Team Members and the number of assignments they are currently bound to.
+          let summary: Array<TeamMemberSummary> = [];
+          dtoTeamMembers.forEach((teamMember) => {
+            let tms = {
+              key: teamMember.key,
+              firstName: teamMember.firstName,
+              lastName: teamMember.lastName,
+              assignmentCount: dtoAssignments.filter(
+                (assignment) => assignment.teamMemberKey === teamMember.key
+              ).length,
+            } as TeamMemberSummary;
 
-              summary.push(tms);
-            });
+            summary.push(tms);
+          });
 
-            summary.sort((a, b) => a.key.localeCompare(b.key));
-            setTeamMembers(summary);
-          }
-        )
+          summary.sort((a, b) => a.key.localeCompare(b.key));
+          setTeamMembers(summary);
+        })
         .catch((error) => {
           console.error(error);
         });
@@ -279,7 +270,7 @@ export default function Assignments() {
         </View>
         {teamMember && (
           <FlatList
-            style={{ width: "100%", marginBottom: 80 }}
+            style={{ width: "100%" }}
             data={matchModels}
             renderItem={({ item }) => renderMatchItem(item)}
             keyExtractor={(item) => item.matchNumber.toString()}

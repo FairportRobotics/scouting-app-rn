@@ -30,7 +30,7 @@ export default function IndexScreen() {
         Database.getTeams() as Promise<Array<Team>>,
         Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
         Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
-        Database.getTeamMembers() as Promise<Array<TeamMember>>,
+        Database.getAllTeamMembers() as Promise<Array<TeamMember>>,
         Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
         .then(
