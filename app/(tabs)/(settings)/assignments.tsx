@@ -114,6 +114,13 @@ export default function Assignments() {
     alliance: string,
     allianceNumber: number
   ) => {
+    console.log(
+      "handleOnPress",
+      new Date().toISOString(),
+      matchKey,
+      alliance,
+      allianceNumber
+    );
     requestAnimationFrame(() => {
       if (teamMember === undefined) return;
 
@@ -131,6 +138,7 @@ export default function Assignments() {
       ] = `${teamMember.firstName} ${teamMember.lastName[0]}`;
       setAssignmentsLookup(newAssignments);
     });
+    console.log("handleOnPress", new Date().toISOString());
   };
 
   const assignmentLookup = (sessionKey: string) => {
