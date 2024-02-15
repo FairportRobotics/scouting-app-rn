@@ -5,15 +5,13 @@ import {
   Match,
   MatchAssignment,
   MatchModel,
-  Team,
   TeamMember,
 } from "@/constants/Types";
-import * as Database from "@/app/helpers/database";
-import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
-import { ContainerGroup } from "@/app/components";
-import Colors from "@/constants/Colors";
 import { FlatList } from "react-native-gesture-handler";
+import { ContainerGroup } from "@/app/components";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
+import * as Database from "@/app/helpers/database";
+import Colors from "@/constants/Colors";
 
 type TeamMemberSummary = {
   key: string;
@@ -43,6 +41,7 @@ export default function Assignments() {
   const [showTeamMembers, setShowTeamMembers] = useState<boolean>(true);
 
   const loadData = async () => {
+    console.log("loadData started  :", new Date().toISOString());
     try {
       // Retrieve data.
       Promise.all([
@@ -52,73 +51,6 @@ export default function Assignments() {
         Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
         .then(([dtoEvent, dtoMatches, dtoTeamMembers, dtoAssignments]) => {
-          // Initialize the list of AssignementModel.
-          let assignmentModels: Array<AssignmentModel> = [];
-          dtoMatches.forEach((match) => {
-            let assignment = {
-              eventKey: dtoEvent.key,
-              matchKey: match.key,
-              matchNumber: match.matchNumber,
-              sessions: {},
-            } as AssignmentModel;
-
-            let key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.One}`;
-            let sessionModel = {
-              alliance: Alliance.Blue,
-              allianceTeam: AllianceTeam.One,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Two}`;
-            sessionModel = {
-              alliance: Alliance.Blue,
-              allianceTeam: AllianceTeam.Two,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            key = `${dtoEvent.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Three}`;
-            sessionModel = {
-              alliance: Alliance.Blue,
-              allianceTeam: AllianceTeam.Three,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.One}`;
-            sessionModel = {
-              alliance: Alliance.Red,
-              allianceTeam: AllianceTeam.One,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Two}`;
-            sessionModel = {
-              alliance: Alliance.Red,
-              allianceTeam: AllianceTeam.Two,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            key = `${dtoEvent.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Three}`;
-            sessionModel = {
-              alliance: Alliance.Red,
-              allianceTeam: AllianceTeam.Three,
-              teamNumber: 0,
-              teamMemberKey: "",
-            } as SessionModel;
-            assignment.sessions[key] = sessionModel;
-
-            assignmentModels.push(assignment);
-          });
-
           // Build the list of Team Members and the number of assignments they are currently bound to.
           let summary: Array<TeamMemberSummary> = [];
           dtoTeamMembers.forEach((teamMember) => {
@@ -143,6 +75,7 @@ export default function Assignments() {
     } catch (error) {
       console.error(error);
     }
+    console.log("loadData completed:", new Date().toISOString());
   };
 
   useEffect(() => {
@@ -150,16 +83,31 @@ export default function Assignments() {
   }, []);
 
   const handleOnSelectTeamMember = async (teamMember: TeamMemberSummary) => {
+    console.log(
+      "handleOnSelectTeamMember started  :",
+      new Date().toISOString()
+    );
     setTeamMember(teamMember);
     setShowTeamMembers(false);
+    console.log(
+      "handleOnSelectTeamMember completed:",
+      new Date().toISOString()
+    );
   };
 
   const handleToggleShowTeamMembers = () => {
+    console.log(
+      "handleToggleShowTeamMembers started  :",
+      new Date().toISOString()
+    );
     setShowTeamMembers(!showTeamMembers);
+    console.log(
+      "handleToggleShowTeamMembers completed:",
+      new Date().toISOString()
+    );
   };
 
-  type TeamMemberItemProps = { teamMember: TeamMemberSummary };
-  const TeamMemberItem = ({ teamMember }: TeamMemberItemProps) => {
+  const renderTeamMember = (teamMember: TeamMemberSummary) => {
     return (
       <Pressable
         onPress={() => handleOnSelectTeamMember(teamMember)}
@@ -247,6 +195,21 @@ export default function Assignments() {
     );
   };
 
+  const matchList = () => {
+    if (teamMember !== undefined) {
+      return (
+        <FlatList
+          style={{ width: "100%" }}
+          data={matchModels}
+          renderItem={({ item }) => renderMatchItem(item)}
+          keyExtractor={(item) => item.matchNumber.toString()}
+        />
+      );
+    } else {
+      return <Text>Select a Team Member to continue...</Text>;
+    }
+  };
+
   return (
     <View style={{ flex: 1, padding: 10 }}>
       <ContainerGroup
@@ -262,20 +225,18 @@ export default function Assignments() {
           {showTeamMembers && (
             <FlatList
               data={teamMembers}
-              renderItem={({ item }) => <TeamMemberItem teamMember={item} />}
+              renderItem={({ item }) => renderTeamMember(item)}
               keyExtractor={(item) => item.key}
               style={{ marginBottom: 100 }}
             />
           )}
         </View>
-        {teamMember && (
-          <FlatList
-            style={{ width: "100%" }}
-            data={matchModels}
-            renderItem={({ item }) => renderMatchItem(item)}
-            keyExtractor={(item) => item.matchNumber.toString()}
-          />
-        )}
+        <FlatList
+          style={{ width: "100%" }}
+          data={matchModels}
+          renderItem={({ item }) => renderMatchItem(item)}
+          keyExtractor={(item) => item.matchKey}
+        />
       </ContainerGroup>
     </View>
   );
