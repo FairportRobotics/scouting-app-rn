@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button, Pressable, TouchableOpacity } from "react-native";
+import { View, Text, Button, Pressable } from "react-native";
 import { Event, Match, MatchAssignment, TeamMember } from "@/constants/Types";
 import { FlatList } from "react-native-gesture-handler";
 import { ContainerGroup } from "@/app/components";
@@ -7,7 +7,6 @@ import { Alliance, AllianceTeam } from "@/constants/Enums";
 import * as Database from "@/app/helpers/database";
 import Colors from "@/constants/Colors";
 import Styles from "@/constants/Styles";
-import { all } from "axios";
 
 type TeamMemberSummary = {
   key: string;
@@ -16,15 +15,38 @@ type TeamMemberSummary = {
   assignmentCount: number;
 };
 
+type TeamSelectItem = {
+  key: string;
+  alliance: string;
+  allianceTeam: number;
+  teamNumber: string;
+  assignedTo: string;
+};
+
+type MatchRow = {
+  key: string;
+  matchNumber: number;
+  teamSelections: Array<TeamSelectItem>;
+};
+
 export default function Assignments() {
   const [event, setEvent] = useState<Event>();
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
+  const [assignments, setAssignments] = useState<Record<string, string>>({});
+
   const [teamMembers, setTeamMembers] = useState<Array<TeamMemberSummary>>([]);
-  const [assignmentsLookup, setAssignmentsLookup] = useState<
-    Record<string, string>
-  >({});
   const [teamMember, setTeamMember] = useState<TeamMemberSummary>();
   const [showTeamMembers, setShowTeamMembers] = useState<boolean>(true);
+
+  const [matchRows, setMatchRows] = useState<Array<MatchRow>>([]);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    buildMatchRows();
+  }, [assignments]);
 
   const loadData = async () => {
     console.log("loadData started  :", new Date().toISOString());
@@ -50,7 +72,7 @@ export default function Assignments() {
               teamMemberName = `${teamMember.firstName} ${teamMember.lastName[0]}`;
             assignmentsLookup[assignment.key] = teamMemberName;
           });
-          setAssignmentsLookup(assignmentsLookup);
+          setAssignments(assignmentsLookup);
 
           // Build the list of Team Members and the number of assignments they are currently bound to.
           let summary: Array<TeamMemberSummary> = [];
@@ -79,9 +101,99 @@ export default function Assignments() {
     console.log("loadData completed:", new Date().toISOString());
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const buildMatchRows = () => {
+    // Enumerate over the Macthes and begin to define the MatchRow collection.
+    let matchRows: Array<MatchRow> = [];
+    //let selectors: Record<string, TeamSelectItem> = {};
+
+    eventMatches.forEach((match) => {
+      let matchRow = {
+        key: match.key,
+        matchNumber: match.matchNumber,
+        teamSelections: new Array<TeamSelectItem>(),
+      } as MatchRow;
+
+      let sessionKey: string;
+      let teamItem: TeamSelectItem;
+
+      // Blue / 1
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.One}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Blue,
+        allianceTeam: AllianceTeam.One,
+        teamNumber: match.blue1TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Blue / 2
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Two}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Blue,
+        allianceTeam: AllianceTeam.Two,
+        teamNumber: match.blue2TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Blue / 3
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Blue}__${AllianceTeam.Three}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Blue,
+        allianceTeam: AllianceTeam.Three,
+        teamNumber: match.blue3TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Red / 1
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Red}__${AllianceTeam.One}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Red,
+        allianceTeam: AllianceTeam.One,
+        teamNumber: match.red1TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Red / 2
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Two}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Red,
+        allianceTeam: AllianceTeam.Two,
+        teamNumber: match.red2TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Red / 3
+      sessionKey = `${event?.key}__${match.key}__${Alliance.Red}__${AllianceTeam.Three}`;
+      teamItem = {
+        key: sessionKey,
+        alliance: Alliance.Red,
+        allianceTeam: AllianceTeam.Three,
+        teamNumber: match.red3TeamKey.replace("frc", ""),
+        assignedTo: assignments[sessionKey],
+      } as TeamSelectItem;
+      matchRow.teamSelections.push(teamItem);
+      //selectors[teamItem.key] = teamItem;
+
+      // Add the MatchRow to the collection.
+      matchRows.push(matchRow);
+    });
+
+    setMatchRows(matchRows);
+  };
 
   const handleOnSelectTeamMember = async (teamMember: TeamMemberSummary) => {
     console.log(
@@ -132,17 +244,17 @@ export default function Assignments() {
 
       Database.saveMatchAssignment(sessionKey, teamMember.key);
 
-      let newAssignments = { ...assignmentsLookup };
+      let newAssignments = { ...assignments };
       newAssignments[
         sessionKey
       ] = `${teamMember.firstName} ${teamMember.lastName[0]}`;
-      setAssignmentsLookup(newAssignments);
+      setAssignments(newAssignments);
     });
     console.log("handleOnPress", new Date().toISOString());
   };
 
   const assignmentLookup = (sessionKey: string) => {
-    return assignmentsLookup[sessionKey];
+    return assignments[sessionKey];
   };
 
   const renderTeamMember = (teamMember: TeamMemberSummary) => {
@@ -209,7 +321,9 @@ export default function Assignments() {
     );
   };
 
-  const renderEventMatch = (match: Match) => {
+  const renderEventMatch = (match: MatchRow) => {
+    if (match.matchNumber === 0) return <></>;
+
     return (
       <View style={{ flex: 1, flexDirection: "row" }}>
         <View style={{}}>
@@ -217,45 +331,30 @@ export default function Assignments() {
             Match {match.matchNumber}
           </Text>
         </View>
-        <View
-          style={{ flex: 1, flexDirection: "row", gap: 8, marginBottom: 10 }}
-        >
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Blue,
-            AllianceTeam.One,
-            match.blue1TeamKey
-          )}
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Blue,
-            AllianceTeam.Two,
-            match.blue2TeamKey
-          )}
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Blue,
-            AllianceTeam.Three,
-            match.blue3TeamKey
-          )}
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Red,
-            AllianceTeam.One,
-            match.red1TeamKey
-          )}
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Red,
-            AllianceTeam.Two,
-            match.red2TeamKey
-          )}
-          {renderEventMatchTeam(
-            match.key,
-            Alliance.Red,
-            AllianceTeam.Three,
-            match.red3TeamKey
-          )}
+        <View style={{ flex: 1, width: "100%" }}>
+          <FlatList
+            contentContainerStyle={{
+              flex: 1,
+              flexGrow: 1,
+              justifyContent: "space-between",
+            }}
+            data={match.teamSelections}
+            horizontal={true}
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  backgroundColor: "blue",
+                }}
+              >
+                <Text style={{ backgroundColor: "plum" }}>
+                  {item.allianceTeam}
+                </Text>
+              </View>
+            )}
+            keyExtractor={(item) => item.key}
+          />
         </View>
       </View>
     );
@@ -289,7 +388,7 @@ export default function Assignments() {
         </View>
         <FlatList
           style={{ width: "100%" }}
-          data={eventMatches}
+          data={matchRows}
           renderItem={({ item }) => renderEventMatch(item)}
           keyExtractor={(item) => item.key}
         />
