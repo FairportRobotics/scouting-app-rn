@@ -27,7 +27,7 @@ const DrawerLayout = () => {
         }}
       />
       <Drawer.Screen
-        name="assignments"
+        name="assignments/[id]"
         options={{
           title: "Match Assignments",
           headerTitle: "Match Assignments",

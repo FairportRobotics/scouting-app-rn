@@ -1,14 +1,8 @@
 import { MatchAssignment, TeamMember } from "@/constants/Types";
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Button,
-  RefreshControl,
-  Pressable,
-} from "react-native";
-import { Check, ContainerGroup } from "@/app/components";
+import { useRouter } from "expo-router";
+import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
+import { ContainerGroup } from "@/app/components";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
@@ -22,6 +16,7 @@ type AssignmentModel = {
 };
 
 export default function TeamMembers() {
+  const router = useRouter();
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [assignmentModels, setAssignmentModels] = useState<
     Array<AssignmentModel>
@@ -72,9 +67,8 @@ export default function TeamMembers() {
     loadData();
   }, []);
 
-  const handleSetCanScout = async (teamMemberKey: string, value: boolean) => {
-    await Database.saveTeamMemberCanScout(teamMemberKey, value);
-    loadData();
+  const handleAssignMatches = (teamMemberKey: string) => {
+    router.push(`/(tabs)/(settings)/assignments/${teamMemberKey}`);
   };
 
   const renderItem = (teamMember: AssignmentModel) => {
@@ -96,7 +90,7 @@ export default function TeamMembers() {
           <Text style={{ fontSize: 20 }}>{teamMember.key}</Text>
         </View>
         <View style={{}}>
-          <Pressable onPress={() => console.log("Pressed", teamMember.key)}>
+          <Pressable onPress={() => handleAssignMatches(teamMember.key)}>
             <View style={[Styles.baseButton, { padding: 10 }]}>
               <Text
                 style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
@@ -106,7 +100,7 @@ export default function TeamMembers() {
             </View>
           </Pressable>
           <Text style={{ fontSize: 20 }}>
-            Assigned to {teamMember.assignmentCount}
+            Assignments: {teamMember.assignmentCount}
           </Text>
         </View>
       </View>
