@@ -85,8 +85,6 @@ function Assignments() {
     if (model === undefined) return;
 
     model.assignedTeamMember = id;
-
-    onRefresh();
   };
 
   const handleDone = () => {
