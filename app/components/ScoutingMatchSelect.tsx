@@ -22,13 +22,13 @@ export default function ScoutingMatchSelect({
       <View style={{ marginRight: 20, width: 100 }}>
         {matchModel.matchNumber === 0 && (
           <View>
-            <Text style={{ fontSize: 18 }}>Practice</Text>
+            <Text style={{ fontSize: 24 }}>Practice</Text>
             <Text>Anytime</Text>
           </View>
         )}
         {matchModel.matchNumber !== 0 && (
           <View>
-            <Text style={{ fontSize: 18 }}>Match {matchModel.matchNumber}</Text>
+            <Text style={{ fontSize: 24 }}>Match {matchModel.matchNumber}</Text>
             <Text>
               {new Date(matchModel.predictedTime).toLocaleTimeString()}
             </Text>

@@ -5,6 +5,10 @@ const DrawerLayout = () => {
   return (
     <Drawer>
       <Drawer.Screen
+        name="teammembers"
+        options={{ title: "Team Members", headerTitle: "Team Members" }}
+      />
+      <Drawer.Screen
         name="caches"
         options={{ title: "Caches", headerTitle: "Caches" }}
       />
@@ -20,6 +24,13 @@ const DrawerLayout = () => {
         options={{
           title: "The Blue Alliance",
           headerTitle: "Refresh from The Blue Alliance",
+        }}
+      />
+      <Drawer.Screen
+        name="assignments/[id]"
+        options={{
+          title: "Match Assignments",
+          headerTitle: "Match Assignments",
         }}
       />
     </Drawer>

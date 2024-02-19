@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, RefreshControl, View } from "react-native";
-import { useRouter } from "expo-router";
-import getDefaultMatchScoutingSession, {
+import { ScrollView, RefreshControl, View, Button, Text } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import {
   Event,
   Match,
   Team,
-  ItemKey,
-  MatchScoutingSession,
   MatchModel,
   TeamModel,
   TeamMember,
@@ -16,10 +14,14 @@ import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 
-export default function IndexScreen() {
+function Assignments() {
   const router = useRouter();
+  const { id } = useLocalSearchParams<{ id: string }>();
+  console.log("Assignments...", id);
+
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
+  const [teamMember, setTeamMember] = useState<TeamMember>();
 
   const loadData = async () => {
     try {
@@ -28,8 +30,6 @@ export default function IndexScreen() {
         Database.getEvent() as Promise<Event>,
         Database.getMatches() as Promise<Array<Match>>,
         Database.getTeams() as Promise<Array<Team>>,
-        Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
-        Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
         Database.getAllTeamMembers() as Promise<Array<TeamMember>>,
         Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
@@ -38,8 +38,6 @@ export default function IndexScreen() {
             dtoEvent,
             dtoMatches,
             dtoTeams,
-            sessionKeys,
-            uploadedKeys,
             dtoTeamMembers,
             dtoAssignments,
           ]) => {
@@ -48,10 +46,15 @@ export default function IndexScreen() {
               dtoEvent,
               dtoMatches,
               dtoTeams,
-              sessionKeys,
-              uploadedKeys,
+              [],
+              [],
               dtoTeamMembers,
               dtoAssignments
+            );
+
+            // Get the Team Member.
+            setTeamMember(
+              dtoTeamMembers.find((teamMember) => teamMember.key == id)
             );
 
             setMatchModels(matchModels);
@@ -65,9 +68,9 @@ export default function IndexScreen() {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setIsRefreshing(true);
-    loadData();
+    await loadData();
     setIsRefreshing(false);
   };
 
@@ -79,32 +82,12 @@ export default function IndexScreen() {
     matchModel: MatchModel,
     teamModel: TeamModel
   ) => {
-    try {
-      // Attempt to retrieve existing session.
-      let sessionKey = teamModel.sessionKey;
-      let session = await Database.getMatchScoutingSession(sessionKey);
+    await Database.saveMatchAssignment(teamModel.sessionKey, id);
+    loadData();
+  };
 
-      // If the session does not exist, we will initialize it.
-      if (session === undefined) {
-        session = getDefaultMatchScoutingSession() as MatchScoutingSession;
-        session.key = sessionKey;
-        session.eventKey = matchModel.eventKey;
-        session.matchKey = matchModel.matchKey;
-        session.matchNumber = matchModel.matchNumber;
-        session.alliance = teamModel.alliance;
-        session.allianceTeam = teamModel.allianceTeam;
-        session.scheduledTeamKey = teamModel.teamKey;
-        session.scoutedTeamKey = teamModel.teamKey;
-      }
-
-      console.log(sessionKey);
-
-      // Save to DB.
-      await Database.saveMatchScoutingSession(session);
-      router.replace(`/(scout-match)/confirm/${sessionKey}`);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleDone = () => {
+    router.back();
   };
 
   return (
@@ -115,6 +98,10 @@ export default function IndexScreen() {
           <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
         }
       >
+        <View>
+          <Text>Assigning Matches for {id}</Text>
+        </View>
+        <Button title="Done" onPress={() => handleDone()} />
         {matchModels.map((matchModel, index) => (
           <ContainerGroup title="" key={index}>
             <ScoutingMatchSelect
@@ -129,3 +116,5 @@ export default function IndexScreen() {
     </View>
   );
 }
+
+export default Assignments;

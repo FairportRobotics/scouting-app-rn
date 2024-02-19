@@ -1,5 +1,6 @@
 import type {
   ItemKey,
+  MatchAssignment,
   TbaEvent,
   TbaMatch,
   TbaTeam,
@@ -53,14 +54,13 @@ export function initializeDatabase(
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
-      tx.executeSql("DROP TABLE IF EXISTS match_scouting_session_actions");
       tx.executeSql("DROP TABLE IF EXISTS pit_scouting_sessions");
-      tx.executeSql("DROP TABLE IF EXISTS pit_scouting_session_actions");
       tx.executeSql(
         "DROP TABLE IF EXISTS uploaded_match_scouting_session_keys"
       );
       tx.executeSql("DROP TABLE IF EXISTS uploaded_pit_scouting_session_keys");
       tx.executeSql("DROP TABLE IF EXISTS team_members");
+      tx.executeSql("DROP TABLE IF EXISTS match_assignments");
     });
   }
 
@@ -75,6 +75,7 @@ export function initializeDatabase(
       tx.executeSql("DELETE FROM pit_scouting_sessions");
       tx.executeSql("DELETE FROM uploaded_pit_scouting_session_keys");
       tx.executeSql("DELETE FROM team_members");
+      tx.executeSql("DELETE FROM match_assignments");
     });
   }
 
@@ -131,7 +132,12 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS team_members \
-      (key TEXT PRIMARY KEY, firstName TEXT, lastName TEXT)"
+      (key TEXT PRIMARY KEY, firstName TEXT, lastName TEXT, canScout INTEGER)"
+    );
+
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS match_assignments \
+      (key TEXT PRIMARY KEY, teamMemberKey TEXT)"
     );
   });
 }
@@ -169,7 +175,7 @@ export const getSettings = async (
       return undefined;
     }
   } catch (error) {
-    console.error("Error fetching AppSettings:", error);
+    console.error(error);
     return undefined;
   }
 };
@@ -312,9 +318,19 @@ export const saveTeamMembers = async (teamMembers: Array<TeamMember>) => {
   });
 };
 
-export const getTeamMembers = async (): Promise<Array<TeamMember>> => {
+export const getAllTeamMembers = async (): Promise<Array<TeamMember>> => {
   try {
-    const query = "SELECT * FROM team_members";
+    const query = "SELECT * FROM team_members ORDER BY firstName, lastName";
+    return (await executeSql(query, [])) as Array<TeamMember>;
+  } catch (error) {
+    return [];
+  }
+};
+
+export const getScoutTeamMembers = async (): Promise<Array<TeamMember>> => {
+  try {
+    const query =
+      "SELECT * FROM team_members WHERE canScout = 1 ORDER BY firstName, lastName";
     return (await executeSql(query, [])) as Array<TeamMember>;
   } catch (error) {
     return [];
@@ -332,7 +348,7 @@ export const getEvent = async (): Promise<Event> => {
       return {} as Event;
     }
   } catch (error) {
-    console.error("Error fetching match scouting session:", error);
+    console.error(error);
     return {} as Event;
   }
 };
@@ -351,7 +367,7 @@ export const getTeams = async (): Promise<Array<Team>> => {
     const query = "SELECT * FROM event_teams ORDER BY teamNumber";
     return (await executeSql(query, [])) as Array<Team>;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error(error);
     return [];
   }
 };
@@ -368,7 +384,7 @@ export const getTeam = async (teamKey: string): Promise<Team | undefined> => {
       return undefined;
     }
   } catch (error) {
-    console.error("Error fetching event_teams", error);
+    console.error(error);
     return undefined;
   }
 };
@@ -629,7 +645,7 @@ export const getMatchScoutingSessions = async (): Promise<
       ORDER BY matchNumber";
     return (await executeSql(query, [])) as Array<MatchScoutingSession>;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error(error);
     return [];
   }
 };
@@ -652,7 +668,7 @@ export const getMatchScoutingSession = async (
       return undefined;
     }
   } catch (error) {
-    console.error("Error fetching match scouting session:", error);
+    console.error(error);
     return undefined;
   }
 };
@@ -662,7 +678,7 @@ export const getMatchScoutingKeys = async (): Promise<Array<ItemKey>> => {
     const query = "SELECT key FROM match_scouting_sessions";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
-    console.error("Error fetching Match Session Keys:", error);
+    console.error(error);
     return [];
   }
 };
@@ -698,7 +714,7 @@ export const getUploadedMatchScoutingKeys = async (): Promise<
     const query = "SELECT key FROM uploaded_match_scouting_session_keys";
     return ((await executeSql(query, [])) as Array<ItemKey>) || [];
   } catch (error) {
-    console.error("Error fetching Match Session Keys:", error);
+    console.error(error);
     return [];
   }
 };
@@ -714,7 +730,7 @@ export const getPitScoutingSessions = async (): Promise<
     const query = "SELECT * FROM pit_scouting_sessions";
     return ((await executeSql(query, [])) as Array<PitScoutingSession>) || [];
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error(error);
     return [];
   }
 };
@@ -733,7 +749,7 @@ export const getPitScoutingSession = async (
       return undefined;
     }
   } catch (error) {
-    console.error("Error fetching match scouting session:", error);
+    console.error(error);
     return undefined;
   }
 };
@@ -825,7 +841,94 @@ export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
       ";
     return (await executeSql(query, [])) as Array<ItemKey> | [];
   } catch (error) {
-    console.error("Error fetching Match Session Keys:", error);
+    console.error(error);
+    return [];
+  }
+};
+
+//=================================================================================================
+// Match Assignments Data Access
+//=================================================================================================
+
+export const saveTeamMemberCanScout = async (
+  teamMemberKey: string,
+  canScout: boolean
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO team_members(key, canScout) \
+        VALUES(:key, :canScout) \
+        ON CONFLICT (key) DO UPDATE SET \
+        canScout = excluded.canScout \
+      ",
+      [teamMemberKey, canScout ? 1 : 0],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+
+    // If the user is being flipped to "No", delete existing assignments.
+    if (!canScout) {
+      tx.executeSql(
+        "DELETE FROM match_assignments WHERE teamMemberKey = ?",
+        [teamMemberKey],
+        (txObj, resultSet) => {},
+        (txObj, error) => {
+          console.error(error);
+          return false;
+        }
+      );
+    }
+  });
+};
+
+export const saveMatchAssignment = async (
+  sessionKey: string,
+  teamMemberKey: string
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO match_assignments(key, teamMemberKey) \
+        VALUES(:key, :teamMemberKey) \
+        ON CONFLICT (key) DO UPDATE SET \
+        teamMemberKey = excluded.teamMemberKey \
+      ",
+      [sessionKey, teamMemberKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const deleteMatchAssignments = async (teamMemberKey: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "DELETE FROM match_assignments  \
+        WHERE teamMemberKey = ? \
+      ",
+      [teamMemberKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
+export const getMatchAssignments = async (): Promise<
+  Array<MatchAssignment>
+> => {
+  try {
+    const query = "SELECT * FROM match_assignments";
+    return (await executeSql(query, [])) as Array<MatchAssignment> | [];
+  } catch (error) {
+    console.error(error);
     return [];
   }
 };

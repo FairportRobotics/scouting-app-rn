@@ -219,6 +219,12 @@ export type TeamMember = {
   key: string;
   firstName: string;
   lastName: string;
+  canScout: boolean;
+};
+
+export type MatchAssignment = {
+  key: string;
+  teamMemberKey: string;
 };
 
 //=================================================================================================

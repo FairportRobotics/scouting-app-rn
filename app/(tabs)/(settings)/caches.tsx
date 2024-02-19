@@ -78,7 +78,7 @@ export default function Caches() {
   const loadTeamMembers = async () => {
     try {
       // Retrieve data.
-      Promise.all([Database.getTeamMembers()])
+      Promise.all([Database.getAllTeamMembers()])
         .then(([dtoTeamMembers]) => {
           setTeamMembers(dtoTeamMembers);
         })
