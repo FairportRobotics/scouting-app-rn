@@ -1,11 +1,4 @@
-import type {
-  ItemKey,
-  MatchAssignment,
-  TbaEvent,
-  TbaMatch,
-  TbaTeam,
-  TeamMember,
-} from "@/constants/Types";
+import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -59,8 +52,6 @@ export function initializeDatabase(
         "DROP TABLE IF EXISTS uploaded_match_scouting_session_keys"
       );
       tx.executeSql("DROP TABLE IF EXISTS uploaded_pit_scouting_session_keys");
-      tx.executeSql("DROP TABLE IF EXISTS team_members");
-      tx.executeSql("DROP TABLE IF EXISTS match_assignments");
     });
   }
 
@@ -74,8 +65,6 @@ export function initializeDatabase(
       tx.executeSql("DELETE FROM uploaded_match_scouting_session_keys");
       tx.executeSql("DELETE FROM pit_scouting_sessions");
       tx.executeSql("DELETE FROM uploaded_pit_scouting_session_keys");
-      tx.executeSql("DELETE FROM team_members");
-      tx.executeSql("DELETE FROM match_assignments");
     });
   }
 
@@ -128,16 +117,6 @@ export function initializeDatabase(
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS uploaded_pit_scouting_session_keys \
       (key TEXT PRIMARY KEY)"
-    );
-
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS team_members \
-      (key TEXT PRIMARY KEY, firstName TEXT, lastName TEXT, canScout INTEGER)"
-    );
-
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS match_assignments \
-      (key TEXT PRIMARY KEY, teamMemberKey TEXT)"
     );
   });
 }
@@ -296,46 +275,6 @@ export function saveTeams(teams: Array<TbaTeam>) {
     });
   });
 }
-
-export const saveTeamMembers = async (teamMembers: Array<TeamMember>) => {
-  db.transaction((tx) => {
-    teamMembers.forEach((teamMember) => {
-      tx.executeSql(
-        "INSERT INTO team_members(key, firstName, lastName) \
-        VALUES(:key, :firstName, :lastName) \
-        ON CONFLICT (key) DO UPDATE SET \
-        firstName = excluded.firstName, \
-        lastName = excluded.lastName \
-      ",
-        [teamMember.key, teamMember.firstName, teamMember.lastName],
-        (txObj, resultSet) => {},
-        (txObj, error) => {
-          console.error(error);
-          return false;
-        }
-      );
-    });
-  });
-};
-
-export const getAllTeamMembers = async (): Promise<Array<TeamMember>> => {
-  try {
-    const query = "SELECT * FROM team_members ORDER BY firstName, lastName";
-    return (await executeSql(query, [])) as Array<TeamMember>;
-  } catch (error) {
-    return [];
-  }
-};
-
-export const getScoutTeamMembers = async (): Promise<Array<TeamMember>> => {
-  try {
-    const query =
-      "SELECT * FROM team_members WHERE canScout = 1 ORDER BY firstName, lastName";
-    return (await executeSql(query, [])) as Array<TeamMember>;
-  } catch (error) {
-    return [];
-  }
-};
 
 export const getEvent = async (): Promise<Event> => {
   try {
@@ -840,93 +779,6 @@ export const getUploadedPitScoutingKeys = async (): Promise<Array<ItemKey>> => {
       SELECT key FROM uploaded_pit_scouting_session_keys \
       ";
     return (await executeSql(query, [])) as Array<ItemKey> | [];
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
-
-//=================================================================================================
-// Match Assignments Data Access
-//=================================================================================================
-
-export const saveTeamMemberCanScout = async (
-  teamMemberKey: string,
-  canScout: boolean
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO team_members(key, canScout) \
-        VALUES(:key, :canScout) \
-        ON CONFLICT (key) DO UPDATE SET \
-        canScout = excluded.canScout \
-      ",
-      [teamMemberKey, canScout ? 1 : 0],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-
-    // If the user is being flipped to "No", delete existing assignments.
-    if (!canScout) {
-      tx.executeSql(
-        "DELETE FROM match_assignments WHERE teamMemberKey = ?",
-        [teamMemberKey],
-        (txObj, resultSet) => {},
-        (txObj, error) => {
-          console.error(error);
-          return false;
-        }
-      );
-    }
-  });
-};
-
-export const saveMatchAssignment = async (
-  sessionKey: string,
-  teamMemberKey: string
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO match_assignments(key, teamMemberKey) \
-        VALUES(:key, :teamMemberKey) \
-        ON CONFLICT (key) DO UPDATE SET \
-        teamMemberKey = excluded.teamMemberKey \
-      ",
-      [sessionKey, teamMemberKey],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const deleteMatchAssignments = async (teamMemberKey: string) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "DELETE FROM match_assignments  \
-        WHERE teamMemberKey = ? \
-      ",
-      [teamMemberKey],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-};
-
-export const getMatchAssignments = async (): Promise<
-  Array<MatchAssignment>
-> => {
-  try {
-    const query = "SELECT * FROM match_assignments";
-    return (await executeSql(query, [])) as Array<MatchAssignment> | [];
   } catch (error) {
     console.error(error);
     return [];

@@ -208,23 +208,10 @@ export type TeamModel = {
   teamNumber: string;
   sessionExists: boolean;
   uploadExists: boolean;
-  assignedTeamMember: string;
 };
 
 export type ItemKey = {
   key: string;
-};
-
-export type TeamMember = {
-  key: string;
-  firstName: string;
-  lastName: string;
-  canScout: boolean;
-};
-
-export type MatchAssignment = {
-  key: string;
-  teamMemberKey: string;
 };
 
 //=================================================================================================
