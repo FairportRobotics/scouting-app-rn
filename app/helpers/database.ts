@@ -905,6 +905,22 @@ export const saveMatchAssignment = async (
   });
 };
 
+export const deleteMatchAssignments = async (teamMemberKey: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "DELETE FROM match_assignments  \
+        WHERE teamMemberKey = ? \
+      ",
+      [teamMemberKey],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+  });
+};
+
 export const getMatchAssignments = async (): Promise<
   Array<MatchAssignment>
 > => {

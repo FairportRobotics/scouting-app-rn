@@ -1,7 +1,13 @@
 import { MatchAssignment, TeamMember } from "@/constants/Types";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { View, Text, FlatList, RefreshControl, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from "react-native";
 import { ContainerGroup } from "@/app/components";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
@@ -36,7 +42,6 @@ export default function TeamMembers() {
         Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
         .then(([dtoTeamMembers, dtoAssignments]) => {
-          // XXX
           let models: Array<AssignmentModel> = [];
           dtoTeamMembers.forEach((teamMember) => {
             let model = {
@@ -52,7 +57,6 @@ export default function TeamMembers() {
             models.push(model);
           });
 
-          // XXX
           setAssignmentModels(models);
         })
         .catch((error) => {
@@ -71,12 +75,17 @@ export default function TeamMembers() {
     router.push(`/(tabs)/(settings)/assignments/${teamMemberKey}`);
   };
 
+  const handleUnassignMatches = async (teamMemberKey: string) => {
+    await Database.deleteMatchAssignments(teamMemberKey);
+    loadData();
+  };
+
   const renderItem = (teamMember: AssignmentModel) => {
     return (
       <View
         style={{
           flexDirection: "row",
-          alignItems: "center",
+          alignItems: "flex-start",
           padding: 5,
           paddingVertical: 10,
           backgroundColor: Colors.appBackground,
@@ -89,8 +98,8 @@ export default function TeamMembers() {
           </Text>
           <Text style={{ fontSize: 20 }}>{teamMember.key}</Text>
         </View>
-        <View style={{}}>
-          <Pressable onPress={() => handleAssignMatches(teamMember.key)}>
+        <View style={{ gap: 8 }}>
+          <TouchableOpacity onPress={() => handleAssignMatches(teamMember.key)}>
             <View style={[Styles.baseButton, { padding: 10 }]}>
               <Text
                 style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
@@ -98,10 +107,18 @@ export default function TeamMembers() {
                 Assign Matches
               </Text>
             </View>
-          </Pressable>
-          <Text style={{ fontSize: 20 }}>
-            Assignments: {teamMember.assignmentCount}
-          </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleUnassignMatches(teamMember.key)}
+          >
+            <View style={[Styles.baseButton, { padding: 10 }]}>
+              <Text
+                style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
+              >
+                Unassign {teamMember.assignmentCount}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     );

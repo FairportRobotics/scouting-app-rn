@@ -33,10 +33,6 @@ const DrawerLayout = () => {
           headerTitle: "Match Assignments",
         }}
       />
-      <Drawer.Screen
-        name="testing"
-        options={{ title: "Testing", headerTitle: "Testing" }}
-      />
     </Drawer>
   );
 };

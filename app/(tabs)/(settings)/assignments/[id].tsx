@@ -17,9 +17,11 @@ import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 function Assignments() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+  console.log("Assignments...", id);
 
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
+  const [teamMember, setTeamMember] = useState<TeamMember>();
 
   const loadData = async () => {
     try {
@@ -50,6 +52,11 @@ function Assignments() {
               dtoAssignments
             );
 
+            // Get the Team Member.
+            setTeamMember(
+              dtoTeamMembers.find((teamMember) => teamMember.key == id)
+            );
+
             setMatchModels(matchModels);
           }
         )
@@ -62,11 +69,9 @@ function Assignments() {
   };
 
   const onRefresh = async () => {
-    console.log("onRefresh...");
     setIsRefreshing(true);
     await loadData();
     setIsRefreshing(false);
-    console.log("onRefresh.");
   };
 
   useEffect(() => {
@@ -78,17 +83,11 @@ function Assignments() {
     teamModel: TeamModel
   ) => {
     await Database.saveMatchAssignment(teamModel.sessionKey, id);
-
-    let model = matchModels.find((model) => model.matchKey === matchModel.key)
-      ?.alliances[teamModel.alliance][teamModel.allianceTeam];
-
-    if (model === undefined) return;
-
-    model.assignedTeamMember = id;
+    loadData();
   };
 
   const handleDone = () => {
-    router.push(`/(tabs)/(settings)/teammembers`);
+    router.back();
   };
 
   return (
@@ -100,7 +99,7 @@ function Assignments() {
         }
       >
         <View>
-          <Text>{id}</Text>
+          <Text>Assigning Matches for {id}</Text>
         </View>
         <Button title="Done" onPress={() => handleDone()} />
         {matchModels.map((matchModel, index) => (
