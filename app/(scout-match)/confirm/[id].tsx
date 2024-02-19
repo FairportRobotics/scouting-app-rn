@@ -16,6 +16,7 @@ import {
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
+import AssignMatchSelect from "@/app/components/AssignMatchSelect";
 
 function ConfirmScreen() {
   const router = useRouter();
@@ -68,14 +69,29 @@ function ConfirmScreen() {
       // Retrieve from the database.
       const dtoSession = await Database.getMatchScoutingSession(sessionKey);
       const dtoTeams = await Database.getTeams();
+      const dtoAssignments = await Database.getMatchAssignments();
+      const dtoTeamMembers = await Database.getAllTeamMembers();
 
       // Validate.
       if (dtoSession === undefined) return;
       if (dtoTeams === undefined) return;
+      if (dtoAssignments === undefined) return;
+
+      // Obtain the name of the assigned Team Member if available.
+      let assignedTeamMemberName = "";
+      const assignee = dtoAssignments.find(
+        (assignment) => assignment.key === dtoSession.key
+      );
+      const teamMember = dtoTeamMembers.find(
+        (teamMember) => teamMember.key === assignee?.teamMemberKey
+      );
+      if (teamMember !== undefined) {
+        assignedTeamMemberName = `${teamMember.firstName} ${teamMember.lastName}`;
+      }
 
       // Set State.
       setSession(dtoSession);
-      setScouterName(dtoSession.scouterName ?? "");
+      setScouterName(dtoSession.scouterName ?? assignedTeamMemberName);
       setAllTeams(dtoTeams);
       setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
       setScoutedTeam(lookupTeam(dtoTeams, dtoSession.scoutedTeamKey));
