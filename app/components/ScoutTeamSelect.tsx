@@ -9,15 +9,15 @@ import type { TeamModel } from "@/constants/Types";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
-type MatchTeamSelectProps = {
+type ScoutTeamSelectProps = {
   teamModel: TeamModel;
   onSelect: (teamModel: TeamModel) => void;
 };
 
-export default function MatchTeamSelect({
+export default function ScoutTeamSelect({
   teamModel,
   onSelect,
-}: MatchTeamSelectProps) {
+}: ScoutTeamSelectProps) {
   const handleOnPress = () => {
     onSelect(teamModel);
   };

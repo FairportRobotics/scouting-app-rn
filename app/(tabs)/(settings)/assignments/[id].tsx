@@ -10,9 +10,10 @@ import {
   TeamMember,
   MatchAssignment,
 } from "@/constants/Types";
-import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
+import { ContainerGroup } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
+import AssignMatchSelect from "@/app/components/AssignMatchSelect";
 
 function Assignments() {
   const router = useRouter();
@@ -118,7 +119,7 @@ function Assignments() {
         <Button title="Done" onPress={() => handleDone()} />
         {matchModels.map((matchModel, index) => (
           <ContainerGroup title="" key={index}>
-            <ScoutingMatchSelect
+            <AssignMatchSelect
               matchModel={matchModel}
               onSelect={(matchModel, teamModel) =>
                 handleOnSelect(matchModel, teamModel)
