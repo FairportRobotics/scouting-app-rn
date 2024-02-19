@@ -12,7 +12,7 @@ import getDefaultMatchScoutingSession, {
   TeamMember,
   MatchAssignment,
 } from "@/constants/Types";
-import { ContainerGroup, ScoutingMatchSelect } from "@/app/components";
+import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 
@@ -117,7 +117,7 @@ export default function IndexScreen() {
       >
         {matchModels.map((matchModel, index) => (
           <ContainerGroup title="" key={index}>
-            <ScoutingMatchSelect
+            <ScoutMatchSelect
               matchModel={matchModel}
               onSelect={(matchModel, teamModel) =>
                 handleOnSelect(matchModel, teamModel)

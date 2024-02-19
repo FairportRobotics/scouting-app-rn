@@ -1,18 +1,18 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
-import MatchTeamSelect from "@/app/components/MatchTeamSelect";
+import ScoutTeamSelect from "@/app/components/ScoutTeamSelect";
 import type { MatchModel, TeamModel } from "@/constants/Types";
 
-type ScoutingMatchSelectProps = {
+type ScoutMatchSelectProps = {
   matchModel: MatchModel;
   onSelect: (matchModel: MatchModel, teamModel: TeamModel) => void;
 };
 
-export default function ScoutingMatchSelect({
+export default function ScoutMatchSelect({
   matchModel,
   onSelect,
-}: ScoutingMatchSelectProps) {
+}: ScoutMatchSelectProps) {
   const handleOnSelect = (teamModel: TeamModel) => {
     onSelect(matchModel, teamModel);
   };
@@ -44,21 +44,21 @@ export default function ScoutingMatchSelect({
           justifyContent: "space-between",
         }}
       >
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Blue][AllianceTeam.One] ??
             ({} as TeamModel)
           }
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Blue][AllianceTeam.Two] ??
             ({} as TeamModel)
           }
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Blue][AllianceTeam.Three] ??
             ({} as TeamModel)
@@ -66,21 +66,21 @@ export default function ScoutingMatchSelect({
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
 
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Red][AllianceTeam.One] ??
             ({} as TeamModel)
           }
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Red][AllianceTeam.Two] ??
             ({} as TeamModel)
           }
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
-        <MatchTeamSelect
+        <ScoutTeamSelect
           teamModel={
             matchModel.alliances[Alliance.Red][AllianceTeam.Three] ??
             ({} as TeamModel)
