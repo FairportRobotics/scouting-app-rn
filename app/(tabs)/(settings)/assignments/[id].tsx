@@ -21,7 +21,9 @@ function Assignments() {
 
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
-  const [teamMember, setTeamMember] = useState<TeamMember>();
+  const [teamMembers, setTeamMembers] = useState<Record<string, TeamMember>>(
+    {}
+  );
 
   const loadData = async () => {
     try {
@@ -51,13 +53,14 @@ function Assignments() {
               dtoTeamMembers,
               dtoAssignments
             );
-
-            // Get the Team Member.
-            setTeamMember(
-              dtoTeamMembers.find((teamMember) => teamMember.key == id)
-            );
-
             setMatchModels(matchModels);
+
+            // Create a dictionary of TeamMembers.
+            let teamMembersDict: Record<string, TeamMember> = {};
+            dtoTeamMembers.forEach(
+              (teamMember) => (teamMembersDict[teamMember.key] = teamMember)
+            );
+            setTeamMembers(teamMembersDict);
           }
         )
         .catch((error) => {
@@ -83,7 +86,18 @@ function Assignments() {
     teamModel: TeamModel
   ) => {
     await Database.saveMatchAssignment(teamModel.sessionKey, id);
-    loadData();
+
+    setMatchModels((prevData) => {
+      const newData = [...prevData];
+
+      let element = newData[matchModel.matchNumber];
+      element.alliances[teamModel.alliance]![
+        teamModel.allianceTeam
+      ]!.assignedTeamMember = `${teamMembers[id].firstName} ${teamMembers[id].lastName[0]}`;
+      newData[matchModel.matchNumber] = element;
+
+      return newData;
+    });
   };
 
   const handleDone = () => {
