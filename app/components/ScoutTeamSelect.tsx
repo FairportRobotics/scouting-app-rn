@@ -71,7 +71,7 @@ export default function ScoutTeamSelect({
             : Styles.allianceRedButton,
           {
             width: "100%",
-            height: 80,
+            height: 60,
             flexDirection: "column",
             opacity:
               teamModel.sessionExists || teamModel.uploadExists ? 0.6 : 1.0,
@@ -82,9 +82,6 @@ export default function ScoutTeamSelect({
           {teamModel.allianceTeam}
         </Text>
         <Text style={{ color: "white" }}>{teamModel.teamNumber}</Text>
-        <Text style={{ color: "white" }}>
-          {teamModel.assignedTeamMember ?? "Unassigned"}
-        </Text>
       </View>
     </TouchableOpacity>
   );

@@ -9,8 +9,6 @@ import getDefaultMatchScoutingSession, {
   MatchScoutingSession,
   MatchModel,
   TeamModel,
-  TeamMember,
-  MatchAssignment,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
@@ -30,33 +28,19 @@ export default function IndexScreen() {
         Database.getTeams() as Promise<Array<Team>>,
         Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
         Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
-        Database.getAllTeamMembers() as Promise<Array<TeamMember>>,
-        Database.getMatchAssignments() as Promise<Array<MatchAssignment>>,
       ])
-        .then(
-          ([
+        .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
+          // Build the Match Models.
+          const matchModels = getMatchSelectModels(
             dtoEvent,
             dtoMatches,
             dtoTeams,
             sessionKeys,
-            uploadedKeys,
-            dtoTeamMembers,
-            dtoAssignments,
-          ]) => {
-            // Build the Match Models.
-            const matchModels = getMatchSelectModels(
-              dtoEvent,
-              dtoMatches,
-              dtoTeams,
-              sessionKeys,
-              uploadedKeys,
-              dtoTeamMembers,
-              dtoAssignments
-            );
+            uploadedKeys
+          );
 
-            setMatchModels(matchModels);
-          }
-        )
+          setMatchModels(matchModels);
+        })
         .catch((error) => {
           console.error(error);
         });

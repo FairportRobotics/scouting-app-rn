@@ -1,9 +1,8 @@
 import { ScrollView, View, Text, Button } from "react-native";
 import { ContainerGroup } from "@/app/components";
 import { useEffect, useState } from "react";
-import { Event, ItemKey, Match, Team, TeamMember } from "@/constants/Types";
+import { Event, ItemKey, Match, Team } from "@/constants/Types";
 import * as Database from "@/app/helpers/database";
-import teamMembers from "@/data/teamMembers";
 
 export default function Caches() {
   // The Blue Alliance
@@ -11,10 +10,6 @@ export default function Caches() {
   const [event, setEvent] = useState<Event>();
   const [eventMatches, setEventMatches] = useState<Array<Match>>([]);
   const [eventTeams, setEventTeams] = useState<Array<Team>>([]);
-
-  // Team
-  const [showTeamCaches, setShowTeamCaches] = useState<boolean>(false);
-  const [teamMembersCache, setTeamMembers] = useState<Array<TeamMember>>([]);
 
   // Match Session Keys
   const [showMatchSessionKeys, setShowMatchSessionKeys] =
@@ -45,10 +40,6 @@ export default function Caches() {
   }, [showTbaCaches]);
 
   useEffect(() => {
-    loadTeamMembers();
-  }, [showTeamCaches]);
-
-  useEffect(() => {
     loadMatchSessionKeys();
   }, [showMatchSessionKeys]);
 
@@ -68,19 +59,6 @@ export default function Caches() {
           setEvent(dtoEvent);
           setEventMatches(dtoMatches);
           setEventTeams(dtoTeams);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (error) {}
-  };
-
-  const loadTeamMembers = async () => {
-    try {
-      // Retrieve data.
-      Promise.all([Database.getAllTeamMembers()])
-        .then(([dtoTeamMembers]) => {
-          setTeamMembers(dtoTeamMembers);
         })
         .catch((error) => {
           console.error(error);
@@ -114,11 +92,6 @@ export default function Caches() {
     } catch (error) {}
   };
 
-  const handleRefreshTeamMembersCache = async () => {
-    await Database.saveTeamMembers(teamMembers);
-    await loadTeamMembers();
-  };
-
   const handleRefreshMatchSessionKeys = async () => {
     await loadMatchSessionKeys();
   };
@@ -139,22 +112,6 @@ export default function Caches() {
             <Text>{JSON.stringify(event, null, 2)}</Text>
             <Text>{JSON.stringify(eventMatches, null, 2)}</Text>
             <Text>{JSON.stringify(eventTeams, null, 2)}</Text>
-          </View>
-        )}
-      </ContainerGroup>
-
-      <ContainerGroup title="Team Members">
-        <Button
-          onPress={() => handleRefreshTeamMembersCache()}
-          title="Refresh"
-        />
-        <Button
-          onPress={() => setShowTeamCaches(!showTeamCaches)}
-          title={showTeamCaches ? "Hide" : "Show"}
-        />
-        {showTeamCaches && (
-          <View>
-            <Text>{JSON.stringify(teamMembersCache, null, 2)}</Text>
           </View>
         )}
       </ContainerGroup>
