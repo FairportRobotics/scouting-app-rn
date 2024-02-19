@@ -61,7 +61,7 @@ export default function IndexScreen() {
           console.error(error);
         });
     } catch (error) {
-      console.log("Something went horribly wrong.");
+      console.error(error);
     }
   };
 
@@ -96,8 +96,6 @@ export default function IndexScreen() {
         session.scheduledTeamKey = teamModel.teamKey;
         session.scoutedTeamKey = teamModel.teamKey;
       }
-
-      console.log(sessionKey);
 
       // Save to DB.
       await Database.saveMatchScoutingSession(session);

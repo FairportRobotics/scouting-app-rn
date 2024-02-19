@@ -18,7 +18,6 @@ import AssignMatchSelect from "@/app/components/AssignMatchSelect";
 function Assignments() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  console.log("Assignments...", id);
 
   const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
@@ -68,7 +67,7 @@ function Assignments() {
           console.error(error);
         });
     } catch (error) {
-      console.log("Something went horribly wrong.");
+      console.error(error);
     }
   };
 

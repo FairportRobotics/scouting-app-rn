@@ -52,7 +52,7 @@ export default function MatchResultsScreen() {
             console.error(error);
           });
       } catch (error) {
-        console.log("Something went horribly wrong.");
+        console.error(error);
       }
     } catch (error) {
       console.error(error);
