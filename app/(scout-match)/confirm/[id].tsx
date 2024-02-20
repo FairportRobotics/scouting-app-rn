@@ -116,7 +116,6 @@ function ConfirmScreen() {
 
   const handleNavigateNext = () => {
     saveData();
-
     if (scouterName === "") return;
     router.replace(`/(scout-match)/auto/${sessionKey}`);
   };
