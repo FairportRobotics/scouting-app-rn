@@ -17,6 +17,7 @@ import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import pitScoutingQuestions from "@/data/pitScoutingQuestions";
+import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
 
 function ScoutPitScreen() {
   const router = useRouter();
@@ -51,8 +52,6 @@ function ScoutPitScreen() {
         } as PitScoutingSession;
       }
 
-      console.log(JSON.stringify(dtoSession, null, 2));
-
       // Set State.
       setTeam(dtoTeam);
       setCurrentSession(dtoSession);
@@ -63,7 +62,6 @@ function ScoutPitScreen() {
 
   const saveData = async () => {
     try {
-      // Save to database.
       await Database.updatePitScoutingSession(currentSession);
     } catch (error) {
       console.error(error);
@@ -71,13 +69,11 @@ function ScoutPitScreen() {
   };
 
   const uploadDate = async () => {
-    // try {
-    //   // Save to database.
-    //   const session = await Database.getPitScoutingSession(id);
-    //   if (session !== undefined) postPitScoutingSession(session);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      postPitScoutingSession(currentSession);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSetOption = (key: string, value: string) => {
