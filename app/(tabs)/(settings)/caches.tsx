@@ -103,6 +103,7 @@ export default function Caches() {
   return (
     <ScrollView style={{ padding: 10 }}>
       <ContainerGroup title="The Blue Alliance">
+        <Button onPress={() => loadTbaCaches()} title="Refresh" />
         <Button
           onPress={() => setShowTbaCaches(!showTbaCaches)}
           title={showTbaCaches ? "Hide" : "Show"}

@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Alert, Button, Share, View } from "react-native";
 import ContainerGroup from "@/app/components/ContainerGroup";
 import * as Database from "@/app/helpers/database";
 import * as FileSystem from "expo-file-system";
+import SignInForAdvanced from "@/app/components/SignInForAdvanced";
 
 export default function DatabaseSettings() {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
   // Function to export SQLite database
   const exportDatabase = async () => {
     try {
@@ -75,10 +79,24 @@ export default function DatabaseSettings() {
       console.error("Error sharing via AirDrop:", error);
     }
   };
+
+  const onSuccessfulSignin = () => {
+    setShowAdvanced(true);
+  };
+
+  if (!showAdvanced) {
+    return <SignInForAdvanced onSuccessfulSignin={onSuccessfulSignin} />;
+  }
+
   return (
     <View style={{ padding: 10 }}>
       <ContainerGroup title="Database">
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+        <View
+          style={{
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+          }}
+        >
           <Button title="Share" onPress={handleShare} />
           <Button
             title="Delete data and initialize"
