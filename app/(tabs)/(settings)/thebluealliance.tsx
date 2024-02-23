@@ -7,10 +7,13 @@ import fetchEventMatches from "@/app/helpers/fetchEventMatches";
 import fetchEventTeams from "@/app/helpers/fetchEventTeams";
 import backfillMissingTeams from "@/app/helpers/backfillMissingTeams";
 import * as Database from "@/app/helpers/database";
+import Styles from "@/constants/Styles";
+import SignInForAdvanced from "@/app/components/SignInForAdvanced";
 
 export default function TBACaches() {
   // Declare the various states that we want to manage.
   const [eventKey, setEventKey] = useState("2023nyrr");
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Support for editing the Event Key
   const handleChangeKey = (key: string) => {
@@ -46,6 +49,14 @@ export default function TBACaches() {
     Database.saveTeams(tbaTeams);
   };
 
+  const onSuccessfulSignin = () => {
+    setShowAdvanced(true);
+  };
+
+  if (!showAdvanced) {
+    return <SignInForAdvanced onSuccessfulSignin={onSuccessfulSignin} />;
+  }
+
   return (
     <View style={{ padding: 10 }}>
       <ContainerGroup title="The Blue Alliance Caches">
@@ -66,12 +77,7 @@ export default function TBACaches() {
             <View style={{ flexDirection: "row" }}>
               <TextInput
                 onChangeText={handleChangeKey}
-                style={{
-                  width: 200,
-                  borderWidth: 2,
-                  borderColor: "darkgray",
-                  padding: 6,
-                }}
+                style={[Styles.textInput, { width: "50%" }]}
                 value={eventKey}
                 placeholder="Event Key..."
                 keyboardType="default"

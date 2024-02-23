@@ -1,4 +1,4 @@
-import { RefreshControl, View, ScrollView, Share } from "react-native";
+import { RefreshControl, View, ScrollView, Share, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
@@ -150,6 +150,30 @@ export default function MatchResultsScreen() {
         value={qrCodeText}
         onPressClose={() => setShowQrCode(false)}
       />
+    );
+  }
+
+  if (sessions.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          padding: 20,
+          gap: 20,
+          alignContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
+        <Text style={{ fontSize: 24 }}>
+          This screen intentionally left blank except for this very important
+          message that the reason this screen is blank is because there have not
+          been any matches scouted on this device yet.
+        </Text>
+        <Text style={{ fontSize: 24 }}>
+          If there HAD been matches scouted on this device, they would show up
+          here instead of this stupid message.
+        </Text>
+      </View>
     );
   }
 
