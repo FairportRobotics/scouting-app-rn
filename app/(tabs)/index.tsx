@@ -13,6 +13,7 @@ import getDefaultMatchScoutingSession, {
 import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
+import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -21,6 +22,9 @@ export default function IndexScreen() {
 
   const loadData = async () => {
     try {
+      // Make sure we have the most recent keys.
+      await refreshMatchScoutingKeys();
+
       // Retrieve data.
       Promise.all([
         Database.getEvent() as Promise<Event>,
