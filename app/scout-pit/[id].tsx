@@ -62,12 +62,12 @@ function ScoutPitScreen() {
   };
 
   const saveData = async () => {
-    // try {
-    //   // Save to database.
-    //   await Database.updatePitScoutingSession(currentSession);
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    try {
+      // Save to database.
+      await Database.updatePitScoutingSession(currentSession);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const uploadDate = async () => {
