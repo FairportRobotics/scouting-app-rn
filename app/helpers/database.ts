@@ -5,7 +5,6 @@ import type {
   Team,
   MatchScoutingSession,
   PitScoutingSession,
-  AppSettings,
 } from "@/constants/Types";
 import * as SQLite from "expo-sqlite";
 
@@ -42,7 +41,6 @@ export function initializeDatabase(
 ) {
   if (dropAndRecreate) {
     db.transaction((tx) => {
-      tx.executeSql("DROP TABLE IF EXISTS settings");
       tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
@@ -57,7 +55,6 @@ export function initializeDatabase(
 
   if (deleteExistingData) {
     db.transaction((tx) => {
-      tx.executeSql("DELETE FROM settings");
       tx.executeSql("DELETE FROM events");
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
@@ -70,11 +67,6 @@ export function initializeDatabase(
 
   db.transaction((tx) => {
     // Create new tables.
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS settings \
-      (key TEXT PRIMARY KEY, tbaKey TEXT, saveUri)"
-    );
-
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS events \
       (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
@@ -120,44 +112,6 @@ export function initializeDatabase(
     );
   });
 }
-
-//=================================================================================================
-// Settings data access.
-//=================================================================================================
-export function saveSettings(settings: AppSettings) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO settings(key, tbaKey, saveUri) \
-      VALUES(:key, :tbaKey, :saveUri) \
-      ON CONFLICT (key) DO NOTHING",
-      [settings.key, settings.tbaKey, settings.saveUri],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
-
-export const getSettings = async (
-  key: string
-): Promise<AppSettings | undefined> => {
-  try {
-    const query = "SELECT * FROM settings WHERE key = ?";
-    const params = [key];
-    const results = (await executeSql(query, params)) as AppSettings[];
-
-    if (results.length > 0) {
-      return results[0];
-    } else {
-      return undefined;
-    }
-  } catch (error) {
-    console.error(error);
-    return undefined;
-  }
-};
 
 //=================================================================================================
 // Event data access.

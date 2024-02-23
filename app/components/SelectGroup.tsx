@@ -63,7 +63,7 @@ export default function SelectGroup({
   return (
     <View style={{}}>
       {title && <Text style={Styles.selectGroupTitle}>{title}</Text>}
-      <View style={{ flexDirection: "row", gap: 6 }}>
+      <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap" }}>
         {options.map((option: string) => (
           <TouchableOpacity
             key={option}
