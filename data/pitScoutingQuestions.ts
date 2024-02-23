@@ -65,20 +65,7 @@ export default [
     key: "maximumClearance",
     title:
       "What is the maximum clearance in inches needed for your robot to get Onstage?",
-    options: [
-      "24",
-      "25",
-      "26",
-      "27",
-      "28",
-      "29",
-      "30",
-      "31",
-      "32",
-      "33",
-      "34",
-      "35+",
-    ],
+    options: ["24", "25", "26", "27", "28", "29", "30+"],
     value: "",
   },
   {
