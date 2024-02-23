@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ContainerGroup, SelectGroup } from "@/app/components";
 import { PitScoutingSession, Team } from "@/constants/Types";
 import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
@@ -102,6 +102,7 @@ function ScoutPitScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen options={{ title: "Scout Pit" }} />
       <View
         style={{
           backgroundColor: Colors.primary,
