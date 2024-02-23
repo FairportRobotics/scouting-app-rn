@@ -21,7 +21,7 @@ export default function DatabaseSettings() {
 
       // Create a copy of the database file in the app's cache directory
       const databaseUri = `${FileSystem.documentDirectory}/SQLite/scouting-app.db`;
-      const cacheUri = `${FileSystem.cacheDirectory}Scouting-Harp-${formattedDate}.db`;
+      const cacheUri = `${FileSystem.cacheDirectory}Scouting-${formattedDate}.db`;
       await FileSystem.copyAsync({ from: databaseUri, to: cacheUri });
       return cacheUri;
     } catch (error) {
