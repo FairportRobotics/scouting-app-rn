@@ -6,6 +6,7 @@ import { ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
 import { ItemKey, PitScoutingSession, Team } from "@/constants/Types";
+import refreshPitScoutingKeys from "../helpers/refreshPitScoutingKeys";
 
 export type ReportRecord = {
   key: string;
@@ -36,6 +37,9 @@ export default function ScoutPitScreen() {
 
   const loadData = async () => {
     try {
+      // Make sure we have the most recent keys.
+      await refreshPitScoutingKeys();
+
       // Retrieve data.
       Promise.all([
         // Retrieve from the database.
