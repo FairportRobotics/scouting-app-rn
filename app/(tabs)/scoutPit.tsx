@@ -58,7 +58,8 @@ export default function ScoutPitScreen() {
               ),
 
               uploadExists: !!uploadedKeys.find(
-                (uploaded) => uploaded.key === dtoTeam.key
+                (uploaded) =>
+                  uploaded.key === dtoTeam.key && dtoTeam.key !== "frc00000"
               ),
             } as ReportRecord;
 

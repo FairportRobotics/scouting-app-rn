@@ -2,7 +2,7 @@
   "expo": {
     "name": "Scouter",
     "slug": "scouting-app-rn",
-    "version": "1.0.0",
+    "version": "20240219.16.59",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -16,13 +16,15 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fairportrobotics.scoutingapprn"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.fairportrobotics.scoutingapprn"
     },
     "web": {
       "bundler": "metro",
