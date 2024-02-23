@@ -1,11 +1,16 @@
-import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
+import type {
+  ItemKey,
+  PitScoutingQuestion,
+  TbaEvent,
+  TbaMatch,
+  TbaTeam,
+} from "@/constants/Types";
 import type {
   Event,
   Match,
   Team,
   MatchScoutingSession,
   PitScoutingSession,
-  AppSettings,
 } from "@/constants/Types";
 import * as SQLite from "expo-sqlite";
 
@@ -42,7 +47,6 @@ export function initializeDatabase(
 ) {
   if (dropAndRecreate) {
     db.transaction((tx) => {
-      tx.executeSql("DROP TABLE IF EXISTS settings");
       tx.executeSql("DROP TABLE IF EXISTS events");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
@@ -57,7 +61,6 @@ export function initializeDatabase(
 
   if (deleteExistingData) {
     db.transaction((tx) => {
-      tx.executeSql("DELETE FROM settings");
       tx.executeSql("DELETE FROM events");
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
@@ -70,11 +73,6 @@ export function initializeDatabase(
 
   db.transaction((tx) => {
     // Create new tables.
-    tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS settings \
-      (key TEXT PRIMARY KEY, tbaKey TEXT, saveUri)"
-    );
-
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS events \
       (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
@@ -103,10 +101,7 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
-      (key TEXT PRIMARY KEY, eventKey TEXT, canAchieveHarmony TEXT, \
-        canFitOnStage TEXT, canFitUnderStage TEXT, canGetFromSource TEXT, canGetOnStage TEXT, canPark TEXT, canPickUpNoteFromGround TEXT, \
-        canRobotRecover TEXT, canScoreAmp TEXT, canScoreSpeaker TEXT, canScoreTrap TEXT, isRobotReady TEXT, numberOfAutoMethods TEXT, planOnClimbing TEXT, \
-        planOnScoringTrap TEXT, robotDimensions TEXT, teamExperience TEXT)"
+      (key TEXT PRIMARY KEY, eventKey TEXT, questions TEXT)"
     );
 
     tx.executeSql(
@@ -120,44 +115,6 @@ export function initializeDatabase(
     );
   });
 }
-
-//=================================================================================================
-// Settings data access.
-//=================================================================================================
-export function saveSettings(settings: AppSettings) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO settings(key, tbaKey, saveUri) \
-      VALUES(:key, :tbaKey, :saveUri) \
-      ON CONFLICT (key) DO NOTHING",
-      [settings.key, settings.tbaKey, settings.saveUri],
-      (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
-
-export const getSettings = async (
-  key: string
-): Promise<AppSettings | undefined> => {
-  try {
-    const query = "SELECT * FROM settings WHERE key = ?";
-    const params = [key];
-    const results = (await executeSql(query, params)) as AppSettings[];
-
-    if (results.length > 0) {
-      return results[0];
-    } else {
-      return undefined;
-    }
-  } catch (error) {
-    console.error(error);
-    return undefined;
-  }
-};
 
 //=================================================================================================
 // Event data access.
@@ -680,13 +637,46 @@ export const getPitScoutingSession = async (
   try {
     const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
     const params = [sessionKey];
-    const results = (await executeSql(query, params)) as PitScoutingSession[];
 
-    if (results.length > 0) {
-      return results[0];
-    } else {
-      return undefined;
-    }
+    return new Promise<PitScoutingSession | undefined>((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            query,
+            params,
+            (_, { rows }) => {
+              // Stuff here.
+              const result: Array<PitScoutingSession> = [];
+
+              for (let i = 0; i < rows.length; i++) {
+                const item = rows.item(i);
+
+                // Convert the column to JSON.
+                const parsedArray: Array<PitScoutingQuestion> = JSON.parse(
+                  item.questions
+                );
+
+                // Build the object.
+                const data = {
+                  key: item.key,
+                  eventKey: item.eventKey,
+                  questions: parsedArray,
+                } as PitScoutingSession;
+
+                result.push(data);
+              }
+
+              resolve(result[0]);
+            },
+            (_, error) => {
+              console.error(error);
+              return false;
+            }
+          );
+        },
+        (error) => reject(error)
+      );
+    });
   } catch (error) {
     console.error(error);
     return undefined;
@@ -697,50 +687,14 @@ export const updatePitScoutingSession = async (session: PitScoutingSession) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
-      (key, eventKey, canAchieveHarmony, canFitOnStage, canFitUnderStage, canGetFromSource, canGetOnStage, canPark, canPickUpNoteFromGround, canRobotRecover, canScoreAmp, canScoreSpeaker, canScoreTrap, isRobotReady, numberOfAutoMethods, planOnClimbing, planOnScoringTrap, robotDimensions, teamExperience) \
+      (key, eventKey, questions) \
       VALUES \
-      (:key, :eventKey, :canAchieveHarmony, :canFitOnStage, :canFitUnderStage, :canGetFromSource, :canGetOnStage, :canPark, :canPickUpNoteFromGround, :canRobotRecover, :canScoreAmp, :canScoreSpeaker, :canScoreTrap, :isRobotReady, :numberOfAutoMethods, :planOnClimbing, :planOnScoringTrap, :robotDimensions, :teamExperience) \
+      (:key, :eventKey, :questions) \
       ON CONFLICT (key) DO UPDATE SET \
         eventKey = excluded.eventKey, \
-        canAchieveHarmony = excluded.canAchieveHarmony, \
-        canFitOnStage = excluded.canFitOnStage, \
-        canFitUnderStage = excluded.canFitUnderStage, \
-        canGetFromSource = excluded.canGetFromSource, \
-        canGetOnStage = excluded.canGetOnStage, \
-        canPark = excluded.canPark, \
-        canPickUpNoteFromGround = excluded.canPickUpNoteFromGround, \
-        canRobotRecover = excluded.canRobotRecover, \
-        canScoreAmp = excluded.canScoreAmp, \
-        canScoreSpeaker = excluded.canScoreSpeaker, \
-        canScoreTrap = excluded.canScoreTrap, \
-        isRobotReady = excluded.isRobotReady, \
-        numberOfAutoMethods = excluded.numberOfAutoMethods, \
-        planOnClimbing = excluded.planOnClimbing, \
-        planOnScoringTrap = excluded.planOnScoringTrap, \
-        robotDimensions = excluded.robotDimensions, \
-        teamExperience = excluded.teamExperience \
+        questions = excluded.questions \
       ",
-      [
-        session.key,
-        session.eventKey,
-        session.canAchieveHarmony,
-        session.canFitOnStage,
-        session.canFitUnderStage,
-        session.canGetFromSource,
-        session.canGetOnStage,
-        session.canPark,
-        session.canPickUpNoteFromGround,
-        session.canRobotRecover,
-        session.canScoreAmp,
-        session.canScoreSpeaker,
-        session.canScoreTrap,
-        session.isRobotReady,
-        session.numberOfAutoMethods,
-        session.planOnClimbing,
-        session.planOnScoringTrap,
-        session.robotDimensions,
-        session.teamExperience,
-      ],
+      [session.key, session.eventKey, JSON.stringify(session.questions)],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);

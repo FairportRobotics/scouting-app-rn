@@ -166,29 +166,7 @@ export type PitScoutingSession = {
   // Root properties.
   key: string;
   eventKey: string;
-  canAchieveHarmony: string;
-  canFitOnStage: string;
-  canFitUnderStage: string;
-  canGetFromSource: string;
-  canGetOnStage: string;
-  canPark: string;
-  canPickUpNoteFromGround: string;
-  canRobotRecover: string;
-  canScoreAmp: string;
-  canScoreSpeaker: string;
-  canScoreTrap: string;
-  isRobotReady: string;
-  numberOfAutoMethods: string;
-  planOnClimbing: string;
-  planOnScoringTrap: string;
-  robotDimensions: string;
-  teamExperience: string;
-};
-
-export type AppSettings = {
-  key: string;
-  tbaKey: string;
-  saveUri: string;
+  questions: Array<PitScoutingQuestion>;
 };
 
 export type MatchModel = {
@@ -220,4 +198,11 @@ export type ItemKey = {
 export type RootStackParamList = {
   ScoutMatchScreen: undefined;
   ScoutMatchEditScreen: { id: string; returnTo: string };
+};
+
+export type PitScoutingQuestion = {
+  key: string;
+  title: string;
+  options: Array<string>;
+  value: string;
 };
