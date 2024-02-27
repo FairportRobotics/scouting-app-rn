@@ -97,7 +97,7 @@ App:
 - [x] For Share of JSON and CSV, just call into a global function and pass the key and string content.
 - [x] The API returns all the Matches and Pits scouted. We can save those keys and use them in the UI to provide a visual indicator about which features have been scouted, even if by others on the team.
 - [ ] Should Pit scouting collect the name of the person scouting or will we be okay with just using the assignment sheet(s).
-- [ ] Format the tabs better. Come up with icons. Column direction. Colors. Badges.
+- [x] Format the tabs better. Come up with icons. Column direction. Colors. Badges.
 
 Match Scouting:
 
@@ -119,7 +119,6 @@ Match Scouting:
 
 Match Results:
 
-- [ ] All Upload
 - [x] All Share JSON
 - [N] All Share CSV
 - [x] Match Upload
@@ -132,9 +131,8 @@ Match Results:
 
 Pit Scouting:
 
-- [ ] Header
+- [x] Header
 - [x] Better navigation UI
-- [ ] All Upload
 - [x] All Share JSON
 - [N] All Share CSV
 - [x] Scout Upload
@@ -142,8 +140,8 @@ Pit Scouting:
 - [N] Scout CSV QR
 - [x] Scout Share JSON
 - [N] Scout Share CSV
-- [ ] Disable share/QR buttons if the team has not been scouted.
-- [ ] Change opacity on buttons where the function has been triggered.
+- [x] Disable share/QR buttons if the team has not been scouted.
+- [x] Change opacity on buttons where the function has been triggered.
 - [?] Retain tab visibility? Is this desirable or possible?
 - [x] If a team has not yet been scouted, suppress or disable the other buttons.
 - [ ] Badge to represent the number of scouting sessions yet to be uploaded.
@@ -151,7 +149,7 @@ Pit Scouting:
 
 Settings:
 
-- [ ] Within the tab, use Drawer navigation to isolate the different features instead of listing them all on the landing screen.
+- [x] Within the tab, use Drawer navigation to isolate the different features instead of listing them all on the landing screen.
 
 Fairport Robotics Settings:
 
