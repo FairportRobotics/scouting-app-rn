@@ -50,6 +50,12 @@ export default [
     value: "",
   },
   {
+    key: "howFarCanYouShoot",
+    title: "How far can your robot shoot from",
+    options: ["Close", "Medium", "Far"],
+    value: "",
+  },
+  {
     key: "canFitUnderStage",
     title: "Can your robot fit under the Stage?",
     options: ["Yes", "No"],
@@ -63,8 +69,7 @@ export default [
   },
   {
     key: "maximumClearance",
-    title:
-      "What is the maximum clearance in inches needed for your robot to get Onstage?",
+    title: "How wide is your robot?",
     options: ["24", "25", "26", "27", "28", "29", "30+"],
     value: "",
   },
