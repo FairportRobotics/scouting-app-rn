@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, RefreshControl, View } from "react-native";
+import { ScrollView, RefreshControl, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import getDefaultMatchScoutingSession, {
   Event,
@@ -17,7 +17,7 @@ import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
 
 export default function IndexScreen() {
   const router = useRouter();
-  const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
   const loadData = async () => {
@@ -93,12 +93,35 @@ export default function IndexScreen() {
     }
   };
 
+  if (!matchModels || matchModels?.length == 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          padding: 20,
+          gap: 20,
+          alignContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Text style={{ fontSize: 24 }}>Pull to refresh and load Matches</Text>
+        </ScrollView>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, padding: 10 }}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
         }
       >
         {matchModels.map((matchModel, index) => (

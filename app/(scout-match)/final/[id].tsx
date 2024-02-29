@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, TextInput, Text, KeyboardAvoidingView } from "react-native";
+import {
+  View,
+  TextInput,
+  Text,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -99,11 +105,11 @@ function FinalScreen() {
   const penaltiesLabel = () => {
     switch (session?.alliance) {
       case Alliance.Blue:
-        return "Penalties: From Red Alliance Scoreboard";
+        return "Penalties: (Read the value for Penalties from the Red Alliance column)";
       case Alliance.Red:
-        return "Penalties: From Blue Alliance Scoreboard";
+        return "Penalties: (Read the value for Penalties from the Blue Alliance column)";
       default:
-        return "Penalties: From TBD Alliance Scoreboard";
+        return "Penalties: (Error. Ignore Penalties.)";
     }
   };
 
@@ -116,7 +122,7 @@ function FinalScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
@@ -183,7 +189,7 @@ function FinalScreen() {
         onPrevious={() => handleNavigatePrevious()}
         onNext={() => handleNavigateNext()}
       />
-    </View>
+    </ScrollView>
   );
 }
 

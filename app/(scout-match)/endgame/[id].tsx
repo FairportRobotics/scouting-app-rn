@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
   ContainerGroup,
-  MinusPlusPair,
   SelectGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
@@ -47,7 +46,7 @@ function EndgameScreen() {
       setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? "0");
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
       setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
-      setHarmonyScore(dtoSession?.endgameHarmony ?? "NONE_SELECTED");
+      setHarmonyScore(dtoSession?.endgameHarmony ?? "0");
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +105,7 @@ function EndgameScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Stage">
         <SelectGroup
@@ -136,7 +135,7 @@ function EndgameScreen() {
           onToggle={() => handleDidRobotHang(!didRobotHang)}
         />
         <SelectGroup
-          title="Harmony"
+          title="Harmony (Number of other robots on the same chain)"
           options={["0", "1", "2"]}
           required={true}
           disabled={!didRobotHang}
@@ -151,7 +150,7 @@ function EndgameScreen() {
         onPrevious={() => handleNavigatePrevious()}
         onNext={() => handleNavigateNext()}
       />
-    </View>
+    </ScrollView>
   );
 }
 

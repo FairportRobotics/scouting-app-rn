@@ -1,4 +1,4 @@
-import { ScrollView, View, Share, RefreshControl } from "react-native";
+import { ScrollView, View, Share, RefreshControl, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
@@ -127,6 +127,29 @@ export default function ScoutPitScreen() {
         value={qrCodeText}
         onPressClose={() => setShowQrCode(false)}
       />
+    );
+  }
+
+  if (!reportRecords || reportRecords?.length == 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          padding: 20,
+          gap: 20,
+          alignContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Text style={{ fontSize: 24 }}>Pull to refresh and load Teams</Text>
+        </ScrollView>
+      </View>
     );
   }
 

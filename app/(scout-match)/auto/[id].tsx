@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import {
   Check,
   MinusPlusPair,
@@ -100,7 +100,7 @@ function AutoScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Start">
         <View
@@ -163,7 +163,7 @@ function AutoScreen() {
         onPrevious={() => handleNavigatePrevious()}
         onNext={() => handleNavigateNext()}
       />
-    </View>
+    </ScrollView>
   );
 }
 
