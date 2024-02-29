@@ -16,7 +16,7 @@ export type MatchResultModel = {
 };
 
 export default function MatchResultsScreen() {
-  const [isRefeshing, setIsRefreshing] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
@@ -153,7 +153,7 @@ export default function MatchResultsScreen() {
     );
   }
 
-  if (sessions.length === 0) {
+  if (sessions?.length == 0) {
     return (
       <View
         style={{
@@ -164,15 +164,16 @@ export default function MatchResultsScreen() {
           alignItems: "flex-start",
         }}
       >
-        <Text style={{ fontSize: 24 }}>
-          This screen intentionally left blank except for this very important
-          message that the reason this screen is blank is because there have not
-          been any matches scouted on this device yet.
-        </Text>
-        <Text style={{ fontSize: 24 }}>
-          If there HAD been matches scouted on this device, they would show up
-          here instead of this stupid message.
-        </Text>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Text style={{ fontSize: 24 }}>
+            Pull to refresh and load Match results
+          </Text>
+        </ScrollView>
       </View>
     );
   }
@@ -182,7 +183,7 @@ export default function MatchResultsScreen() {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl refreshing={isRefeshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
         }
       >
         {reportModels.map((match, index) => (

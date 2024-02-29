@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -95,7 +95,7 @@ function TeleopScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
@@ -142,7 +142,7 @@ function TeleopScreen() {
         onPrevious={() => handleNavigatePrevious()}
         onNext={() => handleNavigateNext()}
       />
-    </View>
+    </ScrollView>
   );
 }
 

@@ -129,7 +129,7 @@ function ConfirmScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
       <ContainerGroup title="Scouter Name (required)">
         <TextInput
@@ -185,7 +185,7 @@ function ConfirmScreen() {
         onPrevious={() => handleNavigatePrevious()}
         onNext={() => handleNavigateNext()}
       />
-    </View>
+    </ScrollView>
   );
 }
 
