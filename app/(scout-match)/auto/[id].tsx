@@ -118,7 +118,7 @@ function AutoScreen() {
             onToggle={() => setStartedWithNote(!startedWithNote)}
           />
           <Check
-            label="Left Start Area"
+            label="Robot exited the Robot Starting Zone (crossed the white line)"
             checked={leftStartArea}
             onToggle={() => setLeftStartArea(!leftStartArea)}
           />
