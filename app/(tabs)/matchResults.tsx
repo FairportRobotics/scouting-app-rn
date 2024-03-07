@@ -117,6 +117,12 @@ export default function MatchResultsScreen() {
     setIsRefreshing(false);
   };
 
+  const handleUploadAllSessions = async () => {
+    sessions.forEach(async (session) => {
+      await postMatchSession(session);
+    });
+  };
+
   const handleUploadSession = async (sessionKey: string) => {
     const session = sessions.find((session) => session.key === sessionKey);
     if (session === undefined) return;
@@ -186,6 +192,25 @@ export default function MatchResultsScreen() {
           <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
         }
       >
+        <ContainerGroup title="All Matches">
+          <View
+            style={{
+              flex: 1,
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
+            <ResultsButton
+              label="Upload All"
+              faIcon="upload"
+              active={true}
+              showUploadExists={false}
+              onPress={() => handleUploadAllSessions()}
+            />
+          </View>
+        </ContainerGroup>
         {reportModels.map((match, index) => (
           <ContainerGroup
             key={index}

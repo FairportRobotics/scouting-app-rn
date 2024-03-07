@@ -89,6 +89,13 @@ export default function ScoutPitScreen() {
     router.replace(`/scout-pit/${key}`);
   };
 
+  const handleUploadAllSessions = async () => {
+    let sessions = await Database.getPitScoutingSessions();
+    sessions.forEach(async (session) => {
+      await postPitScoutingSession(session);
+    });
+  };
+
   const handleUploadSession = async (key: string) => {
     const session = await Database.getPitScoutingSession(key);
     if (session === undefined) return;
@@ -161,6 +168,25 @@ export default function ScoutPitScreen() {
         <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
       }
     >
+      <ContainerGroup title="All Scouting Sessions">
+        <View
+          style={{
+            flex: 1,
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            gap: 10,
+          }}
+        >
+          <ResultsButton
+            label="Upload All"
+            faIcon="upload"
+            active={true}
+            showUploadExists={false}
+            onPress={() => handleUploadAllSessions()}
+          />
+        </View>
+      </ContainerGroup>
       {reportRecords.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
