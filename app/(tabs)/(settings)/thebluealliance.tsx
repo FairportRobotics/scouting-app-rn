@@ -12,7 +12,7 @@ import SignInForAdvanced from "@/app/components/SignInForAdvanced";
 
 export default function TBACaches() {
   // Declare the various states that we want to manage.
-  const [eventKey, setEventKey] = useState("2024paca");
+  const [eventKey, setEventKey] = useState("2024nyro");
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Support for editing the Event Key
@@ -62,18 +62,6 @@ export default function TBACaches() {
       <ContainerGroup title="The Blue Alliance Caches">
         <View>
           <View style={{ alignItems: "flex-start", gap: 6 }}>
-            <View>
-              <Button
-                title="Set 2023nyrr : 2023 Ra Cha Cha Ruckus"
-                onPress={() => handleChangeKey("2023nyrr")}
-              />
-            </View>
-            <View>
-              <Button
-                title="Set 2024paca : 2024 Greater Pittsburgh Regional"
-                onPress={() => handleChangeKey("2024paca")}
-              />
-            </View>
             <View style={{ flexDirection: "row" }}>
               <TextInput
                 onChangeText={handleChangeKey}

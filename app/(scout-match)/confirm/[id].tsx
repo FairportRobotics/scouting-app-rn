@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { MatchScoutingSession, Team } from "@/constants/Types";
+import { MatchScoutingSession, Student, Team } from "@/constants/Types";
 import {
   ContainerGroup,
   MatchScoutingNavigation,
@@ -16,6 +16,7 @@ import {
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
+import students from "@/data/studentsList";
 
 function ConfirmScreen() {
   const router = useRouter();
@@ -23,12 +24,17 @@ function ConfirmScreen() {
 
   const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
+
   const [scouterName, setScouterName] = useState<string>("");
+  const [scoutFilterText, setScoutFilterText] = useState<string>("");
+  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
+
+  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
   const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
-  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
-  const [filterText, setFilterText] = useState<string>("");
+
+  const [teamFilterText, setTeamFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
 
   const lookupTeam = (teams: Array<Team>, teamKey: string) => {
@@ -49,7 +55,22 @@ function ConfirmScreen() {
 
   useEffect(() => {
     // Convert the filter text to lower case.
-    const value = filterText.toLowerCase();
+    const value = scoutFilterText.toLocaleLowerCase();
+
+    // Find matching Students where the filter text is part of the email address or name.
+    let filtered = students.filter(
+      (student) =>
+        value.length > 0 &&
+        (student.email.toLowerCase().includes(value) ||
+          student.name.toLowerCase().includes(value))
+    );
+
+    setFilteredScouters(filtered);
+  }, [scoutFilterText]);
+
+  useEffect(() => {
+    // Convert the filter text to lower case.
+    const value = teamFilterText.toLowerCase();
 
     // Find matching teams where the filter text is part of the team
     // number of nickname.
@@ -61,7 +82,7 @@ function ConfirmScreen() {
     );
 
     setFilteredTeams(filtered);
-  }, [filterText]);
+  }, [teamFilterText]);
 
   const loadData = async () => {
     try {
@@ -101,10 +122,17 @@ function ConfirmScreen() {
     return () => clearTimeout(timeoutId);
   };
 
+  const handleChangeScouter = (value: string) => {
+    setScouterName(value);
+    setScoutFilterText("");
+    setFilteredScouters([]);
+    saveData();
+  };
+
   const handleChangeScoutedTeam = (value: string) => {
     setScoutedTeamKey(value);
     setScoutedTeam(lookupTeam(allTeams, value));
-    setFilterText("");
+    setTeamFilterText("");
     setFilteredTeams([]);
     saveData();
   };
@@ -131,14 +159,37 @@ function ConfirmScreen() {
   return (
     <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
-      <ContainerGroup title="Scouter Name (required)">
+      <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
           style={Styles.textInput}
-          value={scouterName}
-          onChangeText={(text) => setScouterName(text)}
-          placeholder="My name is..."
+          value={scoutFilterText}
+          onChangeText={(text) => setScoutFilterText(text)}
+          placeholder="I am actually..."
           placeholderTextColor={Colors.placeholder}
         />
+        <ScrollView style={{ width: "100%" }}>
+          {filteredScouters.map((scouter) => (
+            <TouchableOpacity
+              style={{
+                width: "100%",
+                backgroundColor: Colors.appBackground,
+                borderRadius: 6,
+                padding: 20,
+                marginBottom: 8,
+              }}
+              key={scouter.email}
+              onPress={() => handleChangeScouter(scouter.name)}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                }}
+              >
+                {scouter.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </ContainerGroup>
       <ContainerGroup title="Confirm Team to be Scouted">
         <Text style={{ fontSize: 24 }}>
@@ -150,8 +201,8 @@ function ConfirmScreen() {
         </Text>
         <TextInput
           style={Styles.textInput}
-          value={filterText}
-          onChangeText={(text) => setFilterText(text)}
+          value={teamFilterText}
+          onChangeText={(text) => setTeamFilterText(text)}
           placeholderTextColor={Colors.placeholder}
           placeholder="I actually need to scout..."
         />
