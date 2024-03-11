@@ -19,6 +19,7 @@ import Styles from "@/constants/Styles";
 import { MatchScoutingSession } from "@/constants/Types";
 import { Alliance } from "@/constants/Enums";
 import Colors from "@/constants/Colors";
+import postMatchSession from "@/app/helpers/postMatchSession";
 
 function FinalScreen() {
   const router = useRouter();
@@ -82,6 +83,19 @@ function FinalScreen() {
     return () => clearTimeout(timeoutId);
   };
 
+  const uploadData = async () => {
+    const timeoutId = setTimeout(async () => {
+      try {
+        const session = await Database.getMatchScoutingSession(sessionKey);
+        if (session === undefined) return;
+        await postMatchSession(session);
+      } catch (error) {
+        console.error(error);
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  };
+
   const handleChangeTotalScore = (value: string) => {
     value = value.replace(/[^0-9]/g, "") || "0";
     setTotalScore(parseInt(value));
@@ -99,6 +113,7 @@ function FinalScreen() {
 
   const handleNavigateNext = () => {
     saveData();
+    uploadData();
     router.replace(`/`);
   };
 
@@ -177,7 +192,7 @@ function FinalScreen() {
             style={[Styles.textInput, { height: 100 }]}
             value={notes}
             onChangeText={(text) => setNotes(text)}
-            placeholder="Anything interesting happen?"
+            placeholder="Note anything that you didn't capture in Auto, Teleop or Endgame..."
             placeholderTextColor={Colors.placeholder}
           />
         </ContainerGroup>

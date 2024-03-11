@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  TextInput,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
@@ -11,6 +17,8 @@ import {
 import { MatchScoutingSession } from "@/constants/Types";
 import postMatchSession from "@/app/helpers/postMatchSession";
 import * as Database from "@/app/helpers/database";
+import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 
 function EndgameScreen() {
   const router = useRouter();
@@ -23,6 +31,7 @@ function EndgameScreen() {
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
   const [didRobotHang, setDidRobotHang] = useState<boolean>(false);
   const [harmonyScore, setHarmonyScore] = useState<string>("NONE_SELECTED");
+  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -47,6 +56,7 @@ function EndgameScreen() {
       setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
       setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
       setHarmonyScore(dtoSession?.endgameHarmony ?? "0");
+      setNotes(dtoSession?.endgameNotes ?? "");
     } catch (error) {
       console.error(error);
     }
@@ -61,7 +71,8 @@ function EndgameScreen() {
         microphoneScore ?? "0",
         didRobotPark,
         didRobotHang,
-        harmonyScore ?? ""
+        harmonyScore ?? "",
+        notes
       );
     } catch (error) {}
   };
@@ -143,6 +154,20 @@ function EndgameScreen() {
           onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
         />
       </ContainerGroup>
+
+      <KeyboardAvoidingView behavior="position">
+        <ContainerGroup title="Notes">
+          <TextInput
+            multiline
+            maxLength={1024}
+            style={[Styles.textInput, { height: 100 }]}
+            value={notes}
+            onChangeText={(text) => setNotes(text)}
+            placeholder="Endgame notes..."
+            placeholderTextColor={Colors.placeholder}
+          />
+        </ContainerGroup>
+      </KeyboardAvoidingView>
 
       <MatchScoutingNavigation
         previousLabel="Teleop"
