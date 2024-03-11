@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  TextInput,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -9,6 +15,8 @@ import {
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import { MatchScoutingSession } from "@/constants/Types";
+import Styles from "@/constants/Styles";
+import Colors from "@/constants/Colors";
 
 function TeleopScreen() {
   const router = useRouter();
@@ -22,6 +30,7 @@ function TeleopScreen() {
   const [ampScore, setAmpScore] = useState<number>(0);
   const [ampMiss, setAmpMiss] = useState<number>(0);
   const [pass, setPass] = useState<number>(0);
+  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -54,6 +63,7 @@ function TeleopScreen() {
       setAmpScore(dtoSession.teleopAmpScore ?? 0);
       setAmpMiss(dtoSession.teleopAmpMiss ?? 0);
       setPass(dtoSession.teleopRelayPass ?? 0);
+      setNotes(dtoSession?.teleopNotes ?? "");
     } catch (error) {
       console.error(error);
     }
@@ -69,7 +79,8 @@ function TeleopScreen() {
         speakerMiss,
         ampScore,
         ampMiss,
-        pass
+        pass,
+        notes
       );
     } catch (error) {
       console.error(error);
@@ -135,6 +146,20 @@ function TeleopScreen() {
           onChange={(delta) => setPass(pass + delta)}
         />
       </ContainerGroup>
+
+      <KeyboardAvoidingView behavior="position">
+        <ContainerGroup title="Notes">
+          <TextInput
+            multiline
+            maxLength={1024}
+            style={[Styles.textInput, { height: 100 }]}
+            value={notes}
+            onChangeText={(text) => setNotes(text)}
+            placeholder="Teleop notes..."
+            placeholderTextColor={Colors.placeholder}
+          />
+        </ContainerGroup>
+      </KeyboardAvoidingView>
 
       <MatchScoutingNavigation
         previousLabel="Auto"

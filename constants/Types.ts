@@ -83,6 +83,7 @@ export type MatchScoutingSession = {
   autoSpeakerMiss: number;
   autoAmpScore: number;
   autoAmpMiss: number;
+  autoNotes: string;
 
   // Teleop
   teleopSpeakerScore: number;
@@ -91,6 +92,7 @@ export type MatchScoutingSession = {
   teleopAmpScore: number;
   teleopAmpMiss: number;
   teleopRelayPass: number;
+  teleopNotes: string;
 
   // Endgame
   endgameTrapScore: string;
@@ -98,6 +100,7 @@ export type MatchScoutingSession = {
   endgameDidRobotPark: boolean;
   endgameDidRobotHang: boolean;
   endgameHarmony: string;
+  endgameNotes: string;
 
   // Final
   finalAllianceScore: number;

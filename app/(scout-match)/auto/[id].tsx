@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  TextInput,
+} from "react-native";
 import {
   Check,
   MinusPlusPair,
@@ -10,6 +16,8 @@ import {
 } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import { MatchScoutingSession } from "@/constants/Types";
+import Colors from "@/constants/Colors";
+import Styles from "@/constants/Styles";
 
 function AutoScreen() {
   const router = useRouter();
@@ -17,13 +25,14 @@ function AutoScreen() {
 
   const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
-  const [startedWithNote, setStartedWithNote] = useState<boolean>(false);
+  const [startedWithNote, setStartedWithNote] = useState<boolean>(true);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
   const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
   const [speakerMiss, setSpeakerMiss] = useState<number>(0);
   const [ampScore, setAmpScore] = useState<number>(0);
   const [ampMiss, setAmpMiss] = useState<number>(0);
+  const [notes, setNotes] = useState<string>("");
 
   const loadData = async () => {
     try {
@@ -35,13 +44,14 @@ function AutoScreen() {
 
       // Set State.
       setSession(dtoSession);
-      setStartedWithNote(dtoSession.autoStartedWithNote ?? false);
+      setStartedWithNote(dtoSession.autoStartedWithNote ?? true);
       setLeftStartArea(dtoSession.autoLeftStartArea ?? false);
       setSpeakerScore(dtoSession.autoSpeakerScore ?? 0);
       setSpeakerScoreAmplified(dtoSession.autoSpeakerScoreAmplified ?? 0);
       setSpeakerMiss(dtoSession.autoSpeakerMiss ?? 0);
       setAmpScore(dtoSession.autoAmpScore ?? 0);
       setAmpMiss(dtoSession.autoAmpMiss ?? 0);
+      setNotes(dtoSession?.autoNotes ?? "");
     } catch (error) {
       console.error(error);
     }
@@ -58,7 +68,8 @@ function AutoScreen() {
         speakerScoreAmplified,
         speakerMiss,
         ampScore,
-        ampMiss
+        ampMiss,
+        notes
       );
     } catch (error) {
       console.error(error);
@@ -79,6 +90,7 @@ function AutoScreen() {
     speakerMiss,
     ampScore,
     ampMiss,
+    notes,
   ]);
 
   const handleNavigatePrevious = () => {
@@ -118,7 +130,7 @@ function AutoScreen() {
             onToggle={() => setStartedWithNote(!startedWithNote)}
           />
           <Check
-            label="Robot exited the Robot Starting Zone (crossed the white line)"
+            label="Robot exited the Robot Starting Zone (Crossed the white line)"
             checked={leftStartArea}
             onToggle={() => setLeftStartArea(!leftStartArea)}
           />
@@ -157,6 +169,21 @@ function AutoScreen() {
           onChange={(delta) => setAmpMiss(ampMiss + delta)}
         />
       </ContainerGroup>
+
+      <KeyboardAvoidingView behavior="position">
+        <ContainerGroup title="Notes">
+          <TextInput
+            multiline
+            maxLength={1024}
+            style={[Styles.textInput, { height: 100 }]}
+            value={notes}
+            onChangeText={(text) => setNotes(text)}
+            placeholder="Auto notes..."
+            placeholderTextColor={Colors.placeholder}
+          />
+        </ContainerGroup>
+      </KeyboardAvoidingView>
+
       <MatchScoutingNavigation
         previousLabel="Confirm"
         nextLabel="Teleop"

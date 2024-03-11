@@ -93,10 +93,11 @@ export function initializeDatabase(
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
       (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
-        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, \
-        teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, \
-        endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, \
-        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT)"
+        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, autoNotes TEXT, \
+        teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, teleopNotes TEXT, \
+        endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, endgameNotes TEXT,\
+        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT, \
+        notes TEXT)"
     );
 
     tx.executeSql(
@@ -350,19 +351,20 @@ export const saveMatchScoutingSessionAuto = async (
   autoSpeakerScoreAmplified: number,
   autoSpeakerMiss: number,
   autoAmpScore: number,
-  autoAmpMiss: number
+  autoAmpMiss: number,
+  autoNotes: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO match_scouting_sessions \
       ( \
         key, \
-        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss \
+        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss, autoNotes \
       ) \
       VALUES \
       ( \
         :key,\
-        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss \
+        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss, :autoNotes \
       ) \
       ON CONFLICT (key) DO UPDATE SET \
         autoStartedWithNote = excluded.autoStartedWithNote, \
@@ -371,7 +373,8 @@ export const saveMatchScoutingSessionAuto = async (
         autoSpeakerScoreAmplified = excluded.autoSpeakerScoreAmplified, \
         autoSpeakerMiss = excluded.autoSpeakerMiss, \
         autoAmpScore = excluded.autoAmpScore, \
-        autoAmpMiss = excluded.autoAmpMiss \
+        autoAmpMiss = excluded.autoAmpMiss, \
+        autoNotes = excluded.autoNotes \
       ",
       [
         sessionKey,
@@ -382,6 +385,7 @@ export const saveMatchScoutingSessionAuto = async (
         autoSpeakerMiss,
         autoAmpScore,
         autoAmpMiss,
+        autoNotes,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -389,6 +393,8 @@ export const saveMatchScoutingSessionAuto = async (
         return false;
       }
     );
+
+    concatenateNotes(sessionKey);
   });
 };
 
@@ -399,19 +405,20 @@ export const saveMatchScoutingSessionTeleop = async (
   teleopSpeakerMiss: number,
   teleopAmpScore: number,
   teleopAmpMiss: number,
-  teleopRelayPass: number
+  teleopRelayPass: number,
+  teleopNotes: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO match_scouting_sessions \
       ( \
         key, \
-        teleopSpeakerScore, teleopSpeakerScoreAmplified, teleopSpeakerMiss, teleopAmpScore, teleopAmpMiss, teleopRelayPass \
+        teleopSpeakerScore, teleopSpeakerScoreAmplified, teleopSpeakerMiss, teleopAmpScore, teleopAmpMiss, teleopRelayPass, teleopNotes \
       ) \
       VALUES \
       ( \
         :key,\
-        :teleopSpeakerScore, :teleopSpeakerScoreAmplified, :teleopSpeakerMiss, :teleopAmpScore, :teleopAmpMiss, :teleopRelayPass \
+        :teleopSpeakerScore, :teleopSpeakerScoreAmplified, :teleopSpeakerMiss, :teleopAmpScore, :teleopAmpMiss, :teleopRelayPass, :teleopNotes \
       ) \
       ON CONFLICT (key) DO UPDATE SET \
       teleopSpeakerScore = excluded.teleopSpeakerScore, \
@@ -419,7 +426,8 @@ export const saveMatchScoutingSessionTeleop = async (
       teleopSpeakerMiss = excluded.teleopSpeakerMiss, \
       teleopAmpScore = excluded.teleopAmpScore, \
       teleopAmpMiss = excluded.teleopAmpMiss, \
-      teleopRelayPass = excluded.teleopRelayPass \
+      teleopRelayPass = excluded.teleopRelayPass, \
+      teleopNotes = excluded.teleopNotes \
       ",
       [
         sessionKey,
@@ -429,6 +437,7 @@ export const saveMatchScoutingSessionTeleop = async (
         teleopAmpScore,
         teleopAmpMiss,
         teleopRelayPass,
+        teleopNotes,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -436,6 +445,8 @@ export const saveMatchScoutingSessionTeleop = async (
         return false;
       }
     );
+
+    concatenateNotes(sessionKey);
   });
 };
 
@@ -445,26 +456,28 @@ export const saveMatchScoutingSessionEndgame = async (
   microphoneScore: string,
   didRobotPark: boolean,
   didRobotHang: boolean,
-  harmonyScore: string
+  harmonyScore: string,
+  endgameNotes: string
 ) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO match_scouting_sessions \
       ( \
         key, \
-        endgameTrapScore, endgameMicrophoneScore, endgameDidRobotPark, endgameDidRobotHang, endgameHarmony \
+        endgameTrapScore, endgameMicrophoneScore, endgameDidRobotPark, endgameDidRobotHang, endgameHarmony, endgameNotes \
       ) \
       VALUES \
       ( \
         :key,\
-        :endgameTrapScore, :endgameMicrophoneScore, :endgameDidRobotPark, :endgameDidRobotHang, :endgameHarmony \
+        :endgameTrapScore, :endgameMicrophoneScore, :endgameDidRobotPark, :endgameDidRobotHang, :endgameHarmony, :endgameNotes \
       ) \
       ON CONFLICT (key) DO UPDATE SET \
         endgameTrapScore = excluded.endgameTrapScore, \
         endgameMicrophoneScore = excluded.endgameMicrophoneScore, \
         endgameDidRobotPark = excluded.endgameDidRobotPark, \
         endgameDidRobotHang = excluded.endgameDidRobotHang, \
-        endgameHarmony = excluded.endgameHarmony \
+        endgameHarmony = excluded.endgameHarmony, \
+        endgameNotes = excluded.endgameNotes \
       ",
       [
         sessionKey,
@@ -473,6 +486,7 @@ export const saveMatchScoutingSessionEndgame = async (
         didRobotPark ? 1 : 0,
         didRobotHang ? 1 : 0,
         harmonyScore,
+        endgameNotes,
       ],
       (txObj, resultSet) => {},
       (txObj, error) => {
@@ -480,6 +494,8 @@ export const saveMatchScoutingSessionEndgame = async (
         return false;
       }
     );
+
+    concatenateNotes(sessionKey);
   });
 };
 
@@ -521,6 +537,30 @@ export const saveMatchScoutingSessionFinal = async (
         finalPenalties,
         finalNotes,
       ],
+      (txObj, resultSet) => {},
+      (txObj, error) => {
+        console.error(error);
+        return false;
+      }
+    );
+
+    concatenateNotes(sessionKey);
+  });
+};
+
+export const concatenateNotes = async (sessionKey: string) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE match_scouting_sessions \
+      SET \
+        notes = 'Auto Notes: ' || autoNotes || char(10) || char(10) ||  \
+        'Teleop Notes: ' || teleopNotes || char(10) || char(10) ||  \
+        'Endgame Notes: ' || endgameNotes || char(10) || char(10) ||  \
+        'Final Notes: ' || finalNotes \
+      WHERE \
+        key = :sessionKey \
+      ",
+      [sessionKey],
       (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
