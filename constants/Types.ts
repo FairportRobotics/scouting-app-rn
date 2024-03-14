@@ -166,10 +166,21 @@ export default function getDefaultMatchScoutingSession() {
 }
 
 export type PitScoutingSession = {
-  // Root properties.
   key: string;
   eventKey: string;
-  questions: Array<PitScoutingQuestion>;
+  driveTeamExperience: string;
+  numberOfAutoMethods: number;
+  canPickUpFromGround: string;
+  canReceiveFromSourceChute: string;
+  canScoreInAmp: string;
+  canScoreInSpeaker: string;
+  canScoreInTrap: string;
+  whereCanYouScoreInSpeaker: string;
+  canFitUnderStage: string;
+  canGetOnstage: string;
+  robotWidth: number;
+  onstagePosition: string;
+  notes: string;
 };
 
 export type MatchModel = {
@@ -206,11 +217,4 @@ export type Student = {
 export type RootStackParamList = {
   ScoutMatchScreen: undefined;
   ScoutMatchEditScreen: { id: string; returnTo: string };
-};
-
-export type PitScoutingQuestion = {
-  key: string;
-  title: string;
-  options: Array<string>;
-  value: string;
 };
