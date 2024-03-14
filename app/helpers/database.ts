@@ -102,7 +102,7 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
-      (key TEXT PRIMARY KEY, eventKey TEXT, questions TEXT)"
+      (key TEXT PRIMARY KEY, eventKey TEXT, driveTeamExperience TEXT, numberOfAutoMethods INTEGER, canPickUpFromGround TEXT, canReceiveFromSourceChute TEXT, canScoreInAmp TEXT, canScoreInSpeaker TEXT, canScoreInTrap TEXT, whereCanYouScoreInSpeaker TEXT, canFitUnderStage TEXT, canGetOnstage TEXT, robotWidth INTEGER, onstagePosition TEXT, notes TEXT)"
     );
 
     tx.executeSql(
@@ -675,67 +675,89 @@ export const getPitScoutingSession = async (
   sessionKey: string
 ): Promise<PitScoutingSession | undefined> => {
   try {
-    const query = "SELECT * FROM pit_scouting_sessions WHERE key = ? LIMIT 1";
+    const query =
+      "SELECT * \
+      FROM pit_scouting_sessions \
+      WHERE key = ? LIMIT 1";
     const params = [sessionKey];
+    const results = (await executeSql(query, params)) as PitScoutingSession[];
 
-    return new Promise<PitScoutingSession | undefined>((resolve, reject) => {
-      db.transaction(
-        (tx) => {
-          tx.executeSql(
-            query,
-            params,
-            (_, { rows }) => {
-              // Stuff here.
-              const result: Array<PitScoutingSession> = [];
-
-              for (let i = 0; i < rows.length; i++) {
-                const item = rows.item(i);
-
-                // Convert the column to JSON.
-                const parsedArray: Array<PitScoutingQuestion> = JSON.parse(
-                  item.questions
-                );
-
-                // Build the object.
-                const data = {
-                  key: item.key,
-                  eventKey: item.eventKey,
-                  questions: parsedArray,
-                } as PitScoutingSession;
-
-                result.push(data);
-              }
-
-              resolve(result[0]);
-            },
-            (_, error) => {
-              console.error(error);
-              return false;
-            }
-          );
-        },
-        (error) => reject(error)
-      );
-    });
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return undefined;
+    }
   } catch (error) {
     console.error(error);
     return undefined;
   }
 };
 
-export const updatePitScoutingSession = async (session: PitScoutingSession) => {
+export const updatePitScoutingSession = async (
+  key: string,
+  eventKey: string,
+  driveTeamExperience: string,
+  numberOfAutoMethods: number,
+  canPickUpFromGround: string,
+  canReceiveFromSourceChute: string,
+  canScoreInAmp: string,
+  canScoreInSpeaker: string,
+  canScoreInTrap: string,
+  whereCanYouScoreInSpeaker: string,
+  canFitUnderStage: string,
+  canGetOnstage: string,
+  robotWidth: number,
+  onstagePosition: string,
+  notes: string
+) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
-      (key, eventKey, questions) \
+      ( \
+        key, eventKey, \
+        driveTeamExperience, numberOfAutoMethods, canPickUpFromGround, canReceiveFromSourceChute, canScoreInAmp, canScoreInSpeaker, canScoreInTrap, whereCanYouScoreInSpeaker, canFitUnderStage, canGetOnstage, robotWidth, onstagePosition, notes \
+      ) \
       VALUES \
-      (:key, :eventKey, :questions) \
+      ( \
+        :key, :eventKey, \
+        :driveTeamExperience, :numberOfAutoMethods, :canPickUpFromGround, :canReceiveFromSourceChute, :canScoreInAmp, :canScoreInSpeaker, :canScoreInTrap, :whereCanYouScoreInSpeaker, :canFitUnderStage, :canGetOnstage, :robotWidth, :onstagePosition, :notes \
+      ) \
       ON CONFLICT (key) DO UPDATE SET \
         eventKey = excluded.eventKey, \
-        questions = excluded.questions \
+        driveTeamExperience = excluded.driveTeamExperience, \
+        numberOfAutoMethods = excluded.numberOfAutoMethods, \
+        canPickUpFromGround = excluded.canPickUpFromGround, \
+        canReceiveFromSourceChute = excluded.canReceiveFromSourceChute, \
+        canScoreInAmp = excluded.canScoreInAmp, \
+        canScoreInSpeaker = excluded.canScoreInSpeaker, \
+        canScoreInTrap = excluded.canScoreInTrap, \
+        whereCanYouScoreInSpeaker = excluded.whereCanYouScoreInSpeaker, \
+        canFitUnderStage = excluded.canFitUnderStage, \
+        canGetOnstage = excluded.canGetOnstage, \
+        robotWidth = excluded.robotWidth, \
+        onstagePosition = excluded.onstagePosition, \
+        notes = excluded.notes \
       ",
-      [session.key, session.eventKey, JSON.stringify(session.questions)],
-      (txObj, resultSet) => {},
+      [
+        key,
+        eventKey,
+        driveTeamExperience,
+        numberOfAutoMethods,
+        canPickUpFromGround,
+        canReceiveFromSourceChute,
+        canScoreInAmp,
+        canScoreInSpeaker,
+        canScoreInTrap,
+        whereCanYouScoreInSpeaker,
+        canFitUnderStage,
+        canGetOnstage,
+        robotWidth,
+        onstagePosition,
+        notes,
+      ],
+      (txObj, resultSet) => {
+        console.log(resultSet);
+      },
       (txObj, error) => {
         console.error(error);
         return false;
