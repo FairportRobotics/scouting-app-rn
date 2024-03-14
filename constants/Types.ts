@@ -169,7 +169,7 @@ export type PitScoutingSession = {
   key: string;
   eventKey: string;
   driveTeamExperience: string;
-  numberOfAutoMethods: number;
+  numberOfAutoMethods: string;
   canPickUpFromGround: string;
   canReceiveFromSourceChute: string;
   canScoreInAmp: string;
@@ -178,7 +178,7 @@ export type PitScoutingSession = {
   whereCanYouScoreInSpeaker: string;
   canFitUnderStage: string;
   canGetOnstage: string;
-  robotWidth: number;
+  robotWidth: string;
   onstagePosition: string;
   notes: string;
 };

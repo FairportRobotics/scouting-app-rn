@@ -1,9 +1,17 @@
-import { RefreshControl, View, ScrollView, Share, Text } from "react-native";
+import {
+  RefreshControl,
+  View,
+  ScrollView,
+  Share,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { useEffect, useState } from "react";
 import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import postMatchSession from "../helpers/postMatchSession";
+import Colors from "@/constants/Colors";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -159,6 +167,23 @@ export default function MatchResultsScreen() {
     );
   }
 
+  if (isRefreshing) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          padding: 20,
+          gap: 20,
+          alignContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={{ fontSize: 24 }}>Refreshing...</Text>
+        <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+
   if (sessions?.length == 0) {
     return (
       <View
@@ -166,19 +191,22 @@ export default function MatchResultsScreen() {
           flex: 1,
           padding: 20,
           gap: 20,
-          alignContent: "flex-start",
-          alignItems: "flex-start",
+          alignContent: "center",
+          alignItems: "center",
         }}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              title="Loading..."
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
+            />
           }
         >
-          <Text style={{ fontSize: 24 }}>
-            Pull to refresh and load Match results
-          </Text>
+          <Text style={{ fontSize: 24 }}>No data. Pull to refresh.</Text>
         </ScrollView>
       </View>
     );
@@ -189,7 +217,12 @@ export default function MatchResultsScreen() {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            title="Loading..."
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor={Colors.primary}
+          />
         }
       >
         <ContainerGroup title="All Matches">

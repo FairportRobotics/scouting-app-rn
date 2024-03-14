@@ -15,23 +15,9 @@ function ScoutPitScreen() {
 
   // Support for state.
   const [team, setTeam] = useState<Team>();
-  const [currentSession, setSession] = useState<PitScoutingSession>();
-
-  const [driveTeamExperience, setDriveTeamExperience] = useState<string>("");
-  const [numberOfAutoMethods, setNumberOfAutoMethods] = useState<number>(0);
-  const [canPickUpFromGround, setCanPickUpFromGround] = useState<string>("");
-  const [canReceiveFromSourceChute, setCanReceiveFromSourceChute] =
-    useState<string>("");
-  const [canScoreInAmp, setCanScoreInAmp] = useState<string>("");
-  const [canScoreInSpeaker, setCanScoreInSpeaker] = useState<string>("");
-  const [canScoreInTrap, setCanScoreInTrap] = useState<string>("");
-  const [whereCanYouScoreInSpeaker, setWhereCanYouScoreInSpeaker] =
-    useState<string>("");
-  const [canFitUnderStage, setCanFitUnderStage] = useState<string>("");
-  const [canGetOnstage, setCanGetOnstage] = useState<string>("");
-  const [robotWidth, setRobotWidth] = useState<number>(0);
-  const [onstagePosition, setOnstagePosition] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [session, setSession] = useState<PitScoutingSession>(
+    {} as PitScoutingSession
+  );
 
   useEffect(() => {
     loadData();
@@ -52,25 +38,25 @@ function ScoutPitScreen() {
         dtoSession = {
           key: id,
           eventKey: dtoEvent.key,
+          driveTeamExperience: "",
+          numberOfAutoMethods: "",
+          canPickUpFromGround: "",
+          canReceiveFromSourceChute: "",
+          canScoreInAmp: "",
+          canScoreInSpeaker: "",
+          canScoreInTrap: "",
+          whereCanYouScoreInSpeaker: "",
+          canFitUnderStage: "",
+          canGetOnstage: "",
+          robotWidth: "",
+          onstagePosition: "",
+          notes: "",
         } as PitScoutingSession;
       }
 
       // Set State.
       setTeam(dtoTeam);
       setSession(dtoSession);
-      setDriveTeamExperience(dtoSession.driveTeamExperience);
-      setNumberOfAutoMethods(dtoSession.numberOfAutoMethods ?? 0);
-      setCanPickUpFromGround(dtoSession.canPickUpFromGround);
-      setCanReceiveFromSourceChute(dtoSession.canReceiveFromSourceChute);
-      setCanScoreInAmp(dtoSession.canScoreInAmp);
-      setCanScoreInSpeaker(dtoSession.canScoreInSpeaker);
-      setCanScoreInTrap(dtoSession.canScoreInTrap);
-      setWhereCanYouScoreInSpeaker(dtoSession.whereCanYouScoreInSpeaker);
-      setCanFitUnderStage(dtoSession.canFitUnderStage);
-      setCanGetOnstage(dtoSession.canGetOnstage);
-      setRobotWidth(dtoSession?.robotWidth ?? 0);
-      setOnstagePosition(dtoSession.onstagePosition);
-      setNotes(dtoSession.notes);
     } catch (error) {
       console.error(error);
     }
@@ -78,39 +64,25 @@ function ScoutPitScreen() {
 
   const saveData = async () => {
     try {
-      await Database.updatePitScoutingSession(
-        id,
-        currentSession?.eventKey!,
-        driveTeamExperience,
-        numberOfAutoMethods,
-        canPickUpFromGround,
-        canReceiveFromSourceChute,
-        canScoreInAmp,
-        canScoreInSpeaker,
-        canScoreInTrap,
-        whereCanYouScoreInSpeaker,
-        canFitUnderStage,
-        canGetOnstage,
-        robotWidth,
-        onstagePosition,
-        notes
-      );
+      await Database.updatePitScoutingSession(session);
     } catch (error) {
       console.error(error);
     }
   };
 
   const uploadDate = async () => {
-    const timeoutId = setTimeout(async () => {
-      try {
-        const session = await Database.getPitScoutingSession(id);
-        if (session === undefined) return;
-        await postPitScoutingSession(session);
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300);
-    return () => clearTimeout(timeoutId);
+    try {
+      await postPitScoutingSession(session);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleChange = (key: string, value: string) => {
+    setSession((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
   };
 
   const handleOnCancel = () => {
@@ -142,7 +114,7 @@ function ScoutPitScreen() {
       <KeyboardAwareScrollView style={{ marginBottom: 100 }}>
         <ContainerGroup title="What experience does your Drive Team have?">
           <SelectGroup
-            value={driveTeamExperience}
+            value={session.driveTeamExperience}
             options={[
               "All New",
               "Mostly New",
@@ -150,90 +122,90 @@ function ScoutPitScreen() {
               "Mostly Veterans",
               "All Veterans",
             ]}
-            onChange={(value) => setDriveTeamExperience(value)}
+            onChange={(value) => handleChange("driveTeamExperience", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="How many Auto methods do you have?">
           <TextInput
             style={[Styles.textInput, {}]}
-            inputMode="numeric"
-            keyboardType="numeric"
-            value={numberOfAutoMethods.toString()}
+            value={session.numberOfAutoMethods}
             onChangeText={(value) =>
-              setNumberOfAutoMethods(
-                parseInt("0" + value.replace(/[^0-9]/g, ""))
-              )
+              handleChange("numberOfAutoMethods", value.replace(/\D/g, ""))
             }
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can your robot pick up Notes from the ground?">
           <SelectGroup
-            value={canPickUpFromGround}
+            value={session.canPickUpFromGround}
             options={["Yes", "No"]}
-            onChange={(value) => setCanPickUpFromGround(value)}
+            onChange={(value) => handleChange("canPickUpFromGround", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can your robot receive Notes from the Source Chute?">
           <SelectGroup
-            value={canReceiveFromSourceChute}
+            value={session.canReceiveFromSourceChute}
             options={["Yes", "No"]}
-            onChange={(value) => setCanReceiveFromSourceChute(value)}
+            onChange={(value) =>
+              handleChange("canReceiveFromSourceChute", value)
+            }
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can you score in the Amp?">
           <SelectGroup
-            value={canScoreInAmp}
+            value={session.canScoreInAmp}
             options={["Yes", "No"]}
-            onChange={(value) => setCanScoreInAmp(value)}
+            onChange={(value) => handleChange("canScoreInAmp", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can you score in the Speaker?">
           <SelectGroup
-            value={canScoreInSpeaker}
+            value={session.canScoreInSpeaker}
             options={["Yes", "No"]}
-            onChange={(value) => setCanScoreInSpeaker(value)}
+            onChange={(value) => handleChange("canScoreInSpeaker", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can you score in the Trap?">
           <SelectGroup
-            value={canScoreInTrap}
+            value={session.canScoreInTrap}
             options={["Yes", "No"]}
-            onChange={(value) => setCanScoreInTrap(value)}
+            onChange={(value) => handleChange("canScoreInTrap", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="What is the farthest your robot can score in the Speaker?">
           <SelectGroup
-            value={whereCanYouScoreInSpeaker}
+            value={session.whereCanYouScoreInSpeaker}
             options={[
               "Adjacent to Subwoofer",
               "Between Subwoofer and Stage",
               "At or under the Stage",
               "Beyond the Stage",
             ]}
-            onChange={(value) => setWhereCanYouScoreInSpeaker(value)}
+            onChange={(value) =>
+              handleChange("whereCanYouScoreInSpeaker", value)
+            }
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can your robot fit under the Stage?">
           <SelectGroup
-            value={canFitUnderStage}
+            value={session.canFitUnderStage}
             options={["Yes", "No"]}
-            onChange={(value) => setCanFitUnderStage(value)}
+            onChange={(value) => handleChange("canFitUnderStage", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can your robot get Onstage?">
           <SelectGroup
-            value={canGetOnstage}
+            value={session.canGetOnstage}
             options={["Yes", "No"]}
-            onChange={(value) => setCanGetOnstage(value)}
+            onChange={(value) => handleChange("canGetOnstage", value)}
           />
         </ContainerGroup>
 
@@ -242,18 +214,18 @@ function ScoutPitScreen() {
             style={[Styles.textInput, {}]}
             inputMode="numeric"
             keyboardType="numeric"
-            value={robotWidth.toString()}
+            value={session.robotWidth}
             onChangeText={(value) =>
-              setRobotWidth(parseInt("0" + value.replace(/[^0-9]/g, "")))
+              handleChange("robotWidth", value.replace(/[^0-9.]/g, ""))
             }
           />
         </ContainerGroup>
 
         <ContainerGroup title="If you can score in the Trap from Onstage, where does your robot need to be positioned?">
           <SelectGroup
-            value={onstagePosition}
+            value={session.onstagePosition}
             options={["Left", "Center", "Right", "Anywhere"]}
-            onChange={(value) => setOnstagePosition(value)}
+            onChange={(value) => handleChange("onstagePosition", value)}
           />
         </ContainerGroup>
 
@@ -262,8 +234,8 @@ function ScoutPitScreen() {
             multiline
             maxLength={1024}
             style={[Styles.textInput, { height: 100 }]}
-            value={notes}
-            onChangeText={(text) => setNotes(text)}
+            value={session.notes}
+            onChangeText={(text) => handleChange("notes", text)}
             placeholder="Anything else we didn't ask that might be important?"
             placeholderTextColor={Colors.placeholder}
           />

@@ -1,10 +1,4 @@
-import type {
-  ItemKey,
-  PitScoutingQuestion,
-  TbaEvent,
-  TbaMatch,
-  TbaTeam,
-} from "@/constants/Types";
+import type { ItemKey, TbaEvent, TbaMatch, TbaTeam } from "@/constants/Types";
 import type {
   Event,
   Match,
@@ -102,7 +96,7 @@ export function initializeDatabase(
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS pit_scouting_sessions \
-      (key TEXT PRIMARY KEY, eventKey TEXT, driveTeamExperience TEXT, numberOfAutoMethods INTEGER, canPickUpFromGround TEXT, canReceiveFromSourceChute TEXT, canScoreInAmp TEXT, canScoreInSpeaker TEXT, canScoreInTrap TEXT, whereCanYouScoreInSpeaker TEXT, canFitUnderStage TEXT, canGetOnstage TEXT, robotWidth INTEGER, onstagePosition TEXT, notes TEXT)"
+      (key TEXT PRIMARY KEY, eventKey TEXT, driveTeamExperience TEXT, numberOfAutoMethods TEXT, canPickUpFromGround TEXT, canReceiveFromSourceChute TEXT, canScoreInAmp TEXT, canScoreInSpeaker TEXT, canScoreInTrap TEXT, whereCanYouScoreInSpeaker TEXT, canFitUnderStage TEXT, canGetOnstage TEXT, robotWidth TEXT, onstagePosition TEXT, notes TEXT)"
     );
 
     tx.executeSql(
@@ -693,23 +687,7 @@ export const getPitScoutingSession = async (
   }
 };
 
-export const updatePitScoutingSession = async (
-  key: string,
-  eventKey: string,
-  driveTeamExperience: string,
-  numberOfAutoMethods: number,
-  canPickUpFromGround: string,
-  canReceiveFromSourceChute: string,
-  canScoreInAmp: string,
-  canScoreInSpeaker: string,
-  canScoreInTrap: string,
-  whereCanYouScoreInSpeaker: string,
-  canFitUnderStage: string,
-  canGetOnstage: string,
-  robotWidth: number,
-  onstagePosition: string,
-  notes: string
-) => {
+export const updatePitScoutingSession = async (session: PitScoutingSession) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO pit_scouting_sessions \
@@ -739,25 +717,23 @@ export const updatePitScoutingSession = async (
         notes = excluded.notes \
       ",
       [
-        key,
-        eventKey,
-        driveTeamExperience,
-        numberOfAutoMethods,
-        canPickUpFromGround,
-        canReceiveFromSourceChute,
-        canScoreInAmp,
-        canScoreInSpeaker,
-        canScoreInTrap,
-        whereCanYouScoreInSpeaker,
-        canFitUnderStage,
-        canGetOnstage,
-        robotWidth,
-        onstagePosition,
-        notes,
+        session.key,
+        session.eventKey,
+        session.driveTeamExperience,
+        session.numberOfAutoMethods,
+        session.canPickUpFromGround,
+        session.canReceiveFromSourceChute,
+        session.canScoreInAmp,
+        session.canScoreInSpeaker,
+        session.canScoreInTrap,
+        session.whereCanYouScoreInSpeaker,
+        session.canFitUnderStage,
+        session.canGetOnstage,
+        session.robotWidth,
+        session.onstagePosition,
+        session.notes,
       ],
-      (txObj, resultSet) => {
-        console.log(resultSet);
-      },
+      (txObj, resultSet) => {},
       (txObj, error) => {
         console.error(error);
         return false;
