@@ -1,4 +1,11 @@
-import { ScrollView, View, Share, RefreshControl, Text } from "react-native";
+import {
+  ScrollView,
+  View,
+  Share,
+  RefreshControl,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "../components";
@@ -7,6 +14,7 @@ import * as Database from "@/app/helpers/database";
 import postPitScoutingSession from "../helpers/postPitScoutingSession";
 import { ItemKey, PitScoutingSession, Team } from "@/constants/Types";
 import refreshPitScoutingKeys from "../helpers/refreshPitScoutingKeys";
+import Colors from "@/constants/Colors";
 
 export type ReportRecord = {
   key: string;
@@ -144,17 +152,22 @@ export default function ScoutPitScreen() {
           flex: 1,
           padding: 20,
           gap: 20,
-          alignContent: "flex-start",
-          alignItems: "flex-start",
+          alignContent: "center",
+          alignItems: "center",
         }}
       >
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              title="Loading..."
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
+            />
           }
         >
-          <Text style={{ fontSize: 24 }}>Pull to refresh and load Teams</Text>
+          <Text style={{ fontSize: 24 }}>No data. Pull to refresh.</Text>
         </ScrollView>
       </View>
     );
@@ -165,7 +178,12 @@ export default function ScoutPitScreen() {
       style={{ padding: 10 }}
       contentContainerStyle={{ flexGrow: 1 }}
       refreshControl={
-        <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+        <RefreshControl
+          title="Loading..."
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          tintColor={Colors.primary}
+        />
       }
     >
       <ContainerGroup title="All Scouting Sessions">

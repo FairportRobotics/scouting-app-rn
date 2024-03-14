@@ -14,6 +14,7 @@ import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
+import Colors from "@/constants/Colors";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -107,10 +108,15 @@ export default function IndexScreen() {
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              title="Loading..."
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.primary}
+            />
           }
         >
-          <Text style={{ fontSize: 24 }}>Pull to refresh and load Matches</Text>
+          <Text style={{ fontSize: 24 }}>No data. Pull to refresh.</Text>
         </ScrollView>
       </View>
     );
@@ -121,7 +127,12 @@ export default function IndexScreen() {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            title="Loading..."
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor={Colors.primary}
+          />
         }
       >
         {matchModels.map((matchModel, index) => (
