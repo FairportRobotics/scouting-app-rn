@@ -130,9 +130,7 @@ function ScoutPitScreen() {
           <TextInput
             style={[Styles.textInput, {}]}
             value={session.numberOfAutoMethods}
-            onChangeText={(value) =>
-              handleChange("numberOfAutoMethods", value.replace(/\D/g, ""))
-            }
+            onChangeText={(value) => handleChange("numberOfAutoMethods", value)}
           />
         </ContainerGroup>
 
@@ -212,12 +210,8 @@ function ScoutPitScreen() {
         <ContainerGroup title="How wide is your robot with the bumpers attached (in inches)?">
           <TextInput
             style={[Styles.textInput, {}]}
-            inputMode="numeric"
-            keyboardType="numeric"
             value={session.robotWidth}
-            onChangeText={(value) =>
-              handleChange("robotWidth", value.replace(/[^0-9.]/g, ""))
-            }
+            onChangeText={(value) => handleChange("robotWidth", value)}
           />
         </ContainerGroup>
 
