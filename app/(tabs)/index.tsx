@@ -100,13 +100,14 @@ export default function IndexScreen() {
         style={{
           flex: 1,
           padding: 20,
+          width: "100%",
           gap: 20,
           alignContent: "flex-start",
           alignItems: "flex-start",
         }}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
+          contentContainerStyle={{ flexGrow: 1, width: "100%" }}
           refreshControl={
             <RefreshControl
               title="Loading..."
