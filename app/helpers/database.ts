@@ -69,14 +69,14 @@ export function initializeDatabase(
     // Create new tables.
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS event \
-      (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
+            (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
     );
 
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS event_matches \
-      (key TEXT PRIMARY KEY, matchNumber INTEGER, predictedTime TEXT, \
-        blue1TeamKey TEXT, blue2TeamKey TEXT, blue3TeamKey TEXT, \
-        red1TeamKey TEXT, red2TeamKey TEXT, red3TeamKey TEXT)"
+            (key TEXT PRIMARY KEY, matchType TEXT, setNumber INTEGER, matchNumber INTEGER, predictedTime TEXT, \
+            blue1TeamKey TEXT, blue2TeamKey TEXT, blue3TeamKey TEXT, \
+            red1TeamKey TEXT, red2TeamKey TEXT, red3TeamKey TEXT)"
     );
 
     tx.executeSql(
@@ -87,11 +87,11 @@ export function initializeDatabase(
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
       (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
-        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, autoNotes TEXT, \
-        teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, teleopNotes TEXT, \
-        endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, endgameNotes TEXT,\
-        finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT, \
-        notes TEXT)"
+      autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, autoNotes TEXT, \
+      teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, teleopNotes TEXT, \
+      endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, endgameNotes TEXT,\
+      finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT, \
+      notes TEXT)"
     );
 
     tx.executeSql(
@@ -112,10 +112,21 @@ export function initializeDatabase(
 }
 
 //=================================================================================================
-// Event data access.
+// Lookup Data.
 //=================================================================================================
+export const deleteLookupData = async () => {
+  db.transaction((tx) => {
+    tx.executeSql("DELETE FROM event");
+    tx.executeSql("DELETE FROM event_matches");
+    tx.executeSql("DELETE FROM event_teams");
+  });
+};
 
-export function saveEvent(event: TbaEvent) {
+export const saveLookupData = async (
+  event: Event,
+  matches: Array<Match>,
+  teams: Array<Team>
+) => {
   db.transaction((tx) => {
     tx.executeSql(
       "INSERT INTO event(key, name, shortName, startDate, endDate) \
@@ -124,40 +135,11 @@ export function saveEvent(event: TbaEvent) {
       [
         event.key,
         event.name,
-        event.short_name,
-        event.start_date,
-        event.end_date,
+        event.shortName,
+        new Date(event.startDate).toISOString(),
+        new Date(event.endDate).toISOString(),
       ],
       (txObj, resultSet) => {},
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
-  });
-}
-
-export function saveMatches(matches: Array<TbaMatch>) {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO event_matches(key, matchNumber, predictedTime, \
-        blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
-      VALUES(:key, :matchNumber, :predictedTime, :blue1TeamKey, :blue2TeamKey, :blue3TeamKey, :red1TeamKey, :red2TeamKey, :red3TeamKey) \
-      ON CONFLICT (key) DO NOTHING",
-      [
-        "practice",
-        0,
-        new Date(0).toISOString(),
-        "frc00000",
-        "frc00000",
-        "frc00000",
-        "frc00000",
-        "frc00000",
-        "frc00000",
-      ],
-      (txObj, resultSet) => {
-        // Do nothing.
-      },
       (txObj, error) => {
         console.error(error);
         return false;
@@ -166,48 +148,29 @@ export function saveMatches(matches: Array<TbaMatch>) {
 
     matches.forEach((match) => {
       tx.executeSql(
-        "INSERT INTO event_matches(key, matchNumber, predictedTime, blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
-        VALUES(:key, :matchNumber, :predictedTime, :blue1TeamKey, :blue2TeamKey, :blue3TeamKey, :red1TeamKey, :red2TeamKey, :red3TeamKey) \
+        "INSERT INTO event_matches(key, matchType, setNumber, matchNumber, predictedTime, blue1TeamKey, blue2TeamKey, blue3TeamKey, red1TeamKey, red2TeamKey, red3TeamKey) \
+        VALUES(:key, :matchType, :setNumber, :matchNumber, :predictedTime, :blue1TeamKey, :blue2TeamKey, :blue3TeamKey, :red1TeamKey, :red2TeamKey, :red3TeamKey) \
         ON CONFLICT (key) DO NOTHING",
         [
           match.key,
-          match.match_number,
-          new Date(1000 * match.predicted_time).toISOString(),
-          match.alliances.blue.team_keys[0],
-          match.alliances.blue.team_keys[1],
-          match.alliances.blue.team_keys[2],
-          match.alliances.red.team_keys[0],
-          match.alliances.red.team_keys[1],
-          match.alliances.red.team_keys[2],
+          match.matchType,
+          match.setNumber,
+          match.matchNumber,
+          match.predictedTime,
+          match.blue1TeamKey,
+          match.blue2TeamKey,
+          match.blue3TeamKey,
+          match.red1TeamKey,
+          match.red2TeamKey,
+          match.red3TeamKey,
         ],
-        (txObj, resultSet) => {
-          // Do nothing.
-        },
+        (txObj, resultSet) => {},
         (txObj, error) => {
           console.error(error);
           return false;
         }
       );
     });
-  });
-}
-
-export function saveTeams(teams: Array<TbaTeam>) {
-  db.transaction((tx) => {
-    // Insert a Practice Match placeholder.
-    tx.executeSql(
-      "INSERT INTO event_teams(key, teamNumber, nickname) \
-      VALUES(:key, :teamNumber, :nickname) \
-      ON CONFLICT (key) DO NOTHING",
-      ["frc00000", 0, "Practice Team"],
-      (txObj, resultSet) => {
-        // Do nothing.
-      },
-      (txObj, error) => {
-        console.error(error);
-        return false;
-      }
-    );
 
     // Insert a Practice Match placeholder.
     teams.forEach((team) => {
@@ -215,10 +178,8 @@ export function saveTeams(teams: Array<TbaTeam>) {
         "INSERT INTO event_teams(key, teamNumber, nickname) \
         VALUES(:key, :teamNumber, :nickname) \
         ON CONFLICT (key) DO NOTHING",
-        [team.key, team.team_number, team.nickname],
-        (txObj, resultSet) => {
-          // Do nothing.
-        },
+        [team.key, team.teamNumber, team.nickname],
+        (txObj, resultSet) => {},
         (txObj, error) => {
           console.error(error);
           return false;
@@ -226,8 +187,11 @@ export function saveTeams(teams: Array<TbaTeam>) {
       );
     });
   });
-}
+};
 
+//=================================================================================================
+// Event data access.
+//=================================================================================================
 export const getEvent = async (): Promise<Event> => {
   try {
     const query = "SELECT * FROM event LIMIT 1";

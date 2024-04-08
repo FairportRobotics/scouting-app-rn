@@ -13,6 +13,14 @@ export default function ScoutMatchSelect({
   matchModel,
   onSelect,
 }: ScoutMatchSelectProps) {
+
+  const matchTypes: Record<string, string> =  {
+    "qm": "Quals",
+    "sf": "Semi",
+    "f": "Final",
+  }
+  const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
   const handleOnSelect = (teamModel: TeamModel) => {
     onSelect(matchModel, teamModel);
   };
@@ -22,13 +30,16 @@ export default function ScoutMatchSelect({
       <View style={{ marginRight: 20, width: 100 }}>
         {matchModel.matchNumber === 0 && (
           <View>
-            <Text style={{ fontSize: 24 }}>Practice</Text>
+            <Text style={{ fontSize: 22 }}>Practice</Text>
             <Text>Anytime</Text>
           </View>
         )}
         {matchModel.matchNumber !== 0 && (
           <View>
-            <Text style={{ fontSize: 24 }}>Match {matchModel.matchNumber}</Text>
+            <Text style={{ fontSize: 22 }}>{matchTypes[matchModel.matchType]} {matchModel.matchNumber}{matchModel.setNumber === 1 ? "" : `/${matchModel.setNumber}` }</Text>
+            <Text>
+              {weekday[new Date(matchModel.predictedTime).getDay()]}
+            </Text>
             <Text>
               {new Date(matchModel.predictedTime).toLocaleTimeString()}
             </Text>

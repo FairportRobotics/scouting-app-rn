@@ -15,13 +15,6 @@ const DrawerLayout = () => {
           headerTitle: "Database Functions",
         }}
       />
-      <Drawer.Screen
-        name="thebluealliance"
-        options={{
-          title: "The Blue Alliance",
-          headerTitle: "Refresh from The Blue Alliance",
-        }}
-      />
     </Drawer>
   );
 };
