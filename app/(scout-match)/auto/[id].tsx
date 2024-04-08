@@ -28,7 +28,6 @@ function AutoScreen() {
   const [startedWithNote, setStartedWithNote] = useState<boolean>(true);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
-  const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
   const [speakerMiss, setSpeakerMiss] = useState<number>(0);
   const [ampScore, setAmpScore] = useState<number>(0);
   const [ampMiss, setAmpMiss] = useState<number>(0);
@@ -47,7 +46,6 @@ function AutoScreen() {
       setStartedWithNote(dtoSession.autoStartedWithNote ?? true);
       setLeftStartArea(dtoSession.autoLeftStartArea ?? false);
       setSpeakerScore(dtoSession.autoSpeakerScore ?? 0);
-      setSpeakerScoreAmplified(dtoSession.autoSpeakerScoreAmplified ?? 0);
       setSpeakerMiss(dtoSession.autoSpeakerMiss ?? 0);
       setAmpScore(dtoSession.autoAmpScore ?? 0);
       setAmpMiss(dtoSession.autoAmpMiss ?? 0);
@@ -65,7 +63,6 @@ function AutoScreen() {
         startedWithNote,
         leftStartArea,
         speakerScore,
-        speakerScoreAmplified,
         speakerMiss,
         ampScore,
         ampMiss,
@@ -86,7 +83,6 @@ function AutoScreen() {
     startedWithNote,
     leftStartArea,
     speakerScore,
-    speakerScoreAmplified,
     speakerMiss,
     ampScore,
     ampMiss,
@@ -139,16 +135,9 @@ function AutoScreen() {
 
       <ContainerGroup title="Speaker:">
         <MinusPlusPair
-          label="Score: Unamplified"
+          label="Score"
           count={speakerScore}
           onChange={(delta) => setSpeakerScore(speakerScore + delta)}
-        />
-        <MinusPlusPair
-          label="Speaker: Amplified"
-          count={speakerScoreAmplified}
-          onChange={(delta) =>
-            setSpeakerScoreAmplified(speakerScoreAmplified + delta)
-          }
         />
         <MinusPlusPair
           label="Miss"
