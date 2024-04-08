@@ -41,7 +41,7 @@ export function initializeDatabase(
 ) {
   if (dropAndRecreate) {
     db.transaction((tx) => {
-      tx.executeSql("DROP TABLE IF EXISTS events");
+      tx.executeSql("DROP TABLE IF EXISTS event");
       tx.executeSql("DROP TABLE IF EXISTS event_matches");
       tx.executeSql("DROP TABLE IF EXISTS event_teams");
       tx.executeSql("DROP TABLE IF EXISTS match_scouting_sessions");
@@ -55,7 +55,7 @@ export function initializeDatabase(
 
   if (deleteExistingData) {
     db.transaction((tx) => {
-      tx.executeSql("DELETE FROM events");
+      tx.executeSql("DELETE FROM event");
       tx.executeSql("DELETE FROM event_matches");
       tx.executeSql("DELETE FROM event_teams");
       tx.executeSql("DELETE FROM match_scouting_sessions");
@@ -68,7 +68,7 @@ export function initializeDatabase(
   db.transaction((tx) => {
     // Create new tables.
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS events \
+      "CREATE TABLE IF NOT EXISTS event \
       (key TEXT PRIMARY KEY, name TEXT, shortName TEXT, startDate TEXT, endDate TEXT)"
     );
 
@@ -118,7 +118,7 @@ export function initializeDatabase(
 export function saveEvent(event: TbaEvent) {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO events(key, name, shortName, startDate, endDate) \
+      "INSERT INTO event(key, name, shortName, startDate, endDate) \
       VALUES(:key, :name, :shortName, :startDate, :endDate) \
       ON CONFLICT (key) DO NOTHING",
       [
@@ -230,7 +230,7 @@ export function saveTeams(teams: Array<TbaTeam>) {
 
 export const getEvent = async (): Promise<Event> => {
   try {
-    const query = "SELECT * FROM events LIMIT 1";
+    const query = "SELECT * FROM event LIMIT 1";
     const results = (await executeSql(query, [])) as Event[];
 
     if (results.length > 0) {
