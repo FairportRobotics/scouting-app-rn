@@ -98,7 +98,6 @@ export default function IndexScreen() {
     return (
       <View
         style={{
-          flex: 1,
           padding: 20,
           width: "100%",
           gap: 20,
@@ -107,6 +106,7 @@ export default function IndexScreen() {
         }}
       >
         <ScrollView
+          style={{ width: "100%", height: "100%" }}
           contentContainerStyle={{ flexGrow: 1, width: "100%" }}
           refreshControl={
             <RefreshControl
@@ -117,7 +117,7 @@ export default function IndexScreen() {
             />
           }
         >
-          <Text style={{ fontSize: 24 }}>No data. Pull to refresh.</Text>
+          <Text style={{ fontSize: 24, width: "100%" }}>No data. Pull to refresh.</Text>
         </ScrollView>
       </View>
     );
