@@ -87,7 +87,7 @@ export function initializeDatabase(
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS match_scouting_sessions \
       (key TEXT PRIMARY KEY, eventKey TEXT, matchKey TEXT, matchNumber INTEGER, alliance TEXT, allianceTeam INTEGER, scheduledTeamKey TEXT, scoutedTeamKey TEXT, scouterName TEXT, \
-        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerScoreAmplified INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, autoNotes TEXT, \
+        autoStartedWithNote INTEGER, autoLeftStartArea INTEGER, autoSpeakerScore INTEGER, autoSpeakerMiss INTEGER, autoAmpScore INTEGER, autoAmpMiss INTEGER, autoNotes TEXT, \
         teleopSpeakerScore INTEGER, teleopSpeakerScoreAmplified INTEGER, teleopSpeakerMiss INTEGER, teleopAmpScore INTEGER, teleopAmpMiss INTEGER, teleopRelayPass INTEGER, teleopNotes TEXT, \
         endgameTrapScore TEXT, endgameMicrophoneScore TEXT, endgameDidRobotPark INTEGER, endgameDidRobotHang INTEGER, endgameHarmony TEXT, endgameNotes TEXT,\
         finalAllianceScore INTEGER, finalRankingPoints INTEGER, finalAllianceResult TEXT, finalViolations TEXT, finalPenalties INTEGER, finalNotes TEXT, \
@@ -342,7 +342,6 @@ export const saveMatchScoutingSessionAuto = async (
   autoStartedWithNote: boolean,
   autoLeftStartArea: boolean,
   autoSpeakerScore: number,
-  autoSpeakerScoreAmplified: number,
   autoSpeakerMiss: number,
   autoAmpScore: number,
   autoAmpMiss: number,
@@ -353,18 +352,17 @@ export const saveMatchScoutingSessionAuto = async (
       "INSERT INTO match_scouting_sessions \
       ( \
         key, \
-        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerScoreAmplified, autoSpeakerMiss, autoAmpScore, autoAmpMiss, autoNotes \
+        autoStartedWithNote, autoLeftStartArea, autoSpeakerScore, autoSpeakerMiss, autoAmpScore, autoAmpMiss, autoNotes \
       ) \
       VALUES \
       ( \
         :key,\
-        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerScoreAmplified, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss, :autoNotes \
+        :autoStartedWithNote, :autoLeftStartArea, :autoSpeakerScore, :autoSpeakerMiss, :autoAmpScore, :autoAmpMiss, :autoNotes \
       ) \
       ON CONFLICT (key) DO UPDATE SET \
         autoStartedWithNote = excluded.autoStartedWithNote, \
         autoLeftStartArea = excluded.autoLeftStartArea, \
         autoSpeakerScore = excluded.autoSpeakerScore, \
-        autoSpeakerScoreAmplified = excluded.autoSpeakerScoreAmplified, \
         autoSpeakerMiss = excluded.autoSpeakerMiss, \
         autoAmpScore = excluded.autoAmpScore, \
         autoAmpMiss = excluded.autoAmpMiss, \
@@ -375,7 +373,6 @@ export const saveMatchScoutingSessionAuto = async (
         autoStartedWithNote ? 1 : 0,
         autoLeftStartArea ? 1 : 0,
         autoSpeakerScore,
-        autoSpeakerScoreAmplified,
         autoSpeakerMiss,
         autoAmpScore,
         autoAmpMiss,
