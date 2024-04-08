@@ -97,13 +97,13 @@ https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
 ## Todo
 
 [X] Remove Auto > Score in Speaker while Amplified
-[ ] Read TBA Event, Matches and Teams from Azure.
-[ ] Flush and fill DB lookup tables.
+[X] Read TBA Event, Matches and Teams from Azure.
+[X] Flush and fill DB lookup tables.
 [ ] Cache Event, Matches and Teams in store.
 [ ] If store is empty, lazy load from DB
-[ ] Remove all TBA-caching
-[ ] Remove all references to Practice Match
-[ ] Remove all referenes to Practice Team
+[X] Remove all TBA-caching
+[X] Remove all references to Practice Match
+[X] Remove all referenes to Practice Team
 [ ] Prevent bypassing Match > Confirm > Name by tapping tab.
 
 Azure Cosmos DB via REST:
