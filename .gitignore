@@ -177,3 +177,4 @@ expo-env.d.ts
 
 # ignores all .env files
 .env*
+eas.json

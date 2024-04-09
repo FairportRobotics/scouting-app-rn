@@ -44,6 +44,8 @@ export type Event = {
 
 export type Match = {
   key: string;
+  matchType: string;
+  setNumber: number;
   matchNumber: number;
   predictedTime: string;
   blue1TeamKey: string;
@@ -187,6 +189,8 @@ export type MatchModel = {
   key: string;
   eventKey: string;
   matchKey: string;
+  matchType: string;
+  setNumber: number;
   matchNumber: number;
   predictedTime: string;
   alliances: Record<string, Record<number, TeamModel | undefined>>;

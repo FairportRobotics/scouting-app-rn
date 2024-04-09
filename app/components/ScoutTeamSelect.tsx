@@ -78,10 +78,10 @@ export default function ScoutTeamSelect({
           },
         ]}
       >
-        <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
+        <Text style={{ color: "white", fontWeight: "bold" }}>
           {teamModel.allianceTeam}
         </Text>
-        <Text style={{ color: "white" }}>{teamModel.teamNumber}</Text>
+        <Text style={{ color: "white", fontSize: 24 }}>{teamModel.teamNumber}</Text>
       </View>
     </TouchableOpacity>
   );

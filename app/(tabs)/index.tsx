@@ -14,6 +14,7 @@ import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
+import flushAndFillLookups from "@/app/helpers/flushAndFillLookups";
 import Colors from "@/constants/Colors";
 
 export default function IndexScreen() {
@@ -35,6 +36,7 @@ export default function IndexScreen() {
         Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
       ])
         .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
+
           // Build the Match Models.
           const matchModels = getMatchSelectModels(
             dtoEvent,
@@ -54,8 +56,9 @@ export default function IndexScreen() {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setIsRefreshing(true);
+    await flushAndFillLookups();
     loadData();
     setIsRefreshing(false);
   };
