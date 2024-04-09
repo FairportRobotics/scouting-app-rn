@@ -11,37 +11,36 @@ import getDefaultMatchScoutingSession, {
   TeamModel,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
-import * as Database from "@/app/helpers/database";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
-import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
 import flushAndFillLookups from "@/app/helpers/flushAndFillLookups";
+import refreshMatchScoutingKeys from "@/app/helpers/refreshMatchScoutingKeys";
+import { useCacheStore } from "@/store/cachesStore"; 
 import Colors from "@/constants/Colors";
+import * as Database from "@/app/helpers/database";
 
 export default function IndexScreen() {
   const router = useRouter();
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
+  const cacheStore = useCacheStore()
 
   const loadData = async () => {
     try {
-      // Make sure we have the most recent keys.
-      await refreshMatchScoutingKeys();
 
       // Retrieve data.
       Promise.all([
-        Database.getEvent() as Promise<Event>,
-        Database.getMatches() as Promise<Array<Match>>,
-        Database.getTeams() as Promise<Array<Team>>,
+        cacheStore.getEvent() as Promise<Event>,
+        cacheStore.getMatches() as Promise<Array<Match>>,
+        cacheStore.getTeams() as Promise<Array<Team>>,
         Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
         Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
       ])
-        .then(([dtoEvent, dtoMatches, dtoTeams, sessionKeys, uploadedKeys]) => {
-
+        .then(([event, matches, teams, sessionKeys, uploadedKeys]) => {
           // Build the Match Models.
           const matchModels = getMatchSelectModels(
-            dtoEvent,
-            dtoMatches,
-            dtoTeams,
+            event,
+            matches,
+            teams,
             sessionKeys,
             uploadedKeys
           );
@@ -58,8 +57,11 @@ export default function IndexScreen() {
 
   const onRefresh = async () => {
     setIsRefreshing(true);
-    await flushAndFillLookups();
+
+    await refreshMatchScoutingKeys();
+    await flushAndFillLookups()
     loadData();
+
     setIsRefreshing(false);
   };
 

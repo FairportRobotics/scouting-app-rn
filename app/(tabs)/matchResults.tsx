@@ -9,9 +9,11 @@ import {
 import { useEffect, useState } from "react";
 import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
+
 import * as Database from "@/app/helpers/database";
 import postMatchSession from "../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
+import { useCacheStore } from "@/store/cachesStore";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -29,6 +31,7 @@ export default function MatchResultsScreen() {
   const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
+  const cacheStore = useCacheStore()
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -45,9 +48,8 @@ export default function MatchResultsScreen() {
       try {
         // Retrieve data.
         Promise.all([
-          // Retrieve from the database.
-          Database.getMatches() as Promise<Array<Match>>,
-          Database.getTeams() as Promise<Array<Team>>,
+          cacheStore.getMatches() as Promise<Array<Match>>,
+          cacheStore.getTeams() as Promise<Array<Team>>,
           Database.getMatchScoutingSessions() as Promise<
             Array<MatchScoutingSession>
           >,

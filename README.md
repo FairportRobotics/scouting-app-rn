@@ -88,8 +88,16 @@ https://axios-http.com/docs/intro
 https://docs.expo.dev/versions/latest/sdk/sqlite/
 
 **Azure REST**
+Unable to use the Azure SDK dues to unresolved issues with an incompatible library that cannot be patched. Expo doctor still complains. So, I've found a solution that uses REST. It's bare-bones but it works.
+
 Azure REST API Documentation:
 https://learn.microsoft.com/en-us/rest/api/cosmos-db/list-documents
+
+Headers:
+https://learn.microsoft.com/en-us/rest/api/cosmos-db/common-cosmosdb-rest-request-headers
+
+Auth token:
+https://learn.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources?redirectedfrom=MSDN
 
 Stolen shamelessly from:
 https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js

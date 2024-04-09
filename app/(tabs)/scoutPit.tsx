@@ -15,6 +15,7 @@ import postPitScoutingSession from "../helpers/postPitScoutingSession";
 import { ItemKey, PitScoutingSession, Team } from "@/constants/Types";
 import refreshPitScoutingKeys from "../helpers/refreshPitScoutingKeys";
 import Colors from "@/constants/Colors";
+import { useCacheStore } from "@/store/cachesStore";
 
 export type ReportRecord = {
   key: string;
@@ -31,6 +32,7 @@ export default function ScoutPitScreen() {
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const cacheStore = useCacheStore()
 
   const onRefresh = async () => {
     try {
@@ -50,8 +52,7 @@ export default function ScoutPitScreen() {
 
       // Retrieve data.
       Promise.all([
-        // Retrieve from the database.
-        Database.getTeams() as Promise<Array<Team>>,
+        cacheStore.getTeams() as Promise<Array<Team>>,
         Database.getPitScoutingSessions() as Promise<Array<PitScoutingSession>>,
         Database.getUploadedPitScoutingKeys() as Promise<Array<ItemKey>>,
       ])
@@ -71,7 +72,7 @@ export default function ScoutPitScreen() {
 
               uploadExists: !!uploadedKeys.find(
                 (uploaded) =>
-                  uploaded.key === dtoTeam.key && dtoTeam.key !== "frc00000"
+                  uploaded.key === dtoTeam.key && dtoTeam.key !== "frc0"
               ),
             } as ReportRecord;
 

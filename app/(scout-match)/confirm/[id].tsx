@@ -17,10 +17,13 @@ import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import * as Database from "@/app/helpers/database";
 import students from "@/data/studentsList";
+import { useCacheStore } from "@/store/cachesStore";
 
 function ConfirmScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const cacheStore = useCacheStore()
 
   const [session, setSession] = useState<MatchScoutingSession>();
   const [sessionKey, setSessionKey] = useState<string>(id);
@@ -88,18 +91,18 @@ function ConfirmScreen() {
     try {
       // Retrieve from the database.
       const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-      const dtoTeams = await Database.getTeams();
+      const teams = await cacheStore.getTeams();
 
       // Validate.
       if (dtoSession === undefined) return;
-      if (dtoTeams === undefined) return;
+      if (teams === undefined) return;
 
       // Set State.
       setSession(dtoSession);
       setScouterName(dtoSession.scouterName ?? "");
-      setAllTeams(dtoTeams);
-      setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
-      setScoutedTeam(lookupTeam(dtoTeams, dtoSession.scoutedTeamKey));
+      setAllTeams(teams);
+      setScheduledTeam(lookupTeam(teams, dtoSession.scheduledTeamKey));
+      setScoutedTeam(lookupTeam(teams, dtoSession.scoutedTeamKey));
       setScoutedTeamKey(dtoSession.scoutedTeamKey);
     } catch (error) {
       console.error(error);

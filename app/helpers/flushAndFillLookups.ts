@@ -40,6 +40,4 @@ export default async () => {
 
   // Fill DB tables.
   await Database.saveLookupData(events[0], matches, teams);
-
-  // Fill Store.
 };
