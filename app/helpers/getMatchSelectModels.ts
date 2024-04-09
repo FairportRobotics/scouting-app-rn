@@ -70,6 +70,8 @@ export default (
     let model = {
       eventKey: event.key,
       matchKey: match.key,
+      matchType: match.matchType,
+      setNumber: match.setNumber,
       matchNumber: match.matchNumber,
       predictedTime: match.predictedTime,
       alliances: {},
@@ -135,6 +137,12 @@ export default (
     );
 
     models.push(model);
+  });
+
+  models.sort(function (a: MatchModel, b: MatchModel) {
+    return (
+      new Date(a.predictedTime).getTime() - new Date(b.predictedTime).getTime()
+    );
   });
 
   return models;
