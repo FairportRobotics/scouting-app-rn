@@ -5,7 +5,7 @@ import { zustandStorage } from "./mmkv-storage";
 
 export interface PitScoutingState {
   currentKey: string | undefined;
-  sessions: Array<PitScoutingSession> | [];
+  sessions: Record<string, PitScoutingSession>;
   uploadedKeys: Array<ItemKey> | [];
   sessionKeys: () => Array<ItemKey> | [];
 }
@@ -14,16 +14,16 @@ export const usePitScoutingStore = create<PitScoutingState>()(
   persist(
     (set, get) => ({
       currentKey: undefined,
-      sessions: [],
+      sessions: {},
       uploadedKeys: [],
       sessionKeys: () => {
-        return get().sessions.map(
-          (session) => ({ key: session.key } as ItemKey)
+        return Object.keys(get().sessions).map(
+          (item) => ({ key: item } as ItemKey)
         );
       },
     }),
     {
-      name: "cache-storage",
+      name: "pit-scouting-storage",
       storage: createJSONStorage(() => zustandStorage),
     }
   )

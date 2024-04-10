@@ -28,7 +28,6 @@ function EndgameScreen() {
   const matchStore = useMatchScoutingStore();
 
   // States.
-  const [sessionKey, setSessionKey] = useState<string>(id);
   const [trapScore, setTrapScore] = useState<string>("0");
   const [microphoneScore, setMicrophoneScore] = useState<string>("0");
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);

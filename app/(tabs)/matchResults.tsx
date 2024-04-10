@@ -9,11 +9,10 @@ import {
 import { useEffect, useState } from "react";
 import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
-
-import * as Database from "@/app/helpers/database";
+import { useCacheStore } from "@/store/cachesStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import postMatchSession from "../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
-import { useCacheStore } from "@/store/cachesStore";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -26,12 +25,15 @@ export type MatchResultModel = {
 };
 
 export default function MatchResultsScreen() {
+  // Stores.
+  const cacheStore = useCacheStore();
+  const matchStore = useMatchScoutingStore();
+
+  // State.
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
-  const [sessions, setSessions] = useState<Array<MatchScoutingSession>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
-  const cacheStore = useCacheStore()
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -44,29 +46,12 @@ export default function MatchResultsScreen() {
   }, []);
 
   const loadData = async () => {
-    try {
-      try {
-        // Retrieve data.
-        Promise.all([
-          cacheStore.getMatches() as Promise<Array<Match>>,
-          cacheStore.getTeams() as Promise<Array<Team>>,
-          Database.getMatchScoutingSessions() as Promise<
-            Array<MatchScoutingSession>
-          >,
-          Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
-        ])
-          .then(([dtoMatches, dtoTeams, dtoSessions, uploadedKeys]) => {
-            buildModels(dtoMatches, dtoTeams, dtoSessions, uploadedKeys);
-          })
-          .catch((error) => {
-            console.error(error);
-          });
-      } catch (error) {
-        console.error(error);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    buildModels(
+      cacheStore.matches,
+      cacheStore.teams,
+      Object.values(matchStore.sessions),
+      matchStore.uploadedKeys
+    );
   };
 
   const buildModels = (
@@ -89,58 +74,59 @@ export default function MatchResultsScreen() {
 
     // Build the array of MatchResultModel.
     let models: Array<MatchResultModel> = [];
-    sessions.map((session) => {
-      try {
-        // Retrieve the needed objects from the dictionaries.
-        const match = matchesDictionary[session.matchKey];
-        const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
+    sessions
+      .sort((a, b) => a.matchNumber - b.matchNumber)
+      .map((session) => {
+        try {
+          // Retrieve the needed objects from the dictionaries.
+          const match = matchesDictionary[session.matchKey];
+          const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
 
-        // Initialize the model.
-        const model = {
-          sessionKey: session.key,
-          matchNumber: match.matchNumber,
-          alliance: session.alliance,
-          allianceTeam: session.allianceTeam,
-        } as MatchResultModel;
+          // Initialize the model.
+          const model = {
+            sessionKey: session.key,
+            matchNumber: match.matchNumber,
+            alliance: session.alliance,
+            allianceTeam: session.allianceTeam,
+          } as MatchResultModel;
 
-        // Assign the scouted team.
-        if (scoutedTeam !== undefined) {
-          model.scoutedTeamNumber = scoutedTeam.teamNumber;
-          model.scoutedTeamNickname = scoutedTeam.nickname;
+          // Assign the scouted team.
+          if (scoutedTeam !== undefined) {
+            model.scoutedTeamNumber = scoutedTeam.teamNumber;
+            model.scoutedTeamNickname = scoutedTeam.nickname;
+          }
+
+          // Determine if the upload exists.
+          model.uploadExists =
+            uploadedKeys.find((item) => session.key === item.key) === undefined
+              ? false
+              : true;
+
+          models.push(model);
+        } catch (error) {
+          console.error(error);
         }
-
-        // Determine if the upload exists.
-        model.uploadExists =
-          uploadedKeys.find((item) => session.key === item.key) === undefined
-            ? false
-            : true;
-
-        models.push(model);
-      } catch (error) {
-        console.error(error);
-      }
-    });
+      });
 
     setReportModels(models);
-    setSessions(sessions);
-
     setIsRefreshing(false);
   };
 
   const handleUploadAllSessions = async () => {
-    sessions.forEach(async (session) => {
+    Object.values(matchStore.sessions).forEach(async (session) => {
       await postMatchSession(session);
     });
   };
 
   const handleUploadSession = async (sessionKey: string) => {
-    const session = sessions.find((session) => session.key === sessionKey);
+    const session = matchStore.sessions[sessionKey];
     if (session === undefined) return;
+
     await postMatchSession(session);
   };
 
-  const handleShowSessionJsonQR = async (sessionKey: string) => {
-    const session = sessions.find((session) => session.key == sessionKey);
+  const handleShowSessionJsonQR = (sessionKey: string) => {
+    const session = matchStore.sessions[sessionKey];
     if (session === undefined) return;
 
     const json = JSON.stringify(session);
@@ -149,8 +135,9 @@ export default function MatchResultsScreen() {
   };
 
   const handleShareSessionJson = async (sessionKey: string) => {
-    const session = sessions.find((session) => session.key == sessionKey);
+    const session = matchStore.sessions[sessionKey];
     if (session === undefined) return;
+
     const json = JSON.stringify(session);
     const shareOptions = {
       message: json,
@@ -186,7 +173,7 @@ export default function MatchResultsScreen() {
     );
   }
 
-  if (sessions?.length == 0) {
+  if (Object.keys(matchStore.sessions).length == 0) {
     return (
       <View
         style={{

@@ -21,15 +21,15 @@ export default function IndexScreen() {
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
   const cacheStore = useCacheStore();
-  const store = useMatchScoutingStore();
+  const matchStore = useMatchScoutingStore();
 
   const loadData = async () => {
     const matchModels = getMatchSelectModels(
       cacheStore.event,
       cacheStore.matches,
       cacheStore.teams,
-      store.sessionKeys(),
-      store.uploadedKeys
+      matchStore.sessionKeys(),
+      matchStore.uploadedKeys
     );
 
     setMatchModels(matchModels);
@@ -55,20 +55,20 @@ export default function IndexScreen() {
   ) => {
     // Extract the Session Key and assign to the store.
     const key = teamModel.sessionKey;
-    store.currentKey = key;
+    matchStore.currentKey = key;
 
-    if (!(key in store.sessions)) {
+    if (!(key in matchStore.sessions)) {
       // Session does not already exist and must be initialized.
-      store.sessions[key] =
+      matchStore.sessions[key] =
         getDefaultMatchScoutingSession() as MatchScoutingSession;
-      store.sessions[key].key = teamModel.sessionKey;
-      store.sessions[key].eventKey = matchModel.eventKey;
-      store.sessions[key].matchKey = matchModel.matchKey;
-      store.sessions[key].matchNumber = matchModel.matchNumber;
-      store.sessions[key].alliance = teamModel.alliance;
-      store.sessions[key].allianceTeam = teamModel.allianceTeam;
-      store.sessions[key].scheduledTeamKey = teamModel.teamKey;
-      store.sessions[key].scoutedTeamKey = teamModel.teamKey;
+      matchStore.sessions[key].key = teamModel.sessionKey;
+      matchStore.sessions[key].eventKey = matchModel.eventKey;
+      matchStore.sessions[key].matchKey = matchModel.matchKey;
+      matchStore.sessions[key].matchNumber = matchModel.matchNumber;
+      matchStore.sessions[key].alliance = teamModel.alliance;
+      matchStore.sessions[key].allianceTeam = teamModel.allianceTeam;
+      matchStore.sessions[key].scheduledTeamKey = teamModel.teamKey;
+      matchStore.sessions[key].scoutedTeamKey = teamModel.teamKey;
     }
 
     // Navigate to the Confirmation screen.

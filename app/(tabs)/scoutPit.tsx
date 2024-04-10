@@ -1,21 +1,12 @@
-import {
-  ScrollView,
-  View,
-  Share,
-  RefreshControl,
-  Text,
-  ActivityIndicator,
-} from "react-native";
+import { ScrollView, View, Share, RefreshControl, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { ContainerGroup } from "../components";
+import { ContainerGroup } from "@/app/components";
 import { ResultsButton, QrCodeModal } from "@/app/components";
-import * as Database from "@/app/helpers/database";
-import postPitScoutingSession from "../helpers/postPitScoutingSession";
-import { ItemKey, PitScoutingSession, Team } from "@/constants/Types";
-import refreshPitScoutingKeys from "../helpers/refreshPitScoutingKeys";
-import Colors from "@/constants/Colors";
 import { useCacheStore } from "@/store/cachesStore";
+import { usePitScoutingStore } from "@/store/pitScoutingStore";
+import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
+import Colors from "@/constants/Colors";
 
 export type ReportRecord = {
   key: string;
@@ -28,11 +19,15 @@ export type ReportRecord = {
 export default function ScoutPitScreen() {
   const router = useRouter();
 
+  // Stores.
+  const cacheStore = useCacheStore();
+  const pitStore = usePitScoutingStore();
+
+  // State.
   const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const cacheStore = useCacheStore()
 
   const onRefresh = async () => {
     try {
@@ -46,48 +41,24 @@ export default function ScoutPitScreen() {
   };
 
   const loadData = async () => {
-    try {
-      // Make sure we have the most recent keys.
-      await refreshPitScoutingKeys();
+    // Build a Model to encapsulate properties from multiple sources so we can
+    // more easily display the rows.
+    const teamRecords: Array<ReportRecord> = [];
 
-      // Retrieve data.
-      Promise.all([
-        cacheStore.getTeams() as Promise<Array<Team>>,
-        Database.getPitScoutingSessions() as Promise<Array<PitScoutingSession>>,
-        Database.getUploadedPitScoutingKeys() as Promise<Array<ItemKey>>,
-      ])
-        .then(([dtoTeams, dtoSessions, uploadedKeys]) => {
-          // Build a Model to encapsulate properties from multiple sources so we can
-          // more easily display the rows.
-          const teamRecords: Array<ReportRecord> = [];
-          dtoTeams.forEach((dtoTeam) => {
-            let newRecord = {
-              key: dtoTeam.key,
-              teamNumber: dtoTeam.teamNumber,
-              nickname: dtoTeam.nickname,
+    cacheStore.teams.forEach((team) => {
+      let newRecord = {
+        key: team.key,
+        teamNumber: team.teamNumber,
+        nickname: team.nickname,
+        sessionExists: team.key in pitStore.sessions,
+        uploadExists: team.key in pitStore.uploadedKeys,
+      } as ReportRecord;
 
-              sessionExists: !!dtoSessions.find(
-                (session) => session.key === dtoTeam.key
-              ),
+      teamRecords.push(newRecord);
+    });
 
-              uploadExists: !!uploadedKeys.find(
-                (uploaded) =>
-                  uploaded.key === dtoTeam.key && dtoTeam.key !== "frc0"
-              ),
-            } as ReportRecord;
-
-            teamRecords.push(newRecord);
-          });
-
-          // Set State.
-          setReportRecords(teamRecords);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (error) {
-      console.error(error);
-    }
+    // Set State.
+    setReportRecords(teamRecords);
   };
 
   useEffect(() => {
@@ -99,22 +70,20 @@ export default function ScoutPitScreen() {
   };
 
   const handleUploadAllSessions = async () => {
-    let sessions = await Database.getPitScoutingSessions();
-    sessions.forEach(async (session) => {
+    Object.values(pitStore.sessions).forEach(async (session) => {
       await postPitScoutingSession(session);
     });
   };
 
   const handleUploadSession = async (key: string) => {
-    const session = await Database.getPitScoutingSession(key);
+    const session = pitStore.sessions[key];
     if (session === undefined) return;
+
     await postPitScoutingSession(session);
   };
 
   const handleShowSessionJsonQR = async (key: string) => {
-    loadData();
-
-    const session = await Database.getPitScoutingSession(key);
+    const session = pitStore.sessions[key];
     if (session === undefined) return;
 
     const json = JSON.stringify(session);
@@ -123,8 +92,9 @@ export default function ScoutPitScreen() {
   };
 
   const handleShareSessionJson = async (key: string) => {
-    const session = await Database.getPitScoutingSession(key);
+    const session = pitStore.sessions[key];
     if (session === undefined) return;
+
     const json = JSON.stringify(session);
 
     const shareOptions = {
