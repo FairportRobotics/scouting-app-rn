@@ -1,5 +1,9 @@
+import { ItemKey } from "@/constants/Types";
+import {
+  MatchScoutingState,
+  useMatchScoutingStore,
+} from "@/store/matchScoutingStore";
 import axios from "axios";
-import * as Database from "@/app/helpers/database";
 
 export default async () => {
   try {
@@ -11,8 +15,12 @@ export default async () => {
     };
 
     const response = await axios.post(saveUri, postData);
-    const keys = (response.data.data_for as Array<string>) || [];
-    await Database.saveMatchScoutingSessionKeys(keys);
+    const uploadedKeys = (response.data.data_for as Array<string>) || [];
+
+    const storeState: MatchScoutingState = useMatchScoutingStore.getState();
+    storeState.uploadedKeys = uploadedKeys.map(
+      (item) => ({ key: item } as ItemKey)
+    );
   } catch (error) {
     console.error(error);
   }

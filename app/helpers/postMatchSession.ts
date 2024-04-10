@@ -16,6 +16,7 @@ export default async (session: MatchScoutingSession) => {
 
     const response = await axios.post(saveUri, postData);
     const uploadedKeys = (response.data.data_for as Array<string>) || [];
+
     const storeState: MatchScoutingState = useMatchScoutingStore.getState();
     storeState.uploadedKeys = uploadedKeys.map(
       (item) => ({ key: item } as ItemKey)

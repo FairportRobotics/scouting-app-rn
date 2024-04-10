@@ -8,13 +8,6 @@ const DrawerLayout = () => {
         name="caches"
         options={{ title: "Caches", headerTitle: "Caches" }}
       />
-      <Drawer.Screen
-        name="database"
-        options={{
-          title: "Database Functions",
-          headerTitle: "Database Functions",
-        }}
-      />
     </Drawer>
   );
 };

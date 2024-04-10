@@ -1,6 +1,9 @@
 import axios from "axios";
-import type { PitScoutingSession } from "@/constants/Types";
-import * as Database from "@/app/helpers/database";
+import type { ItemKey, PitScoutingSession } from "@/constants/Types";
+import {
+  PitScoutingState,
+  usePitScoutingStore,
+} from "@/store/pitScoutingStore";
 
 export default async (session: PitScoutingSession) => {
   try {
@@ -13,7 +16,11 @@ export default async (session: PitScoutingSession) => {
 
     const response = await axios.post(saveUri, postData);
     const uploadedKeys = (response.data.data_for as Array<string>) || [];
-    await Database.savePitScoutingSessionKeys(uploadedKeys);
+
+    const storeState: PitScoutingState = usePitScoutingStore.getState();
+    storeState.uploadedKeys = uploadedKeys.map(
+      (item) => ({ key: item } as ItemKey)
+    );
   } catch (error) {
     console.error(error);
   }
