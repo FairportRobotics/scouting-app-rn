@@ -241,6 +241,8 @@ export default function ScoutPitScreen() {
             <ResultsButton
               label="Data"
               faIcon="json"
+              active={item.sessionExists}
+              disabled={!item.sessionExists}
               onPress={() => handleShowSessionJson(item.key)}
             />
           </View>
