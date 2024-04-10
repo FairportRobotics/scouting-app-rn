@@ -10,3 +10,4 @@ export { default as QrCodeModal } from "@/app/components/QrCodeModal";
 export { default as ResultsButton } from "@/app/components/ResultsButton";
 export { default as ScoutMatchSelect } from "@/app/components/ScoutMatchSelect";
 export { default as SelectGroup } from "@/app/components/SelectGroup";
+export { default as JsonModal } from "@/app/components/JsonViewModal";

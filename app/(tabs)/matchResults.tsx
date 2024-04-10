@@ -13,6 +13,7 @@ import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import postMatchSession from "../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
+import JsonModal from "../components/JsonViewModal";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -32,8 +33,12 @@ export default function MatchResultsScreen() {
   // State.
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
+
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
+
+  const [showJson, setShowJson] = useState<boolean>(false);
+  const [jsonText, setJsonText] = useState<string>("");
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -147,12 +152,27 @@ export default function MatchResultsScreen() {
     await Share.share(shareOptions);
   };
 
+  const handleShowSessionJson = (sessionKey: string) => {
+    const session = matchStore.sessions[sessionKey];
+    if (session === undefined) return;
+
+    const json = JSON.stringify(session);
+    setJsonText(json);
+    setShowJson(true);
+  };
+
   if (showQrCode) {
     return (
       <QrCodeModal
         value={qrCodeText}
         onPressClose={() => setShowQrCode(false)}
       />
+    );
+  }
+
+  if (showJson) {
+    return (
+      <JsonModal value={jsonText} onPressClose={() => setShowJson(false)} />
     );
   }
 
@@ -263,6 +283,11 @@ export default function MatchResultsScreen() {
                 label="JSON"
                 faIcon="share"
                 onPress={() => handleShareSessionJson(match.sessionKey)}
+              />
+              <ResultsButton
+                label="Data"
+                faIcon="json"
+                onPress={() => handleShowSessionJson(match.sessionKey)}
               />
             </View>
           </ContainerGroup>

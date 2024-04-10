@@ -2,7 +2,7 @@ import { ScrollView, View, Share, RefreshControl, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "@/app/components";
-import { ResultsButton, QrCodeModal } from "@/app/components";
+import { ResultsButton, QrCodeModal, JsonModal } from "@/app/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { usePitScoutingStore } from "@/store/pitScoutingStore";
 import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
@@ -24,10 +24,14 @@ export default function ScoutPitScreen() {
   const pitStore = usePitScoutingStore();
 
   // State.
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
+
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
-  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [showJson, setShowJson] = useState<boolean>(false);
+  const [jsonText, setJsonText] = useState<string>("");
 
   const onRefresh = async () => {
     try {
@@ -107,12 +111,27 @@ export default function ScoutPitScreen() {
     loadData();
   };
 
+  const handleShowSessionJson = (sessionKey: string) => {
+    const session = pitStore.sessions[sessionKey];
+    if (session === undefined) return;
+
+    const json = JSON.stringify(session);
+    setJsonText(json);
+    setShowJson(true);
+  };
+
   if (showQrCode) {
     return (
       <QrCodeModal
         value={qrCodeText}
         onPressClose={() => setShowQrCode(false)}
       />
+    );
+  }
+
+  if (showJson) {
+    return (
+      <JsonModal value={jsonText} onPressClose={() => setShowJson(false)} />
     );
   }
 
@@ -218,6 +237,11 @@ export default function ScoutPitScreen() {
               active={item.sessionExists}
               disabled={!item.sessionExists}
               onPress={() => handleShareSessionJson(item.key)}
+            />
+            <ResultsButton
+              label="Data"
+              faIcon="json"
+              onPress={() => handleShowSessionJson(item.key)}
             />
           </View>
         </ContainerGroup>
