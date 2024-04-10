@@ -27,7 +27,6 @@ function AutoScreen() {
   const matchStore = useMatchScoutingStore();
 
   // States.
-  const [sessionKey, setSessionKey] = useState<string>(id);
   const [startedWithNote, setStartedWithNote] = useState<boolean>(true);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
@@ -56,7 +55,6 @@ function AutoScreen() {
 
   const saveData = async () => {
     if (!(id in matchStore.sessions)) return;
-    matchStore.sessions[id].key = sessionKey;
     matchStore.sessions[id].autoStartedWithNote = startedWithNote;
     matchStore.sessions[id].autoLeftStartArea = leftStartArea;
     matchStore.sessions[id].autoSpeakerScore = speakerScore;

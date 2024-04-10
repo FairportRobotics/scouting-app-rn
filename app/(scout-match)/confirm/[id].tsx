@@ -29,7 +29,6 @@ function ConfirmScreen() {
   const matchStore = useMatchScoutingStore();
 
   // States.
-  const [sessionKey, setSessionKey] = useState<string>(id);
   const [scouterName, setScouterName] = useState<string>("");
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
@@ -46,10 +45,6 @@ function ConfirmScreen() {
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [sessionKey]);
 
   useEffect(() => {
     saveData();
