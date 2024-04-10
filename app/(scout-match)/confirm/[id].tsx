@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { MatchScoutingSession, Student, Team } from "@/constants/Types";
+import { Student, Team } from "@/constants/Types";
 import {
   ContainerGroup,
   MatchScoutingNavigation,
@@ -31,7 +31,6 @@ function ConfirmScreen() {
   // States.
   const [sessionKey, setSessionKey] = useState<string>(id);
   const [scouterName, setScouterName] = useState<string>("");
-  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
   const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
@@ -75,7 +74,7 @@ function ConfirmScreen() {
 
     // Find matching teams where the filter text is part of the team
     // number of nickname.
-    let filtered = allTeams.filter(
+    let filtered = cacheStore.teams.filter(
       (team) =>
         value.length > 0 &&
         (team.teamNumber.toString().includes(value) ||
@@ -90,25 +89,20 @@ function ConfirmScreen() {
   };
 
   const loadData = async () => {
-    try {
-      // Retrieve from stores.
-      const cacheSession = matchStore.sessions[id];
-      const teams = cacheStore.teams;
+    // Retrieve from stores.
+    if (!(id in matchStore.sessions)) return;
+    const cacheSession = matchStore.sessions[id];
+    const cacheTeams = cacheStore.teams;
 
-      // Validate.
-      if (cacheSession === undefined) return;
-      if (teams === undefined) return;
+    // Validate.
+    if (cacheSession === undefined) return;
+    if (cacheTeams === undefined) return;
 
-      // Set State.
-      setAllTeams(teams);
-
-      setScouterName(cacheSession.scouterName ?? "");
-      setScheduledTeam(lookupTeam(teams, cacheSession.scheduledTeamKey));
-      setScoutedTeam(lookupTeam(teams, cacheSession.scoutedTeamKey));
-      setScoutedTeamKey(cacheSession.scoutedTeamKey);
-    } catch (error) {
-      console.error(error);
-    }
+    // Set States.
+    setScouterName(cacheSession.scouterName ?? "");
+    setScheduledTeam(lookupTeam(cacheTeams, cacheSession.scheduledTeamKey));
+    setScoutedTeam(lookupTeam(cacheTeams, cacheSession.scoutedTeamKey));
+    setScoutedTeamKey(cacheSession.scoutedTeamKey);
   };
 
   const saveData = async () => {
@@ -126,7 +120,7 @@ function ConfirmScreen() {
 
   const handleChangeScoutedTeam = (value: string) => {
     setScoutedTeamKey(value);
-    setScoutedTeam(lookupTeam(allTeams, value));
+    setScoutedTeam(lookupTeam(cacheStore.teams, value));
     setTeamFilterText("");
     setFilteredTeams([]);
 

@@ -48,7 +48,6 @@ export type MatchScoutingSession = {
   autoStartedWithNote: boolean;
   autoLeftStartArea: boolean;
   autoSpeakerScore: number;
-  autoSpeakerScoreAmplified: number;
   autoSpeakerMiss: number;
   autoAmpScore: number;
   autoAmpMiss: number;
