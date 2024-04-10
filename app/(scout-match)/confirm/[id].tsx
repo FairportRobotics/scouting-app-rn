@@ -98,8 +98,15 @@ function ConfirmScreen() {
     if (cacheSession === undefined) return;
     if (cacheTeams === undefined) return;
 
+    // Determine whether we need to use the name from the session or the
+    // last scouter name that was selected.
+    const name =
+      cacheSession.scouterName.length > 0
+        ? cacheSession.scouterName
+        : matchStore.currentScouter;
+
     // Set States.
-    setScouterName(cacheSession.scouterName ?? "");
+    setScouterName(name);
     setScheduledTeam(lookupTeam(cacheTeams, cacheSession.scheduledTeamKey));
     setScoutedTeam(lookupTeam(cacheTeams, cacheSession.scoutedTeamKey));
     setScoutedTeamKey(cacheSession.scoutedTeamKey);
@@ -111,6 +118,7 @@ function ConfirmScreen() {
   };
 
   const handleChangeScouter = (value: string) => {
+    matchStore.currentScouter = value;
     setScouterName(value);
     setScoutFilterText("");
     setFilteredScouters([]);

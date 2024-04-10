@@ -14,11 +14,9 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
-import * as Database from "@/app/helpers/database";
-import { MatchScoutingSession } from "@/constants/Types";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
 import Styles from "@/constants/Styles";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 
 function AutoScreen() {
   // Route.
@@ -86,12 +84,12 @@ function AutoScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/(scout-match)/confirm/${sessionKey}`);
+    router.replace(`/(scout-match)/confirm/${id}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/(scout-match)/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${id}`);
   };
 
   if (!(id in matchStore.sessions)) {

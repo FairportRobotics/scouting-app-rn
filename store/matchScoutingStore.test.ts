@@ -57,8 +57,6 @@ describe("Cache Store", () => {
         finalViolations: "",
         finalPenalties: 0,
         finalNotes: "",
-        teamNumber: 0,
-        teamNickname: "",
       },
       "SESSION-2": {
         key: "SESSION-2",
@@ -96,8 +94,6 @@ describe("Cache Store", () => {
         finalViolations: "",
         finalPenalties: 0,
         finalNotes: "",
-        teamNumber: 0,
-        teamNickname: "",
       },
     };
 
@@ -152,8 +148,6 @@ describe("Cache Store", () => {
         finalViolations: "",
         finalPenalties: 0,
         finalNotes: "",
-        teamNumber: 0,
-        teamNickname: "",
       },
       "SESSION-2": {
         key: "SESSION-2",
@@ -191,8 +185,6 @@ describe("Cache Store", () => {
         finalViolations: "",
         finalPenalties: 0,
         finalNotes: "",
-        teamNumber: 0,
-        teamNickname: "",
       },
     };
 
