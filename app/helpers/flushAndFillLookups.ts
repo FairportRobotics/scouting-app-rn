@@ -1,11 +1,8 @@
 import { Event, Match, Team } from "@/constants/Types";
 import fetchFromCosmos from "@/app/helpers/fetchFromCosmos";
-import * as Database from "@/app/helpers/database";
+import { useCacheStore } from "@/store/cachesStore";
 
 export default async () => {
-  // Delete DB tables: event, event_matches, event_teams
-  await Database.deleteLookupData();
-
   // Retrieve the URL and key from env.
   const account = process.env.EXPO_PUBLIC_AZURE_ACCOUNT as string;
   const masterKey = process.env.EXPO_PUBLIC_AZURE_KEY as string;
@@ -38,6 +35,24 @@ export default async () => {
   if (matches === undefined) return;
   if (teams === undefined) return;
 
-  // Fill DB tables.
-  await Database.saveLookupData(events[0], matches, teams);
+  // Clear the store.
+  useCacheStore.setState({
+    event: {
+      key: "",
+      name: "",
+      shortName: "",
+      startDate: new Date(),
+      endDate: new Date(),
+    },
+    matches: [],
+    teams: [],
+  });
+
+  // Set the store with the new lookups.
+  useCacheStore.setState((state) => ({
+    ...state,
+    event: events[0],
+    matches: matches,
+    teams: teams,
+  }));
 };

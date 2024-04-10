@@ -13,36 +13,36 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
+import { useCacheStore } from "@/store/cachesStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import * as Database from "@/app/helpers/database";
 import students from "@/data/studentsList";
-import { useCacheStore } from "@/store/cachesStore";
 
 function ConfirmScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const cacheStore = useCacheStore()
+  // Stores.
+  const cacheStore = useCacheStore();
+  const matchStore = useMatchScoutingStore();
 
-  const [session, setSession] = useState<MatchScoutingSession>();
+  // States.
   const [sessionKey, setSessionKey] = useState<string>(id);
-
   const [scouterName, setScouterName] = useState<string>("");
-  const [scoutFilterText, setScoutFilterText] = useState<string>("");
-  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
-
   const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
   const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
 
+  // Support for selecting a new Scouter.
+  const [scoutFilterText, setScoutFilterText] = useState<string>("");
+  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
+
+  // Support for selected a different Team.
   const [teamFilterText, setTeamFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
-
-  const lookupTeam = (teams: Array<Team>, teamKey: string) => {
-    return teams.find((team) => team.key == teamKey);
-  };
 
   useEffect(() => {
     loadData();
@@ -63,9 +63,7 @@ function ConfirmScreen() {
     // Find matching Students where the filter text is part of the email address or name.
     let filtered = students.filter(
       (student) =>
-        value.length > 0 &&
-        (student.email.toLowerCase().includes(value) ||
-          student.name.toLowerCase().includes(value))
+        value.length > 0 && student.name.toLowerCase().includes(value)
     );
 
     setFilteredScouters(filtered);
@@ -87,48 +85,42 @@ function ConfirmScreen() {
     setFilteredTeams(filtered);
   }, [teamFilterText]);
 
+  const lookupTeam = (teams: Array<Team>, teamKey: string) => {
+    return teams.find((team) => team.key == teamKey);
+  };
+
   const loadData = async () => {
     try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-      const teams = await cacheStore.getTeams();
+      // Retrieve from stores.
+      const cacheSession = matchStore.sessions[id];
+      const teams = cacheStore.teams;
 
       // Validate.
-      if (dtoSession === undefined) return;
+      if (cacheSession === undefined) return;
       if (teams === undefined) return;
 
       // Set State.
-      setSession(dtoSession);
-      setScouterName(dtoSession.scouterName ?? "");
       setAllTeams(teams);
-      setScheduledTeam(lookupTeam(teams, dtoSession.scheduledTeamKey));
-      setScoutedTeam(lookupTeam(teams, dtoSession.scoutedTeamKey));
-      setScoutedTeamKey(dtoSession.scoutedTeamKey);
+
+      setScouterName(cacheSession.scouterName ?? "");
+      setScheduledTeam(lookupTeam(teams, cacheSession.scheduledTeamKey));
+      setScoutedTeam(lookupTeam(teams, cacheSession.scoutedTeamKey));
+      setScoutedTeamKey(cacheSession.scoutedTeamKey);
     } catch (error) {
       console.error(error);
     }
   };
 
   const saveData = async () => {
-    const timeoutId = setTimeout(() => {
-      try {
-        // Save to database.
-        Database.saveMatchScoutingSessionConfirm(
-          sessionKey,
-          scoutedTeamKey,
-          scouterName
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300);
-    return () => clearTimeout(timeoutId);
+    matchStore.sessions[id].scouterName = scouterName;
+    matchStore.sessions[id].scoutedTeamKey = scoutedTeamKey;
   };
 
   const handleChangeScouter = (value: string) => {
     setScouterName(value);
     setScoutFilterText("");
     setFilteredScouters([]);
+
     saveData();
   };
 
@@ -137,6 +129,7 @@ function ConfirmScreen() {
     setScoutedTeam(lookupTeam(allTeams, value));
     setTeamFilterText("");
     setFilteredTeams([]);
+
     saveData();
   };
 
@@ -148,10 +141,10 @@ function ConfirmScreen() {
   const handleNavigateNext = () => {
     saveData();
     if (scouterName === "") return;
-    router.replace(`/(scout-match)/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${id}`);
   };
 
-  if (session === undefined) {
+  if (!(id in matchStore.sessions)) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -161,7 +154,7 @@ function ConfirmScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={session} />
+      <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
           style={Styles.textInput}

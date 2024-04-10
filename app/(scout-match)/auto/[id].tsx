@@ -116,7 +116,7 @@ function AutoScreen() {
             flexDirection: "row",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            rowGap: 3,
+            rowGap: 8,
             width: "100%",
           }}
         >

@@ -32,6 +32,11 @@ export default function TabLayout() {
       <Tabs.Screen
         name="auto/[id]"
         initialParams={{ id: id }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+          },
+        }}
         options={{
           title: "Auto",
           headerShown: false,

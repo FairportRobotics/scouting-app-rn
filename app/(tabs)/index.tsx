@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import getDefaultMatchScoutingSession, {
-  Event,
-  Match,
-  Team,
-  ItemKey,
   MatchScoutingSession,
   MatchModel,
   TeamModel,
@@ -14,52 +10,36 @@ import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
 import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
 import flushAndFillLookups from "@/app/helpers/flushAndFillLookups";
 import refreshMatchScoutingKeys from "@/app/helpers/refreshMatchScoutingKeys";
-import { useCacheStore } from "@/store/cachesStore"; 
+import { useCacheStore } from "@/store/cachesStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
-import * as Database from "@/app/helpers/database";
 
 export default function IndexScreen() {
   const router = useRouter();
+
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
-  const cacheStore = useCacheStore()
+
+  const cacheStore = useCacheStore();
+  const store = useMatchScoutingStore();
 
   const loadData = async () => {
-    try {
+    const matchModels = getMatchSelectModels(
+      cacheStore.event,
+      cacheStore.matches,
+      cacheStore.teams,
+      store.sessionKeys(),
+      store.uploadedKeys
+    );
 
-      // Retrieve data.
-      Promise.all([
-        cacheStore.getEvent() as Promise<Event>,
-        cacheStore.getMatches() as Promise<Array<Match>>,
-        cacheStore.getTeams() as Promise<Array<Team>>,
-        Database.getMatchScoutingKeys() as Promise<Array<ItemKey>>,
-        Database.getUploadedMatchScoutingKeys() as Promise<Array<ItemKey>>,
-      ])
-        .then(([event, matches, teams, sessionKeys, uploadedKeys]) => {
-          // Build the Match Models.
-          const matchModels = getMatchSelectModels(
-            event,
-            matches,
-            teams,
-            sessionKeys,
-            uploadedKeys
-          );
-
-          setMatchModels(matchModels);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } catch (error) {
-      console.error(error);
-    }
+    setMatchModels(matchModels);
   };
 
   const onRefresh = async () => {
     setIsRefreshing(true);
 
     await refreshMatchScoutingKeys();
-    await flushAndFillLookups()
+    await flushAndFillLookups();
     loadData();
 
     setIsRefreshing(false);
@@ -73,30 +53,26 @@ export default function IndexScreen() {
     matchModel: MatchModel,
     teamModel: TeamModel
   ) => {
-    try {
-      // Attempt to retrieve existing session.
-      let sessionKey = teamModel.sessionKey;
-      let session = await Database.getMatchScoutingSession(sessionKey);
+    // Extract the Session Key and assign to the store.
+    const key = teamModel.sessionKey;
+    store.currentKey = key;
 
-      // If the session does not exist, we will initialize it.
-      if (session === undefined) {
-        session = getDefaultMatchScoutingSession() as MatchScoutingSession;
-        session.key = sessionKey;
-        session.eventKey = matchModel.eventKey;
-        session.matchKey = matchModel.matchKey;
-        session.matchNumber = matchModel.matchNumber;
-        session.alliance = teamModel.alliance;
-        session.allianceTeam = teamModel.allianceTeam;
-        session.scheduledTeamKey = teamModel.teamKey;
-        session.scoutedTeamKey = teamModel.teamKey;
-      }
-
-      // Save to DB.
-      await Database.saveMatchScoutingSession(session);
-      router.replace(`/(scout-match)/confirm/${sessionKey}`);
-    } catch (error) {
-      console.error(error);
+    if (!(key in store.sessions)) {
+      // Session does not already exist and must be initialized.
+      store.sessions[key] =
+        getDefaultMatchScoutingSession() as MatchScoutingSession;
+      store.sessions[key].key = teamModel.sessionKey;
+      store.sessions[key].eventKey = matchModel.eventKey;
+      store.sessions[key].matchKey = matchModel.matchKey;
+      store.sessions[key].matchNumber = matchModel.matchNumber;
+      store.sessions[key].alliance = teamModel.alliance;
+      store.sessions[key].allianceTeam = teamModel.allianceTeam;
+      store.sessions[key].scheduledTeamKey = teamModel.teamKey;
+      store.sessions[key].scoutedTeamKey = teamModel.teamKey;
     }
+
+    // Navigate to the Confirmation screen.
+    router.replace(`/(scout-match)/confirm/${key}`);
   };
 
   if (!matchModels || matchModels?.length == 0) {
@@ -122,7 +98,9 @@ export default function IndexScreen() {
             />
           }
         >
-          <Text style={{ fontSize: 24, width: "100%" }}>No data. Pull to refresh.</Text>
+          <Text style={{ fontSize: 24, width: "100%" }}>
+            No data. Pull to refresh.
+          </Text>
         </ScrollView>
       </View>
     );
@@ -134,7 +112,7 @@ export default function IndexScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           <RefreshControl
-            title="Loading..."
+            title="Refreshing data for the Event, Matches, Teams and loading saved Match and Pit Scouting sessions..."
             refreshing={isRefreshing}
             onRefresh={onRefresh}
             tintColor={Colors.primary}
