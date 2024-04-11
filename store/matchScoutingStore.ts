@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { zustandStorage } from "./mmkv-storage";
+import { zustandStorage } from "./store-storage";
 
 export interface MatchScoutingState {
   currentKey: string | undefined;
