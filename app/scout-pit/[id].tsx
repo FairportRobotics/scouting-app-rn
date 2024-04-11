@@ -72,6 +72,8 @@ function ScoutPitScreen() {
   const uploadDate = async () => {
     try {
       await postPitScoutingSession(session);
+      pitStore.sessions[id].uploadedDate = new Date();
+      loadData;
     } catch (error) {
       console.error(error);
     }
@@ -80,6 +82,7 @@ function ScoutPitScreen() {
   const handleChange = (key: string, value: string) => {
     setSession((prevState) => ({
       ...prevState,
+      editedDate: new Date(),
       [key]: value,
     }));
   };

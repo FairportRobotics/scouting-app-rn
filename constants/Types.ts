@@ -78,6 +78,10 @@ export type MatchScoutingSession = {
   finalViolations: string;
   finalPenalties: number;
   finalNotes: string;
+
+  // Meta
+  editedDate: Date;
+  uploadedDate: Date;
 };
 
 export default function getDefaultMatchScoutingSession() {
@@ -124,6 +128,10 @@ export default function getDefaultMatchScoutingSession() {
     finalViolations: "",
     finalPenalties: 0,
     finalNotes: "",
+
+    // Meta
+    editedDate: undefined,
+    uploadedDate: undefined,
   } as unknown as MatchScoutingSession;
 
   return session;
@@ -145,6 +153,10 @@ export type PitScoutingSession = {
   robotWidth: string;
   onstagePosition: string;
   notes: string;
+
+  // Meta
+  editedDate: Date;
+  uploadedDate: Date;
 };
 
 export type MatchModel = {
