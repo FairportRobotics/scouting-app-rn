@@ -14,16 +14,6 @@ npm install
 
 We only need to do this one time.
 
-**Install the Expo CLI**
-
-Expo is the tool used to transpile the React Code into iOS and Android.
-
-```
-npm install -g expo-cli
-```
-
-We only need to do this one time.
-
 ## Running the Project
 
 In order to debug and see the application, we need to install the "Expo Go" app on your iOS device. The iPads will have this installed already, but if you want to test on a personal device, you will need the app.
@@ -33,7 +23,7 @@ In order to debug and see the application, we need to install the "Expo Go" app 
 Open a terminal to the folder containing the source and execute the following command:
 
 ```
-npm expo start
+npm start
 ```
 
 This will load a launcher that can be used to refresh the app, connect to simulators and provides a QR code which can be used to load the application into Expo Go.
@@ -84,12 +74,22 @@ Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs
 **Axios**
 https://axios-http.com/docs/intro
 
-**SQLite Storage**
-https://docs.expo.dev/versions/latest/sdk/sqlite/
+**Store**
+zustand
+
+Using AsyncStorage (https://react-native-async-storage.github.io/async-storage/docs/install) to persist. This is not the fastest, but it works and it's less maintenance than SQLite direct.
 
 **Azure REST**
+Unable to use the Azure SDK dues to unresolved issues with an incompatible library that cannot be patched. Expo doctor still complains. So, I've found a solution that uses REST. It's bare-bones but it works.
+
 Azure REST API Documentation:
 https://learn.microsoft.com/en-us/rest/api/cosmos-db/list-documents
+
+Headers:
+https://learn.microsoft.com/en-us/rest/api/cosmos-db/common-cosmosdb-rest-request-headers
+
+Auth token:
+https://learn.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources?redirectedfrom=MSDN
 
 Stolen shamelessly from:
 https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
@@ -98,9 +98,7 @@ https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
 
 [X] Remove Auto > Score in Speaker while Amplified
 [X] Read TBA Event, Matches and Teams from Azure.
-[X] Flush and fill DB lookup tables.
-[ ] Cache Event, Matches and Teams in store.
-[ ] If store is empty, lazy load from DB
+[X] Use store with persisted backend.
 [X] Remove all TBA-caching
 [X] Remove all references to Practice Match
 [X] Remove all referenes to Practice Team

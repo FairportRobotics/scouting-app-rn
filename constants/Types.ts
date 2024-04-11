@@ -1,37 +1,4 @@
 //=================================================================================================
-// The Blue Alliance types
-//=================================================================================================
-export interface TbaEvent {
-  key: string;
-  name: string;
-  short_name: string;
-  start_date: string;
-  end_date: string;
-}
-
-export interface TbaMatch {
-  key: string;
-  comp_level: string;
-  match_number: number;
-  predicted_time: number;
-  alliances: {
-    blue: {
-      team_keys: Array<string>;
-    };
-    red: {
-      team_keys: Array<string>;
-    };
-  };
-}
-
-export interface TbaTeam {
-  key: string;
-  team_number: string;
-  name: string;
-  nickname: string;
-}
-
-//=================================================================================================
 // Our DTOs and Types
 //=================================================================================================
 export type Event = {
@@ -61,6 +28,7 @@ export type Team = {
   teamNumber: string;
   name: string;
   nickname: string;
+  schoolName: string;
 };
 
 export type MatchScoutingSession = {
@@ -81,7 +49,6 @@ export type MatchScoutingSession = {
   autoStartedWithNote: boolean;
   autoLeftStartArea: boolean;
   autoSpeakerScore: number;
-  autoSpeakerScoreAmplified: number;
   autoSpeakerMiss: number;
   autoAmpScore: number;
   autoAmpMiss: number;
@@ -112,9 +79,9 @@ export type MatchScoutingSession = {
   finalPenalties: number;
   finalNotes: string;
 
-  // For Display
-  teamNumber: number;
-  teamNickname: string;
+  // Meta
+  editedDate: Date;
+  uploadedDate: Date;
 };
 
 export default function getDefaultMatchScoutingSession() {
@@ -135,7 +102,6 @@ export default function getDefaultMatchScoutingSession() {
     autoStartedWithNote: 0,
     autoLeftStartArea: 0,
     autoSpeakerScore: 0,
-    autoSpeakerScoreAmplified: 0,
     autoSpeakerMiss: 0,
     autoAmpScore: 0,
     autoAmpMiss: 0,
@@ -162,6 +128,10 @@ export default function getDefaultMatchScoutingSession() {
     finalViolations: "",
     finalPenalties: 0,
     finalNotes: "",
+
+    // Meta
+    editedDate: undefined,
+    uploadedDate: undefined,
   } as unknown as MatchScoutingSession;
 
   return session;
@@ -183,6 +153,10 @@ export type PitScoutingSession = {
   robotWidth: string;
   onstagePosition: string;
   notes: string;
+
+  // Meta
+  editedDate: Date;
+  uploadedDate: Date;
 };
 
 export type MatchModel = {
@@ -213,12 +187,4 @@ export type ItemKey = {
 export type Student = {
   email: string;
   name: string;
-};
-
-//=================================================================================================
-// Support for Props
-//=================================================================================================
-export type RootStackParamList = {
-  ScoutMatchScreen: undefined;
-  ScoutMatchEditScreen: { id: string; returnTo: string };
 };

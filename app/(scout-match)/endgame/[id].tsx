@@ -14,18 +14,20 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
-import { MatchScoutingSession } from "@/constants/Types";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import postMatchSession from "@/app/helpers/postMatchSession";
-import * as Database from "@/app/helpers/database";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
 function EndgameScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [session, setSession] = useState<MatchScoutingSession>();
-  const [sessionKey, setSessionKey] = useState<string>(id);
+  // Stores.
+  const matchStore = useMatchScoutingStore();
+
+  // States.
   const [trapScore, setTrapScore] = useState<string>("0");
   const [microphoneScore, setMicrophoneScore] = useState<string>("0");
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
@@ -42,46 +44,32 @@ function EndgameScreen() {
   }, [trapScore, microphoneScore, didRobotPark, didRobotHang, harmonyScore]);
 
   const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
+    // Retrieve from stores.
+    if (!(id in matchStore.sessions)) return;
+    const cacheSession = matchStore.sessions[id];
 
-      // Validate.
-      if (dtoSession === undefined) return;
+    // Validate.
+    if (cacheSession === undefined) return;
 
-      // Set State.
-      setSession(dtoSession);
-      setTrapScore(dtoSession?.endgameTrapScore ?? "0");
-      setMicrophoneScore(dtoSession?.endgameMicrophoneScore ?? "0");
-      setDidRobotPark(dtoSession?.endgameDidRobotPark ?? false);
-      setDidRobotHang(dtoSession?.endgameDidRobotHang ?? false);
-      setHarmonyScore(dtoSession?.endgameHarmony ?? "0");
-      setNotes(dtoSession?.endgameNotes ?? "");
-    } catch (error) {
-      console.error(error);
-    }
+    setTrapScore(cacheSession.endgameTrapScore ?? "0");
+    setMicrophoneScore(cacheSession.endgameMicrophoneScore ?? "0");
+    setDidRobotPark(cacheSession.endgameDidRobotPark ?? false);
+    setDidRobotHang(cacheSession.endgameDidRobotHang ?? false);
+    setHarmonyScore(cacheSession.endgameHarmony ?? "0");
+    setNotes(cacheSession.endgameNotes ?? "");
   };
 
   const saveData = async () => {
-    try {
-      // Save to database.
-      await Database.saveMatchScoutingSessionEndgame(
-        sessionKey,
-        trapScore ?? "0",
-        microphoneScore ?? "0",
-        didRobotPark,
-        didRobotHang,
-        harmonyScore ?? "",
-        notes
-      );
-    } catch (error) {}
-  };
+    if (!(id in matchStore.sessions)) return;
 
-  const uplodaData = async () => {
-    try {
-      const session = await Database.getMatchScoutingSession(sessionKey);
-      if (session !== undefined) await postMatchSession(session);
-    } catch (error) {}
+    matchStore.sessions[id].endgameTrapScore = trapScore;
+    matchStore.sessions[id].endgameMicrophoneScore = microphoneScore;
+    matchStore.sessions[id].endgameDidRobotPark = didRobotPark;
+    matchStore.sessions[id].endgameDidRobotHang = didRobotHang;
+    matchStore.sessions[id].endgameHarmony = harmonyScore;
+    matchStore.sessions[id].endgameNotes = notes;
+
+    postMatchSession(matchStore.sessions[id]);
   };
 
   const handleDidRobotPark = (value: boolean) => {
@@ -98,16 +86,15 @@ function EndgameScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/(scout-match)/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${id}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    uplodaData();
-    router.replace(`/(scout-match)/final/${sessionKey}`);
+    router.replace(`/(scout-match)/final/${id}`);
   };
 
-  if (session === undefined) {
+  if (!(id in matchStore.sessions)) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -117,7 +104,7 @@ function EndgameScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={session} />
+      <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title="Stage">
         <SelectGroup
           title="Trap"

@@ -3,15 +3,21 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { PitScoutingSession, Team } from "@/constants/Types";
 import { ContainerGroup, SelectGroup } from "@/app/components";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { useCacheStore } from "@/store/cachesStore";
+import { usePitScoutingStore } from "@/store/pitScoutingStore";
+import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
-import * as Database from "@/app/helpers/database";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 function ScoutPitScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  // Stores.
+  const cacheStore = useCacheStore();
+  const pitStore = usePitScoutingStore();
 
   // Support for state.
   const [team, setTeam] = useState<Team>();
@@ -24,55 +30,50 @@ function ScoutPitScreen() {
   }, []);
 
   const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoEvent = await Database.getEvent();
-      const dtoTeam = await Database.getTeam(id);
-      let dtoSession = await Database.getPitScoutingSession(id);
+    // Extract the Session Key and assign to the store.
+    const key = id;
+    pitStore.currentKey = key;
 
-      // Verify
-      if (dtoEvent === undefined) return;
-      if (dtoTeam === undefined) return;
+    // Retrieve the team.
+    const cacheTeam = cacheStore.teams.find((team) => team.key == id);
 
-      if (dtoSession === undefined) {
-        dtoSession = {
-          key: id,
-          eventKey: dtoEvent.key,
-          driveTeamExperience: "",
-          numberOfAutoMethods: "",
-          canPickUpFromGround: "",
-          canReceiveFromSourceChute: "",
-          canScoreInAmp: "",
-          canScoreInSpeaker: "",
-          canScoreInTrap: "",
-          whereCanYouScoreInSpeaker: "",
-          canFitUnderStage: "",
-          canGetOnstage: "",
-          robotWidth: "",
-          onstagePosition: "",
-          notes: "",
-        } as PitScoutingSession;
-      }
-
-      // Set State.
-      setTeam(dtoTeam);
-      setSession(dtoSession);
-    } catch (error) {
-      console.error(error);
+    // Retrieve existing or create new PitScoutingSession.
+    let cacheSession = {} as PitScoutingSession;
+    if (key in pitStore.sessions) {
+      cacheSession = pitStore.sessions[id];
+    } else {
+      cacheSession = {
+        key: id,
+        eventKey: cacheStore.event.key,
+        driveTeamExperience: "",
+        numberOfAutoMethods: "",
+        canPickUpFromGround: "",
+        canReceiveFromSourceChute: "",
+        canScoreInAmp: "",
+        canScoreInSpeaker: "",
+        canScoreInTrap: "",
+        whereCanYouScoreInSpeaker: "",
+        canFitUnderStage: "",
+        canGetOnstage: "",
+        robotWidth: "",
+        onstagePosition: "",
+        notes: "",
+      } as PitScoutingSession;
     }
+
+    setTeam(cacheTeam);
+    setSession(cacheSession);
   };
 
   const saveData = async () => {
-    try {
-      await Database.updatePitScoutingSession(session);
-    } catch (error) {
-      console.error(error);
-    }
+    pitStore.sessions[id] = session;
   };
 
   const uploadDate = async () => {
     try {
       await postPitScoutingSession(session);
+      pitStore.sessions[id].uploadedDate = new Date();
+      loadData;
     } catch (error) {
       console.error(error);
     }
@@ -81,6 +82,7 @@ function ScoutPitScreen() {
   const handleChange = (key: string, value: string) => {
     setSession((prevState) => ({
       ...prevState,
+      editedDate: new Date(),
       [key]: value,
     }));
   };

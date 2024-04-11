@@ -7,47 +7,44 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { MatchScoutingSession, Student, Team } from "@/constants/Types";
+import { Student, Team } from "@/constants/Types";
 import {
   ContainerGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
+import { useCacheStore } from "@/store/cachesStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import * as Database from "@/app/helpers/database";
 import students from "@/data/studentsList";
 
 function ConfirmScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [session, setSession] = useState<MatchScoutingSession>();
-  const [sessionKey, setSessionKey] = useState<string>(id);
+  // Stores.
+  const cacheStore = useCacheStore();
+  const matchStore = useMatchScoutingStore();
 
+  // States.
   const [scouterName, setScouterName] = useState<string>("");
-  const [scoutFilterText, setScoutFilterText] = useState<string>("");
-  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
-
-  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
   const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
 
+  // Support for selecting a new Scouter.
+  const [scoutFilterText, setScoutFilterText] = useState<string>("");
+  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
+
+  // Support for selected a different Team.
   const [teamFilterText, setTeamFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
-
-  const lookupTeam = (teams: Array<Team>, teamKey: string) => {
-    return teams.find((team) => team.key == teamKey);
-  };
 
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [sessionKey]);
 
   useEffect(() => {
     saveData();
@@ -60,9 +57,7 @@ function ConfirmScreen() {
     // Find matching Students where the filter text is part of the email address or name.
     let filtered = students.filter(
       (student) =>
-        value.length > 0 &&
-        (student.email.toLowerCase().includes(value) ||
-          student.name.toLowerCase().includes(value))
+        value.length > 0 && student.name.toLowerCase().includes(value)
     );
 
     setFilteredScouters(filtered);
@@ -74,7 +69,7 @@ function ConfirmScreen() {
 
     // Find matching teams where the filter text is part of the team
     // number of nickname.
-    let filtered = allTeams.filter(
+    let filtered = cacheStore.teams.filter(
       (team) =>
         value.length > 0 &&
         (team.teamNumber.toString().includes(value) ||
@@ -84,56 +79,54 @@ function ConfirmScreen() {
     setFilteredTeams(filtered);
   }, [teamFilterText]);
 
+  const lookupTeam = (teams: Array<Team>, teamKey: string) => {
+    return teams.find((team) => team.key == teamKey);
+  };
+
   const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
-      const dtoTeams = await Database.getTeams();
+    // Retrieve from stores.
+    if (!(id in matchStore.sessions)) return;
+    const cacheSession = matchStore.sessions[id];
+    const cacheTeams = cacheStore.teams;
 
-      // Validate.
-      if (dtoSession === undefined) return;
-      if (dtoTeams === undefined) return;
+    // Validate.
+    if (cacheSession === undefined) return;
+    if (cacheTeams === undefined) return;
 
-      // Set State.
-      setSession(dtoSession);
-      setScouterName(dtoSession.scouterName ?? "");
-      setAllTeams(dtoTeams);
-      setScheduledTeam(lookupTeam(dtoTeams, dtoSession.scheduledTeamKey));
-      setScoutedTeam(lookupTeam(dtoTeams, dtoSession.scoutedTeamKey));
-      setScoutedTeamKey(dtoSession.scoutedTeamKey);
-    } catch (error) {
-      console.error(error);
-    }
+    // Determine whether we need to use the name from the session or the
+    // last scouter name that was selected.
+    const name =
+      cacheSession.scouterName.length > 0
+        ? cacheSession.scouterName
+        : matchStore.currentScouter;
+
+    // Set States.
+    setScouterName(name);
+    setScheduledTeam(lookupTeam(cacheTeams, cacheSession.scheduledTeamKey));
+    setScoutedTeam(lookupTeam(cacheTeams, cacheSession.scoutedTeamKey));
+    setScoutedTeamKey(cacheSession.scoutedTeamKey);
   };
 
   const saveData = async () => {
-    const timeoutId = setTimeout(() => {
-      try {
-        // Save to database.
-        Database.saveMatchScoutingSessionConfirm(
-          sessionKey,
-          scoutedTeamKey,
-          scouterName
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300);
-    return () => clearTimeout(timeoutId);
+    matchStore.sessions[id].scouterName = scouterName;
+    matchStore.sessions[id].scoutedTeamKey = scoutedTeamKey;
   };
 
   const handleChangeScouter = (value: string) => {
+    matchStore.currentScouter = value;
     setScouterName(value);
     setScoutFilterText("");
     setFilteredScouters([]);
+
     saveData();
   };
 
   const handleChangeScoutedTeam = (value: string) => {
     setScoutedTeamKey(value);
-    setScoutedTeam(lookupTeam(allTeams, value));
+    setScoutedTeam(lookupTeam(cacheStore.teams, value));
     setTeamFilterText("");
     setFilteredTeams([]);
+
     saveData();
   };
 
@@ -145,10 +138,10 @@ function ConfirmScreen() {
   const handleNavigateNext = () => {
     saveData();
     if (scouterName === "") return;
-    router.replace(`/(scout-match)/auto/${sessionKey}`);
+    router.replace(`/(scout-match)/auto/${id}`);
   };
 
-  if (session === undefined) {
+  if (!(id in matchStore.sessions)) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -158,7 +151,7 @@ function ConfirmScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={session} />
+      <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
           style={Styles.textInput}

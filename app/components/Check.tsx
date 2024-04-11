@@ -20,8 +20,8 @@ export default function Check({ label, checked, onToggle, style }: CheckProps) {
       style={[
         {
           flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
         },
         style,
       ]}

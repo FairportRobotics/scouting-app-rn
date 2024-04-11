@@ -6,13 +6,14 @@ import {
   faShareFromSquare,
   faEdit,
   faCloud,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 
 type ResultsButtonProps = {
   label: string;
-  faIcon: "edit" | "upload" | "qr" | "share";
+  faIcon: "edit" | "upload" | "qr" | "share" | "json";
   active?: boolean | undefined;
   disabled?: boolean | undefined;
   showUploadExists?: boolean | false;
@@ -35,6 +36,7 @@ export default function ResultsButton({
     upload: faCloudArrowUp,
     qr: faQrcode,
     share: faShareFromSquare,
+    json: faMagnifyingGlass,
   };
 
   const renderBadge = () => {

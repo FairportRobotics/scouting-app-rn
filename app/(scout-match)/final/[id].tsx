@@ -14,19 +14,21 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
-import * as Database from "@/app/helpers/database";
-import Styles from "@/constants/Styles";
-import { MatchScoutingSession } from "@/constants/Types";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
+import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import postMatchSession from "@/app/helpers/postMatchSession";
 
 function FinalScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [session, setSession] = useState<MatchScoutingSession>();
-  const [sessionKey, setSessionKey] = useState<string>(id);
+  // Stores.
+  const matchStore = useMatchScoutingStore();
+
+  // States.
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
@@ -43,57 +45,32 @@ function FinalScreen() {
   }, [totalScore, rankingPoints, allianceResult, violations, penalties, notes]);
 
   const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
+    // Retrieve from stores.
+    if (!(id in matchStore.sessions)) return;
+    const cacheSession = matchStore.sessions[id];
 
-      // Validate.
-      if (dtoSession === undefined) return;
+    // Validate.
+    if (cacheSession === undefined) return;
 
-      // Set State.
-      setSession(dtoSession);
-      setTotalScore(dtoSession.finalAllianceScore ?? 0);
-      setRankingPoints(dtoSession.finalRankingPoints ?? 0);
-      setAllianceResult(dtoSession.finalAllianceResult ?? null);
-      setViolations(dtoSession.finalViolations ?? null);
-      setPenalties(dtoSession.finalPenalties ?? 0);
-      setNotes(dtoSession.finalNotes ?? "");
-    } catch (error) {
-      console.error(error);
-    }
+    setTotalScore(cacheSession.finalAllianceScore ?? 0);
+    setRankingPoints(cacheSession.finalRankingPoints ?? 0);
+    setAllianceResult(cacheSession.finalAllianceResult ?? null);
+    setViolations(cacheSession.finalViolations ?? null);
+    setPenalties(cacheSession.finalPenalties ?? 0);
+    setNotes(cacheSession.finalNotes ?? "");
   };
 
   const saveData = async () => {
-    const timeoutId = setTimeout(() => {
-      try {
-        // Save to database.
-        Database.saveMatchScoutingSessionFinal(
-          sessionKey,
-          totalScore,
-          rankingPoints,
-          allianceResult,
-          violations,
-          penalties,
-          notes
-        );
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300);
-    return () => clearTimeout(timeoutId);
-  };
+    if (!(id in matchStore.sessions)) return;
 
-  const uploadData = async () => {
-    const timeoutId = setTimeout(async () => {
-      try {
-        const session = await Database.getMatchScoutingSession(sessionKey);
-        if (session === undefined) return;
-        await postMatchSession(session);
-      } catch (error) {
-        console.error(error);
-      }
-    }, 300);
-    return () => clearTimeout(timeoutId);
+    matchStore.sessions[id].finalAllianceScore = totalScore;
+    matchStore.sessions[id].finalRankingPoints = rankingPoints;
+    matchStore.sessions[id].finalAllianceResult = allianceResult;
+    matchStore.sessions[id].finalViolations = violations;
+    matchStore.sessions[id].finalPenalties = penalties;
+    matchStore.sessions[id].finalNotes = notes;
+
+    postMatchSession(matchStore.sessions[id]);
   };
 
   const handleChangeTotalScore = (value: string) => {
@@ -108,17 +85,16 @@ function FinalScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/(scout-match)/endgame/${sessionKey}`);
+    router.replace(`/(scout-match)/endgame/${id}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    uploadData();
     router.replace(`/`);
   };
 
   const penaltiesLabel = () => {
-    switch (session?.alliance) {
+    switch (matchStore.sessions[id]?.alliance) {
       case Alliance.Blue:
         return "Penalties: (Read the value for Penalties from the Red Alliance column)";
       case Alliance.Red:
@@ -128,7 +104,7 @@ function FinalScreen() {
     }
   };
 
-  if (session === undefined) {
+  if (!(id in matchStore.sessions)) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -138,7 +114,7 @@ function FinalScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={session} />
+      <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 1 }}>

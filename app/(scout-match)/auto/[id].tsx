@@ -14,17 +14,19 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/app/components";
-import * as Database from "@/app/helpers/database";
-import { MatchScoutingSession } from "@/constants/Types";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
 import Styles from "@/constants/Styles";
 
 function AutoScreen() {
+  // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const [session, setSession] = useState<MatchScoutingSession>();
-  const [sessionKey, setSessionKey] = useState<string>(id);
+  // Stores.
+  const matchStore = useMatchScoutingStore();
+
+  // States.
   const [startedWithNote, setStartedWithNote] = useState<boolean>(true);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
@@ -34,43 +36,32 @@ function AutoScreen() {
   const [notes, setNotes] = useState<string>("");
 
   const loadData = async () => {
-    try {
-      // Retrieve from the database.
-      const dtoSession = await Database.getMatchScoutingSession(sessionKey);
+    // Retrieve from stores.
+    if (!(id in matchStore.sessions)) return;
+    const cacheSession = matchStore.sessions[id];
 
-      // Validate.
-      if (dtoSession === undefined) return;
+    // Validate.
+    if (cacheSession === undefined) return;
 
-      // Set State.
-      setSession(dtoSession);
-      setStartedWithNote(dtoSession.autoStartedWithNote ?? true);
-      setLeftStartArea(dtoSession.autoLeftStartArea ?? false);
-      setSpeakerScore(dtoSession.autoSpeakerScore ?? 0);
-      setSpeakerMiss(dtoSession.autoSpeakerMiss ?? 0);
-      setAmpScore(dtoSession.autoAmpScore ?? 0);
-      setAmpMiss(dtoSession.autoAmpMiss ?? 0);
-      setNotes(dtoSession?.autoNotes ?? "");
-    } catch (error) {
-      console.error(error);
-    }
+    // Set State.
+    setStartedWithNote(cacheSession.autoStartedWithNote ?? true);
+    setLeftStartArea(cacheSession.autoLeftStartArea ?? false);
+    setSpeakerScore(cacheSession.autoSpeakerScore ?? 0);
+    setSpeakerMiss(cacheSession.autoSpeakerMiss ?? 0);
+    setAmpScore(cacheSession.autoAmpScore ?? 0);
+    setAmpMiss(cacheSession.autoAmpMiss ?? 0);
+    setNotes(cacheSession?.autoNotes ?? "");
   };
 
   const saveData = async () => {
-    try {
-      // Save to database.
-      await Database.saveMatchScoutingSessionAuto(
-        sessionKey,
-        startedWithNote,
-        leftStartArea,
-        speakerScore,
-        speakerMiss,
-        ampScore,
-        ampMiss,
-        notes
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    if (!(id in matchStore.sessions)) return;
+    matchStore.sessions[id].autoStartedWithNote = startedWithNote;
+    matchStore.sessions[id].autoLeftStartArea = leftStartArea;
+    matchStore.sessions[id].autoSpeakerScore = speakerScore;
+    matchStore.sessions[id].autoSpeakerMiss = speakerMiss;
+    matchStore.sessions[id].autoAmpScore = ampScore;
+    matchStore.sessions[id].autoAmpMiss = ampMiss;
+    matchStore.sessions[id].autoNotes = notes;
   };
 
   useEffect(() => {
@@ -91,15 +82,15 @@ function AutoScreen() {
 
   const handleNavigatePrevious = () => {
     saveData();
-    router.replace(`/(scout-match)/confirm/${sessionKey}`);
+    router.replace(`/(scout-match)/confirm/${id}`);
   };
 
   const handleNavigateNext = () => {
     saveData();
-    router.replace(`/(scout-match)/teleop/${sessionKey}`);
+    router.replace(`/(scout-match)/teleop/${id}`);
   };
 
-  if (session === undefined) {
+  if (!(id in matchStore.sessions)) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -109,14 +100,14 @@ function AutoScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={session} />
+      <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title="Start">
         <View
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
             flexWrap: "wrap",
-            rowGap: 3,
+            rowGap: 8,
             width: "100%",
           }}
         >

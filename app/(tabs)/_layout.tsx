@@ -51,10 +51,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(settings)"
+        name="caches"
         options={{
-          headerShown: false,
-          title: "Settings",
+          title: "Caches",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faGear}
