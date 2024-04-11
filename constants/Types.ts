@@ -28,6 +28,7 @@ export type Team = {
   teamNumber: string;
   name: string;
   nickname: string;
+  schoolName: string;
 };
 
 export type MatchScoutingSession = {
@@ -97,7 +98,6 @@ export default function getDefaultMatchScoutingSession() {
     autoStartedWithNote: 0,
     autoLeftStartArea: 0,
     autoSpeakerScore: 0,
-    autoSpeakerScoreAmplified: 0,
     autoSpeakerMiss: 0,
     autoAmpScore: 0,
     autoAmpMiss: 0,
@@ -175,12 +175,4 @@ export type ItemKey = {
 export type Student = {
   email: string;
   name: string;
-};
-
-//=================================================================================================
-// Support for Props
-//=================================================================================================
-export type RootStackParamList = {
-  ScoutMatchScreen: undefined;
-  ScoutMatchEditScreen: { id: string; returnTo: string };
 };
