@@ -80,12 +80,14 @@ describe("Cache Store", () => {
         teamNumber: "1",
         name: "Team 1",
         nickname: "One",
+        schoolName: "School 1",
       },
       {
         key: "T2",
         teamNumber: "2",
         name: "Team 2",
         nickname: "Two",
+        schoolName: "School 2",
       },
     ];
 
