@@ -3,9 +3,9 @@ import { Tabs } from "expo-router";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faHouse,
-  faPeopleRobbery,
-  faGear,
-  faToiletPaper,
+  faRobot,
+  faDatabase,
+  faPeopleArrows,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function TabLayout() {
@@ -30,7 +30,7 @@ export default function TabLayout() {
           title: "Match Results",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
-              icon={faToiletPaper}
+              icon={faRobot}
               size={size}
               style={{ color: color }}
             />
@@ -43,7 +43,7 @@ export default function TabLayout() {
           title: "Pit Scouting",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
-              icon={faPeopleRobbery}
+              icon={faPeopleArrows}
               size={size}
               style={{ color: color }}
             />
@@ -56,7 +56,7 @@ export default function TabLayout() {
           title: "Caches",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
-              icon={faGear}
+              icon={faDatabase}
               size={size}
               style={{ color: color }}
             />
