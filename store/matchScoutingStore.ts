@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { MatchScoutingSession, ItemKey } from "@/constants/Types";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { zustandStorage } from "./store-storage";
+import { zustandStorage } from "./storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface MatchScoutingState {
@@ -53,8 +53,6 @@ export const useMatchScoutingStore = create<MatchScoutingState>()(
           current[session.key] = session;
           set({ sessions: current });
         }
-
-        await AsyncStorage.setItem("match-sessions", JSON.stringify(current));
       },
 
       sessionKeys: () => {

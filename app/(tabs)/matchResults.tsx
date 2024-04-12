@@ -17,6 +17,7 @@ import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import postMatchSession from "../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
+import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -52,7 +53,9 @@ export default function MatchResultsScreen() {
     loadData();
   }, []);
 
-  const loadData = async () => {};
+  const loadData = async () => {
+    await refreshMatchScoutingKeys();
+  };
 
   const getTeamDetails = (teamKey: string) => {
     const team = cacheStore.teams.find((team) => team.key === teamKey);
@@ -75,6 +78,7 @@ export default function MatchResultsScreen() {
     Object.values(matchStore.sessions).forEach(async (session) => {
       await postMatchSession(session);
     });
+    await refreshMatchScoutingKeys();
   };
 
   const handleUploadSession = async (sessionKey: string) => {
@@ -82,6 +86,7 @@ export default function MatchResultsScreen() {
     if (session === undefined) return;
 
     await postMatchSession(session);
+    await refreshMatchScoutingKeys();
   };
 
   const handleShowSessionJsonQR = (sessionKey: string) => {
@@ -208,6 +213,7 @@ export default function MatchResultsScreen() {
           </View>
         </ContainerGroup>
         {Object.values(matchStore.sessions)
+          .filter((session) => session.eventKey == cacheStore.event.key)
           .sort((a, b) => a.matchNumber - b.matchNumber)
           .map((session, index) => (
             <ContainerGroup

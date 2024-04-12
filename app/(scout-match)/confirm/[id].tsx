@@ -43,17 +43,10 @@ function ConfirmScreen() {
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
 
   useEffect(() => {
-    console.log("useEffect []");
     loadData();
   }, []);
 
   useEffect(() => {
-    console.log("useEffect [scouterName, scoutedTeam]");
-  }, [scouterName, scoutedTeam]);
-
-  useEffect(() => {
-    console.log("useEffect [scoutFilterText]");
-
     // Convert the filter text to lower case.
     const value = scoutFilterText.toLocaleLowerCase();
 
@@ -67,8 +60,6 @@ function ConfirmScreen() {
   }, [scoutFilterText]);
 
   useEffect(() => {
-    console.log("useEffect [teamFilterText]");
-
     // Convert the filter text to lower case.
     const value = teamFilterText.toLowerCase();
 
@@ -89,9 +80,6 @@ function ConfirmScreen() {
   };
 
   const loadData = async () => {
-    console.log("loadData");
-    console.log("loadData matchStore.sessions", matchStore.sessions);
-
     // Retrieve from stores.
     if (!(id in matchStore.sessions)) return;
     const cacheSession = matchStore.sessions[id];
