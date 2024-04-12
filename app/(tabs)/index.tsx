@@ -6,10 +6,10 @@ import getDefaultMatchScoutingSession, {
   MatchModel,
   TeamModel,
 } from "@/constants/Types";
-import { ContainerGroup, ScoutMatchSelect } from "@/app/components";
-import getMatchSelectModels from "@/app/helpers/getMatchSelectModels";
-import flushAndFillLookups from "@/app/helpers/flushAndFillLookups";
-import refreshMatchScoutingKeys from "@/app/helpers/refreshMatchScoutingKeys";
+import { ContainerGroup, ScoutMatchSelect } from "@/components";
+import getMatchSelectModels from "@/helpers/getMatchSelectModels";
+import flushAndFillLookups from "@/helpers/flushAndFillLookups";
+import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
@@ -119,7 +119,7 @@ export default function IndexScreen() {
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
           <RefreshControl
-            title="Refreshing data for the Event, Matches, Teams and loading saved Match and Pit Scouting sessions..."
+            title="Refreshing data for the Event, Matches, Teams and loading saved Match and Pit Scouting session keys..."
             refreshing={isRefreshing}
             onRefresh={onRefresh}
             tintColor={Colors.primary}

@@ -13,12 +13,12 @@ import {
   SelectGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
-} from "@/app/components";
+} from "@/components";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import postMatchSession from "@/app/helpers/postMatchSession";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function FinalScreen() {
   // Route.

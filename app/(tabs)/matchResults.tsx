@@ -12,12 +12,12 @@ import {
   ResultsButton,
   QrCodeModal,
   JsonModal,
-} from "@/app/components";
+} from "@/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
-import postMatchSession from "../helpers/postMatchSession";
+import postMatchSession from "../../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
-import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
+import refreshMatchScoutingKeys from "../../helpers/refreshMatchScoutingKeys";
 
 export type MatchResultModel = {
   sessionKey: string;

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
 import { PitScoutingSession, Team } from "@/constants/Types";
-import { ContainerGroup, SelectGroup } from "@/app/components";
+import { ContainerGroup, SelectGroup } from "@/components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useCacheStore } from "@/store/cachesStore";
 import { usePitScoutingStore } from "@/store/pitScoutingStore";
-import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
+import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 

@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import ContainerGroup from "@/app/components/ContainerGroup";
+import ContainerGroup from "@/components/ContainerGroup";
 import Styles from "@/constants/Styles";
 
 type MatchScoutingNavigationProps = {

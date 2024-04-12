@@ -2,8 +2,8 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import MetricLabel from "@/app/components/MetricLabel";
-import MetricCount from "@/app/components/MetricCount";
+import MetricLabel from "@/components/MetricLabel";
+import MetricCount from "@/components/MetricCount";
 import Styles from "@/constants/Styles";
 
 type MinusPlusProps = {

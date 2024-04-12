@@ -12,7 +12,7 @@ import {
   ContainerGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
-} from "@/app/components";
+} from "@/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Styles from "@/constants/Styles";
