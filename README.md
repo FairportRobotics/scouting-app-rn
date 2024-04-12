@@ -97,11 +97,17 @@ https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
 ## Todo
 
 [X] Remove Auto > Score in Speaker while Amplified
+
 [X] Read TBA Event, Matches and Teams from Azure.
+
 [X] Use store with persisted backend.
+
 [X] Remove all TBA-caching
+
 [X] Remove all references to Practice Match
+
 [X] Remove all referenes to Practice Team
+
 [ ] Prevent bypassing Match > Confirm > Name by tapping tab.
 
 Azure Cosmos DB via REST:
