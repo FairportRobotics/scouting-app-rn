@@ -10,5 +10,5 @@ export default {
 
   notUploaded: "#696969",
   uploaded: "#0b8030",
-  placeholder: "#999",
+  placeholder: "#a1a1a1",
 };

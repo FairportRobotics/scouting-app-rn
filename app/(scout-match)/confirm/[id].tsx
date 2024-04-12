@@ -157,7 +157,7 @@ function ConfirmScreen() {
       <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
-          style={Styles.textInput}
+          style={[Styles.textInput, {}]}
           value={scoutFilterText}
           onChangeText={(text) => setScoutFilterText(text)}
           placeholder="I am actually..."
