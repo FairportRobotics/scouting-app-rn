@@ -1,8 +1,5 @@
 import { ItemKey } from "@/constants/Types";
-import {
-  MatchScoutingState,
-  useMatchScoutingStore,
-} from "@/store/matchScoutingStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import axios from "axios";
 
 export default async () => {
@@ -17,10 +14,11 @@ export default async () => {
     const response = await axios.post(saveUri, postData);
     const uploadedKeys = (response.data.data_for as Array<string>) || [];
 
-    const storeState: MatchScoutingState = useMatchScoutingStore.getState();
-    storeState.uploadedKeys = uploadedKeys.map(
-      (item) => ({ key: item } as ItemKey)
-    );
+    // Set the store with the new lookups.
+    useMatchScoutingStore.setState((state) => ({
+      ...state,
+      uploadedKeys: uploadedKeys.map((item) => ({ key: item } as ItemKey)),
+    }));
   } catch (error) {
     console.error(error);
   }

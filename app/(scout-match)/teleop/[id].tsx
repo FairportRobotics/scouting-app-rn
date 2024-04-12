@@ -69,13 +69,17 @@ function TeleopScreen() {
 
   const saveData = async () => {
     if (!(id in matchStore.sessions)) return;
-    matchStore.sessions[id].teleopSpeakerScore = speakerScore;
-    matchStore.sessions[id].teleopSpeakerScoreAmplified = speakerScoreAmplified;
-    matchStore.sessions[id].teleopSpeakerMiss = speakerMiss;
-    matchStore.sessions[id].teleopAmpScore = ampScore;
-    matchStore.sessions[id].teleopAmpMiss = ampMiss;
-    matchStore.sessions[id].teleopRelayPass = pass;
-    matchStore.sessions[id].teleopNotes = notes;
+
+    // Set properties and save.
+    let current = matchStore.sessions[id];
+    current.teleopSpeakerScore = speakerScore;
+    current.teleopSpeakerScoreAmplified = speakerScoreAmplified;
+    current.teleopSpeakerMiss = speakerMiss;
+    current.teleopAmpScore = ampScore;
+    current.teleopAmpMiss = ampMiss;
+    current.teleopRelayPass = pass;
+    current.teleopNotes = notes;
+    matchStore.saveSession(current);
   };
 
   const handleNavigatePrevious = () => {
