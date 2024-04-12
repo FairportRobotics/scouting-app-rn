@@ -193,7 +193,7 @@ export default function MatchResultsScreen() {
           />
         }
       >
-        <ContainerGroup title="All Matches">
+        <ContainerGroup title="All Match Scouting Sessions">
           <View
             style={{
               flex: 1,
