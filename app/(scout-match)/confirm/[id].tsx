@@ -116,7 +116,6 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    console.log("saveData");
     if (!(id in matchStore.sessions)) return;
 
     // Set properties and save.
@@ -125,8 +124,11 @@ function ConfirmScreen() {
     current.scoutedTeamKey = scoutedTeamKey;
     matchStore.saveSession(current);
 
-    console.log("saveData current", current);
-    console.log("saveData matchStore.sessions", matchStore.sessions);
+    // HACK: Set the store with the new lookups.
+    useMatchScoutingStore.setState((state) => ({
+      ...state,
+      sessions: matchStore.sessions,
+    }));
   };
 
   const handleChangeScouter = (value: string) => {

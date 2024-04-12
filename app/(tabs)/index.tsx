@@ -70,6 +70,12 @@ export default function IndexScreen() {
       newSession.scoutedTeamKey = teamModel.teamKey;
 
       matchStore.saveSession(newSession);
+
+      // HACK: Set the store with the new lookups.
+      useMatchScoutingStore.setState((state) => ({
+        ...state,
+        sessions: matchStore.sessions,
+      }));
     }
 
     // Navigate to the Confirmation screen.
