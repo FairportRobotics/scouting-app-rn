@@ -109,6 +109,3 @@ https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
 [X] Remove all referenes to Practice Team
 
 [ ] Prevent bypassing Match > Confirm > Name by tapping tab.
-
-Azure Cosmos DB via REST:
-https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
