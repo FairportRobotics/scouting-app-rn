@@ -14,6 +14,7 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
+import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
@@ -26,6 +27,7 @@ function FinalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // Stores.
+  const cacheStore = useCacheStore();
   const matchStore = useMatchScoutingStore();
 
   // States.
@@ -177,6 +179,16 @@ function FinalScreen() {
           />
         </ContainerGroup>
       </KeyboardAvoidingView>
+
+      <ContainerGroup title="Your Reward">
+        <Text>
+          {
+            cacheStore.levity[
+              Math.floor(Math.random() * cacheStore.levity.length)
+            ].item
+          }
+        </Text>
+      </ContainerGroup>
 
       <MatchScoutingNavigation
         previousLabel="Final"
