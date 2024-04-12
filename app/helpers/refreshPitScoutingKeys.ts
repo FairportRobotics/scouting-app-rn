@@ -1,8 +1,6 @@
 import axios from "axios";
-import {
-  PitScoutingState,
-  usePitScoutingStore,
-} from "@/store/pitScoutingStore";
+import { usePitScoutingStore } from "@/store/pitScoutingStore";
+import { useCacheStore } from "@/store/cachesStore";
 import { ItemKey } from "@/constants/Types";
 
 export default async () => {
@@ -17,10 +15,17 @@ export default async () => {
     const response = await axios.post(saveUri, postData);
     const uploadedKeys = (response.data.data_for as Array<string>) || [];
 
-    const storeState: PitScoutingState = usePitScoutingStore.getState();
-    storeState.uploadedKeys = uploadedKeys.map(
-      (item) => ({ key: item } as ItemKey)
-    );
+    // Filter the keys to only those for the event.
+    const eventKey = useCacheStore.getState().event.key;
+    const eventKeys = uploadedKeys
+      .filter((key) => key.startsWith(eventKey))
+      .map((item) => ({ key: item } as ItemKey));
+
+    // Set the store with the new lookups.
+    usePitScoutingStore.setState((state) => ({
+      ...state,
+      uploadedKeys: eventKeys,
+    }));
   } catch (error) {
     console.error(error);
   }

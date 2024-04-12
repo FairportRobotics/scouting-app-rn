@@ -96,7 +96,7 @@ export default async <Type>(
     const results = response.data.Documents as Array<Type>;
     return results;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
 };

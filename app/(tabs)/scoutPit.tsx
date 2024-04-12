@@ -176,7 +176,7 @@ export default function ScoutPitScreen() {
         />
       }
     >
-      <ContainerGroup title="All Scouting Sessions">
+      <ContainerGroup title="All Pit Scouting Sessions">
         <View
           style={{
             flex: 1,

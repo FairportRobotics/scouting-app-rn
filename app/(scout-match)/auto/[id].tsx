@@ -55,13 +55,17 @@ function AutoScreen() {
 
   const saveData = async () => {
     if (!(id in matchStore.sessions)) return;
-    matchStore.sessions[id].autoStartedWithNote = startedWithNote;
-    matchStore.sessions[id].autoLeftStartArea = leftStartArea;
-    matchStore.sessions[id].autoSpeakerScore = speakerScore;
-    matchStore.sessions[id].autoSpeakerMiss = speakerMiss;
-    matchStore.sessions[id].autoAmpScore = ampScore;
-    matchStore.sessions[id].autoAmpMiss = ampMiss;
-    matchStore.sessions[id].autoNotes = notes;
+
+    // Set properties and save.
+    let current = matchStore.sessions[id];
+    current.autoStartedWithNote = startedWithNote;
+    current.autoLeftStartArea = leftStartArea;
+    current.autoSpeakerScore = speakerScore;
+    current.autoSpeakerMiss = speakerMiss;
+    current.autoAmpScore = ampScore;
+    current.autoAmpMiss = ampMiss;
+    current.autoNotes = notes;
+    matchStore.saveSession(current);
   };
 
   useEffect(() => {

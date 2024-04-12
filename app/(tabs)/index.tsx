@@ -55,20 +55,27 @@ export default function IndexScreen() {
   ) => {
     // Extract the Session Key and assign to the store.
     const key = teamModel.sessionKey;
-    matchStore.currentKey = key;
+    matchStore.setCurrentKey(key);
 
     if (!(key in matchStore.sessions)) {
       // Session does not already exist and must be initialized.
-      matchStore.sessions[key] =
-        getDefaultMatchScoutingSession() as MatchScoutingSession;
-      matchStore.sessions[key].key = teamModel.sessionKey;
-      matchStore.sessions[key].eventKey = matchModel.eventKey;
-      matchStore.sessions[key].matchKey = matchModel.matchKey;
-      matchStore.sessions[key].matchNumber = matchModel.matchNumber;
-      matchStore.sessions[key].alliance = teamModel.alliance;
-      matchStore.sessions[key].allianceTeam = teamModel.allianceTeam;
-      matchStore.sessions[key].scheduledTeamKey = teamModel.teamKey;
-      matchStore.sessions[key].scoutedTeamKey = teamModel.teamKey;
+      let newSession = getDefaultMatchScoutingSession() as MatchScoutingSession;
+      newSession.key = teamModel.sessionKey;
+      newSession.eventKey = matchModel.eventKey;
+      newSession.matchKey = matchModel.matchKey;
+      newSession.matchNumber = matchModel.matchNumber;
+      newSession.alliance = teamModel.alliance;
+      newSession.allianceTeam = teamModel.allianceTeam;
+      newSession.scheduledTeamKey = teamModel.teamKey;
+      newSession.scoutedTeamKey = teamModel.teamKey;
+
+      matchStore.saveSession(newSession);
+
+      // HACK: Set the store with the new lookups.
+      useMatchScoutingStore.setState((state) => ({
+        ...state,
+        sessions: matchStore.sessions,
+      }));
     }
 
     // Navigate to the Confirmation screen.
@@ -119,16 +126,22 @@ export default function IndexScreen() {
           />
         }
       >
-        {matchModels.map((matchModel, index) => (
-          <ContainerGroup title="" key={index}>
-            <ScoutMatchSelect
-              matchModel={matchModel}
-              onSelect={(matchModel, teamModel) =>
-                handleOnSelect(matchModel, teamModel)
-              }
-            />
-          </ContainerGroup>
-        ))}
+        {matchModels
+          .sort(
+            (a: MatchModel, b: MatchModel) =>
+              new Date(a.predictedTime).getTime() -
+              new Date(b.predictedTime).getTime()
+          )
+          .map((matchModel, index) => (
+            <ContainerGroup title="" key={index}>
+              <ScoutMatchSelect
+                matchModel={matchModel}
+                onSelect={(matchModel, teamModel) =>
+                  handleOnSelect(matchModel, teamModel)
+                }
+              />
+            </ContainerGroup>
+          ))}
       </ScrollView>
     </View>
   );

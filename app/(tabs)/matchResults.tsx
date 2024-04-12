@@ -7,13 +7,17 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useEffect, useState } from "react";
-import { Match, Team, MatchScoutingSession, ItemKey } from "@/constants/Types";
-import { ContainerGroup, ResultsButton, QrCodeModal } from "@/app/components";
+import {
+  ContainerGroup,
+  ResultsButton,
+  QrCodeModal,
+  JsonModal,
+} from "@/app/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import postMatchSession from "../helpers/postMatchSession";
 import Colors from "@/constants/Colors";
-import JsonModal from "../components/JsonViewModal";
+import refreshMatchScoutingKeys from "../helpers/refreshMatchScoutingKeys";
 
 export type MatchResultModel = {
   sessionKey: string;
@@ -32,7 +36,6 @@ export default function MatchResultsScreen() {
 
   // State.
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [reportModels, setReportModels] = useState<Array<MatchResultModel>>([]);
 
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
@@ -51,76 +54,31 @@ export default function MatchResultsScreen() {
   }, []);
 
   const loadData = async () => {
-    buildModels(
-      cacheStore.matches,
-      cacheStore.teams,
-      Object.values(matchStore.sessions),
-      matchStore.uploadedKeys
-    );
+    await refreshMatchScoutingKeys();
   };
 
-  const buildModels = (
-    matches: Array<Match>,
-    teams: Array<Team>,
-    sessions: Array<MatchScoutingSession>,
-    uploadedKeys: Array<ItemKey>
-  ) => {
-    // Create Matches dictionary.
-    let matchesDictionary: Record<string, Match> = {};
-    matches.forEach((match) => {
-      matchesDictionary[match.key] = match;
-    });
+  const getTeamDetails = (teamKey: string) => {
+    const team = cacheStore.teams.find((team) => team.key === teamKey);
+    if (team === undefined) {
+      return `(Team not found with key ${teamKey})`;
+    } else {
+      return `${team.teamNumber} - ${team.nickname}`;
+    }
+  };
 
-    // Create Teams dictionary.
-    let teamsDictionary: Record<string, Team> = {};
-    teams.forEach((team) => {
-      teamsDictionary[team.key] = team;
-    });
-
-    // Build the array of MatchResultModel.
-    let models: Array<MatchResultModel> = [];
-    sessions
-      .sort((a, b) => a.matchNumber - b.matchNumber)
-      .map((session) => {
-        try {
-          // Retrieve the needed objects from the dictionaries.
-          const match = matchesDictionary[session.matchKey];
-          const scoutedTeam = teamsDictionary[session.scoutedTeamKey];
-
-          // Initialize the model.
-          const model = {
-            sessionKey: session.key,
-            matchNumber: match.matchNumber,
-            alliance: session.alliance,
-            allianceTeam: session.allianceTeam,
-          } as MatchResultModel;
-
-          // Assign the scouted team.
-          if (scoutedTeam !== undefined) {
-            model.scoutedTeamNumber = scoutedTeam.teamNumber;
-            model.scoutedTeamNickname = scoutedTeam.nickname;
-          }
-
-          // Determine if the upload exists.
-          model.uploadExists =
-            uploadedKeys.find((item) => session.key === item.key) === undefined
-              ? false
-              : true;
-
-          models.push(model);
-        } catch (error) {
-          console.error(error);
-        }
-      });
-
-    setReportModels(models);
-    setIsRefreshing(false);
+  const uploadExists = (teamKey: string) => {
+    return (
+      matchStore.uploadedKeys.find(
+        (uploadedKey) => uploadedKey.key === teamKey
+      ) !== undefined
+    );
   };
 
   const handleUploadAllSessions = async () => {
     Object.values(matchStore.sessions).forEach(async (session) => {
       await postMatchSession(session);
     });
+    await refreshMatchScoutingKeys();
   };
 
   const handleUploadSession = async (sessionKey: string) => {
@@ -128,6 +86,7 @@ export default function MatchResultsScreen() {
     if (session === undefined) return;
 
     await postMatchSession(session);
+    await refreshMatchScoutingKeys();
   };
 
   const handleShowSessionJsonQR = (sessionKey: string) => {
@@ -234,7 +193,7 @@ export default function MatchResultsScreen() {
           />
         }
       >
-        <ContainerGroup title="All Matches">
+        <ContainerGroup title="All Match Scouting Sessions">
           <View
             style={{
               flex: 1,
@@ -253,45 +212,50 @@ export default function MatchResultsScreen() {
             />
           </View>
         </ContainerGroup>
-        {reportModels.map((match, index) => (
-          <ContainerGroup
-            key={index}
-            title={`Match ${match.matchNumber}: ${match.alliance} ${match.allianceTeam}: ${match.scoutedTeamNumber} - ${match.scoutedTeamNickname}`}
-          >
-            <View
-              style={{
-                flex: 1,
-                width: "100%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                gap: 10,
-              }}
+        {Object.values(matchStore.sessions)
+          .filter((session) => session.eventKey == cacheStore.event.key)
+          .sort((a, b) => a.matchNumber - b.matchNumber)
+          .map((session, index) => (
+            <ContainerGroup
+              key={index}
+              title={`Match ${session.matchNumber}: ${session.alliance} ${
+                session.allianceTeam
+              }: ${getTeamDetails(session.scoutedTeamKey)}`}
             >
-              <ResultsButton
-                label="Upload"
-                faIcon="upload"
-                active={!match.uploadExists}
-                showUploadExists={match.uploadExists}
-                onPress={() => handleUploadSession(match.sessionKey)}
-              />
-              <ResultsButton
-                label="JSON"
-                faIcon="qr"
-                onPress={() => handleShowSessionJsonQR(match.sessionKey)}
-              />
-              <ResultsButton
-                label="JSON"
-                faIcon="share"
-                onPress={() => handleShareSessionJson(match.sessionKey)}
-              />
-              <ResultsButton
-                label="Data"
-                faIcon="json"
-                onPress={() => handleShowSessionJson(match.sessionKey)}
-              />
-            </View>
-          </ContainerGroup>
-        ))}
+              <View
+                style={{
+                  flex: 1,
+                  width: "100%",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  gap: 10,
+                }}
+              >
+                <ResultsButton
+                  label="Upload"
+                  faIcon="upload"
+                  active={!uploadExists(session.key)}
+                  showUploadExists={uploadExists(session.key)}
+                  onPress={() => handleUploadSession(session.key)}
+                />
+                <ResultsButton
+                  label="JSON"
+                  faIcon="qr"
+                  onPress={() => handleShowSessionJsonQR(session.key)}
+                />
+                <ResultsButton
+                  label="JSON"
+                  faIcon="share"
+                  onPress={() => handleShareSessionJson(session.key)}
+                />
+                <ResultsButton
+                  label="Data"
+                  faIcon="json"
+                  onPress={() => handleShowSessionJson(session.key)}
+                />
+              </View>
+            </ContainerGroup>
+          ))}
       </ScrollView>
     </View>
   );

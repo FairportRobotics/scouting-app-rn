@@ -63,13 +63,17 @@ function FinalScreen() {
   const saveData = async () => {
     if (!(id in matchStore.sessions)) return;
 
-    matchStore.sessions[id].finalAllianceScore = totalScore;
-    matchStore.sessions[id].finalRankingPoints = rankingPoints;
-    matchStore.sessions[id].finalAllianceResult = allianceResult;
-    matchStore.sessions[id].finalViolations = violations;
-    matchStore.sessions[id].finalPenalties = penalties;
-    matchStore.sessions[id].finalNotes = notes;
+    // Set properties and save.
+    let current = matchStore.sessions[id];
+    current.finalAllianceScore = totalScore;
+    current.finalRankingPoints = rankingPoints;
+    current.finalAllianceResult = allianceResult;
+    current.finalViolations = violations;
+    current.finalPenalties = penalties;
+    current.finalNotes = notes;
+    matchStore.saveSession(current);
 
+    // Upload.
     postMatchSession(matchStore.sessions[id]);
   };
 

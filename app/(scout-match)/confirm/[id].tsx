@@ -47,10 +47,6 @@ function ConfirmScreen() {
   }, []);
 
   useEffect(() => {
-    saveData();
-  }, [scouterName, scoutedTeam]);
-
-  useEffect(() => {
     // Convert the filter text to lower case.
     const value = scoutFilterText.toLocaleLowerCase();
 
@@ -108,8 +104,19 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    matchStore.sessions[id].scouterName = scouterName;
-    matchStore.sessions[id].scoutedTeamKey = scoutedTeamKey;
+    if (!(id in matchStore.sessions)) return;
+
+    // Set properties and save.
+    let current = matchStore.sessions[id];
+    current.scouterName = scouterName;
+    current.scoutedTeamKey = scoutedTeamKey;
+    matchStore.saveSession(current);
+
+    // HACK: Set the store with the new lookups.
+    useMatchScoutingStore.setState((state) => ({
+      ...state,
+      sessions: matchStore.sessions,
+    }));
   };
 
   const handleChangeScouter = (value: string) => {
@@ -117,8 +124,6 @@ function ConfirmScreen() {
     setScouterName(value);
     setScoutFilterText("");
     setFilteredScouters([]);
-
-    saveData();
   };
 
   const handleChangeScoutedTeam = (value: string) => {
@@ -126,8 +131,6 @@ function ConfirmScreen() {
     setScoutedTeam(lookupTeam(cacheStore.teams, value));
     setTeamFilterText("");
     setFilteredTeams([]);
-
-    saveData();
   };
 
   const handleNavigatePrevious = () => {

@@ -62,14 +62,15 @@ function EndgameScreen() {
   const saveData = async () => {
     if (!(id in matchStore.sessions)) return;
 
-    matchStore.sessions[id].endgameTrapScore = trapScore;
-    matchStore.sessions[id].endgameMicrophoneScore = microphoneScore;
-    matchStore.sessions[id].endgameDidRobotPark = didRobotPark;
-    matchStore.sessions[id].endgameDidRobotHang = didRobotHang;
-    matchStore.sessions[id].endgameHarmony = harmonyScore;
-    matchStore.sessions[id].endgameNotes = notes;
-
-    postMatchSession(matchStore.sessions[id]);
+    // Set properties and save.
+    let current = matchStore.sessions[id];
+    current.endgameTrapScore = trapScore;
+    current.endgameMicrophoneScore = microphoneScore;
+    current.endgameDidRobotPark = didRobotPark;
+    current.endgameDidRobotHang = didRobotHang;
+    current.endgameHarmony = harmonyScore;
+    current.endgameNotes = notes;
+    matchStore.saveSession(current);
   };
 
   const handleDidRobotPark = (value: boolean) => {
