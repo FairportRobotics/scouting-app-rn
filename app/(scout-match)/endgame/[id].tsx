@@ -13,9 +13,9 @@ import {
   SelectGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
-} from "@/app/components";
+} from "@/components";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
-import postMatchSession from "@/app/helpers/postMatchSession";
+import postMatchSession from "@/helpers/postMatchSession";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 

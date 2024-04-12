@@ -13,7 +13,7 @@ import {
   ContainerGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
-} from "@/app/components";
+} from "@/components";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
 import Styles from "@/constants/Styles";

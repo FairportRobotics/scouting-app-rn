@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button, View, TextInput, Text } from "react-native";
-import ContainerGroup from "@/app/components/ContainerGroup";
+import ContainerGroup from "@/components/ContainerGroup";
 import Styles from "@/constants/Styles";
 import * as Crypto from "expo-crypto";
 

@@ -1,12 +1,14 @@
-import { ScrollView, View, Text, Button } from "react-native";
-import { ContainerGroup } from "@/app/components";
+import { ScrollView, View, Text, Button, RefreshControl } from "react-native";
+import { ContainerGroup } from "@/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { usePitScoutingStore } from "@/store/pitScoutingStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { useEffect, useState } from "react";
-import refreshMatchScoutingKeys from "@/app/helpers/refreshMatchScoutingKeys";
-import refreshPitScoutingKeys from "@/app/helpers/refreshPitScoutingKeys";
 import { ItemKey } from "@/constants/Types";
+import flushAndFillLookups from "@/helpers/flushAndFillLookups";
+import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
+import refreshPitScoutingKeys from "@/helpers/refreshPitScoutingKeys";
+import Colors from "@/constants/Colors";
 
 export default function Caches() {
   // Stores.
@@ -22,10 +24,22 @@ export default function Caches() {
   const [pitKeys, setPitKeys] = useState<Array<ItemKey>>([]);
   const [showPitKeys, setShowPitKeys] = useState<boolean>(false);
 
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
   useEffect(() => {
     setMatchKeys(matchStore.uploadedKeys);
     setPitKeys(pitStore.uploadedKeys);
   }, []);
+
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+
+    await flushAndFillLookups();
+    await refreshMatchScoutingKeys();
+    await refreshPitScoutingKeys();
+
+    setIsRefreshing(false);
+  };
 
   const handleRefreshMatchSessionKeys = async () => {
     await refreshMatchScoutingKeys();
@@ -38,7 +52,17 @@ export default function Caches() {
   };
 
   return (
-    <ScrollView style={{ padding: 10 }}>
+    <ScrollView
+      style={{ padding: 10 }}
+      refreshControl={
+        <RefreshControl
+          title="Refreshing data for the Event, Matches, Teams and loading saved Match and Pit Scouting session keys..."
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          tintColor={Colors.primary}
+        />
+      }
+    >
       <ContainerGroup title="Competition Lookups">
         <Button
           onPress={() => setShowCaches(!showCaches)}

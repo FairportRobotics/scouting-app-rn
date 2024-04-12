@@ -12,7 +12,7 @@ import {
   MinusPlusPair,
   MatchScoutingNavigation,
   MatchScoutingHeader,
-} from "@/app/components";
+} from "@/components";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";

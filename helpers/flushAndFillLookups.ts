@@ -1,5 +1,5 @@
 import { Event, Match, Team } from "@/constants/Types";
-import fetchFromCosmos from "@/app/helpers/fetchFromCosmos";
+import fetchFromCosmos from "@/helpers/fetchFromCosmos";
 import { useCacheStore } from "@/store/cachesStore";
 
 export default async () => {

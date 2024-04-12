@@ -1,17 +1,18 @@
 import { ScrollView, View, Share, RefreshControl, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { ContainerGroup } from "@/app/components";
-import { ResultsButton, QrCodeModal, JsonModal } from "@/app/components";
+import { ContainerGroup } from "@/components";
+import { ResultsButton, QrCodeModal, JsonModal } from "@/components";
 import { useCacheStore } from "@/store/cachesStore";
 import { usePitScoutingStore } from "@/store/pitScoutingStore";
-import postPitScoutingSession from "@/app/helpers/postPitScoutingSession";
+import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 import Colors from "@/constants/Colors";
 
 export type ReportRecord = {
   key: string;
   teamNumber: string;
   nickname: string;
+  schoolName: string;
   sessionExists: boolean;
   uploadExists: boolean;
 };
@@ -54,6 +55,7 @@ export default function ScoutPitScreen() {
         key: team.key,
         teamNumber: team.teamNumber,
         nickname: team.nickname,
+        schoolName: team.schoolName,
         sessionExists: team.key in pitStore.sessions,
         uploadExists: team.key in pitStore.uploadedKeys,
       } as ReportRecord;
@@ -200,6 +202,7 @@ export default function ScoutPitScreen() {
           title={`${item.teamNumber} - ${item.nickname}`}
           key={index}
         >
+          <Text style={{ marginTop: -10 }}>{item.schoolName}</Text>
           <View
             style={{
               flex: 1,
