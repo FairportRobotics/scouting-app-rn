@@ -1,5 +1,7 @@
 # Opening the Scouting App
 
+The passcode to nlock the iPads is: 578578.
+
 The Scouting App should already be open. It not, here's how to run it:
 
 ## 1: Open the Expo Application
