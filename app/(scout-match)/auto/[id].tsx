@@ -159,7 +159,7 @@ function AutoScreen() {
           <TextInput
             multiline
             maxLength={1024}
-            style={[Styles.textInput, { height: 100 }]}
+            style={[Styles.textInput, { height: 80 }]}
             value={notes}
             onChangeText={(text) => setNotes(text)}
             placeholder="Auto notes..."

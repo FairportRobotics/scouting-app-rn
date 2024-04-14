@@ -113,7 +113,7 @@ function ScoutPitScreen() {
         </Text>
       </View>
 
-      <KeyboardAwareScrollView style={{ marginBottom: 100 }}>
+      <KeyboardAwareScrollView style={{}}>
         <ContainerGroup title="What experience does your Drive Team have?">
           <SelectGroup
             value={session.driveTeamExperience}
@@ -178,6 +178,22 @@ function ScoutPitScreen() {
           />
         </ContainerGroup>
 
+        <ContainerGroup title="Can your robot get Onstage?">
+          <SelectGroup
+            value={session.canGetOnstage}
+            options={["Yes", "No"]}
+            onChange={(value) => handleChange("canGetOnstage", value)}
+          />
+        </ContainerGroup>
+
+        <ContainerGroup title="If you can score in the Trap from Onstage, where does your robot need to be positioned?">
+          <SelectGroup
+            value={session.onstagePosition}
+            options={["Left", "Center", "Right", "Anywhere"]}
+            onChange={(value) => handleChange("onstagePosition", value)}
+          />
+        </ContainerGroup>
+
         <ContainerGroup title="What is the farthest your robot can score in the Speaker?">
           <SelectGroup
             value={session.whereCanYouScoreInSpeaker}
@@ -201,27 +217,12 @@ function ScoutPitScreen() {
           />
         </ContainerGroup>
 
-        <ContainerGroup title="Can your robot get Onstage?">
-          <SelectGroup
-            value={session.canGetOnstage}
-            options={["Yes", "No"]}
-            onChange={(value) => handleChange("canGetOnstage", value)}
-          />
-        </ContainerGroup>
-
-        <ContainerGroup title="How wide is your robot with the bumpers attached (in inches)?">
+        <ContainerGroup title="How big is your robot with the bumpers attached (in inches)?">
           <TextInput
             style={[Styles.textInput, {}]}
             value={session.robotWidth}
+            placeholder="L x W x H"
             onChangeText={(value) => handleChange("robotWidth", value)}
-          />
-        </ContainerGroup>
-
-        <ContainerGroup title="If you can score in the Trap from Onstage, where does your robot need to be positioned?">
-          <SelectGroup
-            value={session.onstagePosition}
-            options={["Left", "Center", "Right", "Anywhere"]}
-            onChange={(value) => handleChange("onstagePosition", value)}
           />
         </ContainerGroup>
 
@@ -235,6 +236,16 @@ function ScoutPitScreen() {
             placeholder="Anything else we didn't ask that might be important?"
             placeholderTextColor={Colors.placeholder}
           />
+        </ContainerGroup>
+
+        <ContainerGroup title="Your Reward">
+          <Text>
+            {
+              cacheStore.levity[
+                Math.floor(Math.random() * cacheStore.levity.length)
+              ].item
+            }
+          </Text>
         </ContainerGroup>
 
         <View style={{ flex: 1, justifyContent: "flex-end" }}>

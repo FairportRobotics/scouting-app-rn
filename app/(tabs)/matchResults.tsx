@@ -170,7 +170,8 @@ export default function MatchResultsScreen() {
               title="Loading..."
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              tintColor={Colors.primary}
+              titleColor={Colors.placeholder}
+              tintColor={Colors.placeholder}
             />
           }
         >
@@ -189,7 +190,8 @@ export default function MatchResultsScreen() {
             title="Loading..."
             refreshing={isRefreshing}
             onRefresh={onRefresh}
-            tintColor={Colors.primary}
+            titleColor={Colors.placeholder}
+            tintColor={Colors.placeholder}
           />
         }
       >

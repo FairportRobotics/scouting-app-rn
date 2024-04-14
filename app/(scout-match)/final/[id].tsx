@@ -14,6 +14,7 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
+import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
@@ -26,6 +27,7 @@ function FinalScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   // Stores.
+  const cacheStore = useCacheStore();
   const matchStore = useMatchScoutingStore();
 
   // States.
@@ -169,7 +171,7 @@ function FinalScreen() {
           <TextInput
             multiline
             maxLength={1024}
-            style={[Styles.textInput, { height: 100 }]}
+            style={[Styles.textInput, { height: 80 }]}
             value={notes}
             onChangeText={(text) => setNotes(text)}
             placeholder="Note anything that you didn't capture in Auto, Teleop or Endgame..."
@@ -177,6 +179,16 @@ function FinalScreen() {
           />
         </ContainerGroup>
       </KeyboardAvoidingView>
+
+      <ContainerGroup title="Your Reward">
+        <Text>
+          {
+            cacheStore.levity[
+              Math.floor(Math.random() * cacheStore.levity.length)
+            ].item
+          }
+        </Text>
+      </ContainerGroup>
 
       <MatchScoutingNavigation
         previousLabel="Final"

@@ -1,4 +1,4 @@
-import { Event, Match, Team } from "@/constants/Types";
+import { Event, Match, Team, Levity } from "@/constants/Types";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
 import { useCacheStore } from "@/store/cachesStore";
 
@@ -29,11 +29,19 @@ export default async () => {
     "event_teams"
   );
 
+  const levity = await fetchFromCosmos<Levity>(
+    masterKey,
+    account,
+    "crescendo",
+    "event_levity"
+  );
+
   // Validate we returned data. If not, short-circuit and bail. We probably
   // have not loaded the lookup data into Cosmos so there is no reason to continue.
   if (events === undefined || events.length != 1) return;
   if (matches === undefined) return;
   if (teams === undefined) return;
+  if (levity === undefined) return;
 
   // Clear the store.
   useCacheStore.setState({
@@ -46,6 +54,7 @@ export default async () => {
     },
     matches: [],
     teams: [],
+    levity: [],
   });
 
   // Set the store with the new lookups.
@@ -54,5 +63,6 @@ export default async () => {
     event: events[0],
     matches: matches,
     teams: teams,
+    levity: levity,
   }));
 };

@@ -115,8 +115,8 @@ export default function getDefaultMatchScoutingSession() {
     teleopRelayPass: 0,
 
     // Endgame
-    endgameTrapScore: 0,
-    endgameMicrophoneScore: 0,
+    endgameTrapScore: "0",
+    endgameMicrophoneScore: "0",
     endgameDidRobotPark: 0,
     endgameDidRobotHang: 0,
     endgameHarmony: "",
@@ -187,4 +187,9 @@ export type ItemKey = {
 export type Student = {
   email: string;
   name: string;
+};
+
+export type Levity = {
+  key: string;
+  item: string;
 };

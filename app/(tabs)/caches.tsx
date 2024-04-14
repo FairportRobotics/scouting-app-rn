@@ -59,7 +59,8 @@ export default function Caches() {
           title="Refreshing data for the Event, Matches, Teams and loading saved Match and Pit Scouting session keys..."
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={Colors.primary}
+          titleColor={Colors.placeholder}
+          tintColor={Colors.placeholder}
         />
       }
     >

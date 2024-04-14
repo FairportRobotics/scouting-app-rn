@@ -155,7 +155,8 @@ export default function ScoutPitScreen() {
               title="Loading..."
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              tintColor={Colors.primary}
+              titleColor={Colors.placeholder}
+              tintColor={Colors.placeholder}
             />
           }
         >
@@ -174,7 +175,8 @@ export default function ScoutPitScreen() {
           title="Loading..."
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={Colors.primary}
+          titleColor={Colors.placeholder}
+          tintColor={Colors.placeholder}
         />
       }
     >
