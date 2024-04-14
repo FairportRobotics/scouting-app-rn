@@ -8,9 +8,11 @@ import {
   faHourglassEnd,
   faList,
 } from "@fortawesome/free-solid-svg-icons";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 
 export default function TabLayout() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const matchStore = useMatchScoutingStore();
 
   return (
     <Tabs screenOptions={{}}>
@@ -32,6 +34,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="auto/[id]"
         initialParams={{ id: id }}
+        listeners={{
+          tabPress: (e) => {
+            if (!matchStore.isScouterSet()) {
+              e.preventDefault();
+            }
+          },
+        }}
         options={{
           title: "Auto",
           headerShown: false,
@@ -47,6 +56,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="teleop/[id]"
         initialParams={{ id: id }}
+        listeners={{
+          tabPress: (e) => {
+            if (!matchStore.isScouterSet()) {
+              e.preventDefault();
+            }
+          },
+        }}
         options={{
           title: "Teleop",
           headerShown: false,
@@ -62,6 +78,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="endgame/[id]"
         initialParams={{ id: id }}
+        listeners={{
+          tabPress: (e) => {
+            if (!matchStore.isScouterSet()) {
+              e.preventDefault();
+            }
+          },
+        }}
         options={{
           title: "Endgame",
           headerShown: false,
@@ -77,6 +100,13 @@ export default function TabLayout() {
       <Tabs.Screen
         name="final/[id]"
         initialParams={{ id: id }}
+        listeners={{
+          tabPress: (e) => {
+            if (!matchStore.isScouterSet()) {
+              e.preventDefault();
+            }
+          },
+        }}
         options={{
           title: "Final",
           headerShown: false,

@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Student, Team } from "@/constants/Types";
@@ -89,15 +90,8 @@ function ConfirmScreen() {
     if (cacheSession === undefined) return;
     if (cacheTeams === undefined) return;
 
-    // Determine whether we need to use the name from the session or the
-    // last scouter name that was selected.
-    const name =
-      cacheSession.scouterName.length > 0
-        ? cacheSession.scouterName
-        : matchStore.currentScouter;
-
     // Set States.
-    setScouterName(name);
+    setScouterName(cacheSession.scouterName);
     setScheduledTeam(lookupTeam(cacheTeams, cacheSession.scheduledTeamKey));
     setScoutedTeam(lookupTeam(cacheTeams, cacheSession.scoutedTeamKey));
     setScoutedTeamKey(cacheSession.scoutedTeamKey);
@@ -120,7 +114,6 @@ function ConfirmScreen() {
   };
 
   const handleChangeScouter = (value: string) => {
-    matchStore.currentScouter = value;
     setScouterName(value);
     setScoutFilterText("");
     setFilteredScouters([]);
@@ -140,7 +133,12 @@ function ConfirmScreen() {
 
   const handleNavigateNext = () => {
     saveData();
-    if (scouterName === "") return;
+
+    if (!matchStore.isScouterSet()) {
+      Alert.alert("Scouter Name Missing", "Select Scouter Name to continue");
+      return;
+    }
+
     router.replace(`/(scout-match)/auto/${id}`);
   };
 
@@ -157,7 +155,11 @@ function ConfirmScreen() {
       <MatchScoutingHeader session={matchStore.sessions[id]} />
       <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
-          style={[Styles.textInput, {}]}
+          style={[
+            matchStore.isScouterSet()
+              ? Styles.textInput
+              : Styles.textInputError,
+          ]}
           value={scoutFilterText}
           onChangeText={(text) => setScoutFilterText(text)}
           placeholder="I am actually..."

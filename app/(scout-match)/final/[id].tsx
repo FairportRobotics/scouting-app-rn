@@ -171,7 +171,7 @@ function FinalScreen() {
           <TextInput
             multiline
             maxLength={1024}
-            style={[Styles.textInput, { height: 100 }]}
+            style={[Styles.textInput, { height: 80 }]}
             value={notes}
             onChangeText={(text) => setNotes(text)}
             placeholder="Note anything that you didn't capture in Auto, Teleop or Endgame..."

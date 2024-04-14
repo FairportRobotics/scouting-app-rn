@@ -6,17 +6,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface MatchScoutingState {
   currentKey: string | undefined;
-  currentScouter: string;
   sessions: Record<string, MatchScoutingSession>;
   uploadedKeys: Array<ItemKey>;
+
+  isScouterSet: () => boolean;
   sessionKeys: () => Array<ItemKey>;
-
   setCurrentKey: (key: string) => void;
-  setCurrentScouter: (name: string) => void;
-
   saveUploadedKeys: (keys: Array<ItemKey>) => void;
   saveUploadedKey: (key: ItemKey) => void;
-
   saveSessions: (sessions: Record<string, MatchScoutingSession>) => void;
   saveSession: (session: MatchScoutingSession) => void;
 }
@@ -25,13 +22,25 @@ export const useMatchScoutingStore = create<MatchScoutingState>()(
   persist(
     (set, get) => ({
       currentKey: undefined,
-      currentScouter: "",
       sessions: {},
       uploadedKeys: [],
 
-      setCurrentKey: (key: string) => set({ currentKey: key }),
+      isScouterSet: () => {
+        // Get the current session key if one exists.
+        let cc = get().currentKey;
+        if (cc === undefined) return false;
 
-      setCurrentScouter: (name: string) => set({ currentScouter: name }),
+        // Get the current session.
+        let cs = get().sessions[cc];
+        if (cs === undefined) return false;
+
+        // Return the truthiness of the scouter name.
+        let s = cs.scouterName;
+        if (s) return true;
+        else return false;
+      },
+
+      setCurrentKey: (key: string) => set({ currentKey: key }),
 
       saveUploadedKeys: (uploadedKeys: Array<ItemKey>) =>
         set({ uploadedKeys: uploadedKeys }),
