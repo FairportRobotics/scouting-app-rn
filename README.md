@@ -34,6 +34,18 @@ If there are ever any issues, shake the device to bring up the debug menu and se
 
 Any changes made to code should immediately be deployed and available on the device making development very nice.
 
+**Prebuild**
+
+```
+npx expo prebuild
+```
+
+**Expo Deploy**
+
+```
+eas update --branch <desired name of branch> --message "<some message>"
+```
+
 ## Setup
 
 ### Github
