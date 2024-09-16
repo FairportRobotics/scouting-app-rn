@@ -30,27 +30,29 @@ export function initializeDb() {
   }
 }
 
-export async function getMatches() {
-  interface Match {
-    matchKey: string;
-    matchType: string;
-    setNumber: number;
-    matchNumber: number;
-    predictedTime: string | null;
-    blueTeams: Record<number, MatchTeam>;
-    redTeams: Record<number, MatchTeam>;
-  }
+export interface MatchModel {
+  eventKey: string;
+  matchKey: string;
+  matchType: string;
+  setNumber: number;
+  matchNumber: number;
+  predictedTime: Date;
+  blueTeams: Record<number, MatchTeamModel>;
+  redTeams: Record<number, MatchTeamModel>;
+}
 
-  interface MatchTeam {
-    sessionKey: string;
-    teamKey: string;
-    teamNumber: string;
-    matchScouted: boolean;
-  }
+export interface MatchTeamModel {
+  sessionKey: string;
+  teamKey: string;
+  teamNumber: string;
+  matchScouted: boolean;
+}
 
+export async function getMatchScouting() {
   // Get the denormalized data.
   const results = await db
     .select({
+      eventKey: eventMatches.eventKey,
       matchKey: eventMatches.id,
       matchType: eventMatches.matchType,
       setNumber: eventMatches.setNumber,
@@ -66,45 +68,64 @@ export async function getMatches() {
     .leftJoin(eventMatchTeams, eq(eventMatches.id, eventMatchTeams.matchKey))
     .leftJoin(matchScouting, eq(eventMatchTeams.id, matchScouting.id));
 
-  // Group TableB records under each TableA record
-  const groupedResult = results.reduce<Record<string, Match>>((acc, row) => {
-    const { matchKey, matchType, setNumber, matchNumber, predictedTime } = row;
-    const { sessionKey, alliance, allianceTeam, teamKey, matchScouted } = row;
-
-    // Create the parent Match if it does not exist.
-    if (!acc[matchKey]) {
-      acc[matchKey] = {
+  // Group MatchModel and add MatchTeamModels as children.
+  const groupedResult = results.reduce<Record<string, MatchModel>>(
+    (acc, row) => {
+      const {
+        eventKey,
         matchKey,
         matchType,
         setNumber,
         matchNumber,
         predictedTime,
-        blueTeams: {},
-        redTeams: {},
-      };
-    }
+      } = row;
+      const { sessionKey, alliance, allianceTeam, teamKey, matchScouted } = row;
 
-    // Session key exists and we don't have bad data.
-    if (sessionKey && alliance === "Blue" && allianceTeam && teamKey) {
-      acc[matchKey].blueTeams[allianceTeam] = {
-        sessionKey: sessionKey,
-        teamKey: teamKey,
-        teamNumber: teamKey.replace("frc", ""),
-        matchScouted: !!matchScouted,
-      };
-    }
+      // Create the parent Match if it does not exist.
+      if (!acc[matchKey]) {
+        acc[matchKey] = {
+          eventKey,
+          matchKey,
+          matchType,
+          setNumber,
+          matchNumber,
+          predictedTime: predictedTime ? new Date(predictedTime) : new Date(),
+          blueTeams: {},
+          redTeams: {},
+        };
+      }
 
-    if (sessionKey && alliance === "Red" && allianceTeam && teamKey) {
-      acc[matchKey].redTeams[allianceTeam] = {
-        sessionKey: sessionKey,
-        teamKey: teamKey,
-        teamNumber: teamKey.replace("frc", ""),
-        matchScouted: !!matchScouted,
-      };
-    }
+      // Session key exists and we don't have bad data.
+      if (sessionKey && alliance === "Blue" && allianceTeam && teamKey) {
+        acc[matchKey].blueTeams[allianceTeam] = {
+          sessionKey: sessionKey,
+          teamKey: teamKey,
+          teamNumber: teamKey.replace("frc", ""),
+          matchScouted: !!matchScouted,
+        };
+      }
 
-    return acc;
-  }, {});
+      if (sessionKey && alliance === "Red" && allianceTeam && teamKey) {
+        acc[matchKey].redTeams[allianceTeam] = {
+          sessionKey: sessionKey,
+          teamKey: teamKey,
+          teamNumber: teamKey.replace("frc", ""),
+          matchScouted: !!matchScouted,
+        };
+      }
 
-  console.log(JSON.stringify(groupedResult, null, 2));
+      return acc;
+    },
+    {}
+  );
+
+  // Convert the Records to an array and sort.
+  const arrayResult = Object.values(groupedResult);
+  arrayResult.sort((a, b) => {
+    return a.predictedTime.getTime() - b.predictedTime.getTime();
+  });
+
+  console.log(JSON.stringify(arrayResult, null, 2));
+
+  return arrayResult;
 }

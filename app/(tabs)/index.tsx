@@ -7,13 +7,13 @@ import getDefaultMatchScoutingSession, {
   TeamModel,
 } from "@/constants/Types";
 import { ContainerGroup, ScoutMatchSelect } from "@/components";
+import { useCacheStore } from "@/store/cachesStore";
+import { useMatchScoutingStore } from "@/store/matchScoutingStore";
+import { getMatchScouting } from "@/data/db";
 import getMatchSelectModels from "@/helpers/getMatchSelectModels";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
 import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
-import { useCacheStore } from "@/store/cachesStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
-import { getMatches } from "@/data/db";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function IndexScreen() {
 
     setMatchModels(matchModels);
 
-    await getMatches();
+    await getMatchScouting();
   };
 
   const onRefresh = async () => {
