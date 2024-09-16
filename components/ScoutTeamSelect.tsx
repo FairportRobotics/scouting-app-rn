@@ -5,25 +5,29 @@ import {
   faCloud,
 } from "@fortawesome/free-solid-svg-icons";
 import { Alliance } from "@/constants/Enums";
-import type { TeamModel } from "@/constants/Types";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import { MatchTeamModel } from "@/data/db";
 
 type ScoutTeamSelectProps = {
-  teamModel: TeamModel;
-  onSelect: (teamModel: TeamModel) => void;
+  alliance: string;
+  allianceTeam: number;
+  teamModel: MatchTeamModel;
+  onSelect: (sessionKey: string) => void;
 };
 
 export default function ScoutTeamSelect({
+  alliance,
+  allianceTeam,
   teamModel,
   onSelect,
 }: ScoutTeamSelectProps) {
   const handleOnPress = () => {
-    onSelect(teamModel);
+    onSelect(teamModel.sessionKey);
   };
 
   const renderBadge = () => {
-    if (teamModel.sessionExists) {
+    if (teamModel.matchScouted) {
       return (
         <View
           style={{
@@ -35,12 +39,12 @@ export default function ScoutTeamSelect({
             height: 30,
             borderRadius: 15,
             backgroundColor:
-              teamModel.sessionExists && teamModel.uploadExists
+              teamModel.matchScouted && teamModel.matchScouted
                 ? Colors.uploaded
                 : Colors.notUploaded,
             borderWidth: 2,
             borderColor:
-              teamModel.sessionExists && teamModel.uploadExists
+              teamModel.matchScouted && teamModel.matchScouted
                 ? Colors.uploaded
                 : Colors.notUploaded,
             justifyContent: "center",
@@ -48,7 +52,7 @@ export default function ScoutTeamSelect({
           }}
         >
           <FontAwesomeIcon
-            icon={teamModel.uploadExists ? faCloud : faTabletScreenButton}
+            icon={teamModel.matchScouted ? faCloud : faTabletScreenButton}
             size={18}
             style={{
               color: "white",
@@ -66,22 +70,23 @@ export default function ScoutTeamSelect({
       {renderBadge()}
       <View
         style={[
-          teamModel.alliance === Alliance.Blue
+          alliance === Alliance.Blue
             ? Styles.allianceBlueButton
             : Styles.allianceRedButton,
           {
             width: "100%",
             height: 60,
             flexDirection: "column",
-            opacity:
-              teamModel.sessionExists || teamModel.uploadExists ? 0.6 : 1.0,
+            opacity: teamModel.matchScouted ? 0.6 : 1.0,
           },
         ]}
       >
         <Text style={{ color: "white", fontWeight: "bold" }}>
-          {teamModel.allianceTeam}
+          {allianceTeam}
         </Text>
-        <Text style={{ color: "white", fontSize: 24 }}>{teamModel.teamNumber}</Text>
+        <Text style={{ color: "white", fontSize: 24 }}>
+          {teamModel.teamNumber}
+        </Text>
       </View>
     </TouchableOpacity>
   );

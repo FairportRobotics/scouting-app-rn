@@ -43,15 +43,6 @@ export const eventMatchTeams = sqliteTable("event_match_team", {
 export const matchScouting = sqliteTable("scouting_match", {
   id: text("id").notNull().primaryKey(),
 
-  eventKey: text("event_key")
-    .notNull()
-    .references(() => events.id),
-  matchKey: text("match_key")
-    .notNull()
-    .references(() => eventMatches.id),
-  alliance: text("alliance", { enum: ["Blue", "Red"] }).notNull(),
-  allianceTeam: integer("alliance_team").notNull(),
-
   scheduledTeamKey: text("scheduled_team_key")
     .notNull()
     .references(() => eventTeams.id),
@@ -62,43 +53,43 @@ export const matchScouting = sqliteTable("scouting_match", {
 
   autoStartedWithNote: integer("auto_started_with_note", {
     mode: "boolean",
-  }).notNull(),
+  }).default(false),
   autoLeftStartArea: integer("auto_left_start_area", {
     mode: "boolean",
-  }).notNull(),
-  autoSpeakerScore: integer("auto_speaker_Score").notNull(),
-  autoSpeakerMiss: integer("auto_speaker_miss").notNull(),
-  autoAmpScore: integer("auto_amp_score").notNull(),
-  autoAmpMiss: integer("auto_amp_miss").notNull(),
-  autoNotes: text("auto_notes").notNull(),
+  }).default(false),
+  autoSpeakerScore: integer("auto_speaker_Score").default(0),
+  autoSpeakerMiss: integer("auto_speaker_miss").default(0),
+  autoAmpScore: integer("auto_amp_score").default(0),
+  autoAmpMiss: integer("auto_amp_miss").default(0),
+  autoNotes: text("auto_notes").default(""),
 
-  teleopSpeakerScore: integer("teleop_speaker_score").notNull(),
+  teleopSpeakerScore: integer("teleop_speaker_score").default(0),
   teleopSpeakerScoreAmplified: integer(
     "teleop_speaker_score_amplified"
-  ).notNull(),
-  teleopSpeakerMiss: integer("teleop_speaker_miss").notNull(),
-  teleopAmpScore: integer("teleop_amp_score").notNull(),
-  teleopAmpMiss: integer("teleop_amp_miss").notNull(),
-  teleopRelayPass: integer("teleop_relay_pass").notNull(),
-  teleopNotes: text("teleop_notes").notNull(),
+  ).default(0),
+  teleopSpeakerMiss: integer("teleop_speaker_miss").default(0),
+  teleopAmpScore: integer("teleop_amp_score").default(0),
+  teleopAmpMiss: integer("teleop_amp_miss").default(0),
+  teleopRelayPass: integer("teleop_relay_pass").default(0),
+  teleopNotes: text("teleop_notes").default(""),
 
-  endgameTrapScore: text("endgame_trap_score").notNull(),
-  endgameMicrophoneScore: text("endgame_microphone_score").notNull(),
+  endgameTrapScore: text("endgame_trap_score").default(""),
+  endgameMicrophoneScore: text("endgame_microphone_score").default(""),
   endgameDidRobotPark: integer("endgame_did_robot_park", {
     mode: "boolean",
-  }).notNull(),
+  }).default(false),
   endgameDidRobotHang: integer("endgame_did_robot_hang", {
     mode: "boolean",
-  }).notNull(),
-  endgameHarmony: text("endgame_harmony").notNull(),
-  endgameNotes: text("endgame_notes").notNull(),
+  }).default(false),
+  endgameHarmony: text("endgame_harmony").default(""),
+  endgameNotes: text("endgame_notes").default(""),
 
-  finalAllianceScore: integer("final_alliance_score").notNull(),
-  finalRankingPoints: integer("final_ranking_points").notNull(),
-  finalAllianceResult: text("final_alliance_result").notNull(),
+  finalAllianceScore: integer("final_alliance_score").default(0),
+  finalRankingPoints: integer("final_ranking_points").default(0),
+  finalAllianceResult: text("final_alliance_result").default(""),
   finalViolations: text("final_violations").notNull(),
-  finalPenalties: integer("final_penalties").notNull(),
-  finalNotes: text("final_notes").notNull(),
+  finalPenalties: integer("final_penalties").default(0),
+  finalNotes: text("final_notes").default(""),
 });
 
 export const pitScouting = sqliteTable("scouting_pit", {

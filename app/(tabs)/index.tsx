@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, View, Text } from "react-native";
 import { useRouter } from "expo-router";
-import getDefaultMatchScoutingSession, {
-  MatchScoutingSession,
-  MatchModel,
-  TeamModel,
-} from "@/constants/Types";
 import { ContainerGroup, ScoutMatchSelect } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
-import { getMatchScouting } from "@/data/db";
-import getMatchSelectModels from "@/helpers/getMatchSelectModels";
+import { getMatchScouting, MatchModel } from "@/data/db";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
-import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import Colors from "@/constants/Colors";
 
 export default function IndexScreen() {
@@ -21,27 +12,14 @@ export default function IndexScreen() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
-  const cacheStore = useCacheStore();
-  const matchStore = useMatchScoutingStore();
-
   const loadData = async () => {
-    const matchModels = getMatchSelectModels(
-      cacheStore.event,
-      cacheStore.matches,
-      cacheStore.teams,
-      matchStore.sessionKeys(),
-      matchStore.uploadedKeys
-    );
-
+    const matchModels = await getMatchScouting();
     setMatchModels(matchModels);
-
-    await getMatchScouting();
   };
 
   const onRefresh = async () => {
     setIsRefreshing(true);
 
-    await refreshMatchScoutingKeys();
     await flushAndFillLookups();
     loadData();
 
@@ -52,37 +30,8 @@ export default function IndexScreen() {
     loadData();
   }, []);
 
-  const handleOnSelect = async (
-    matchModel: MatchModel,
-    teamModel: TeamModel
-  ) => {
-    // Extract the Session Key and assign to the store.
-    const key = teamModel.sessionKey;
-    matchStore.setCurrentKey(key);
-
-    if (!(key in matchStore.sessions)) {
-      // Session does not already exist and must be initialized.
-      let newSession = getDefaultMatchScoutingSession() as MatchScoutingSession;
-      newSession.key = teamModel.sessionKey;
-      newSession.eventKey = matchModel.eventKey;
-      newSession.matchKey = matchModel.matchKey;
-      newSession.matchNumber = matchModel.matchNumber;
-      newSession.alliance = teamModel.alliance;
-      newSession.allianceTeam = teamModel.allianceTeam;
-      newSession.scheduledTeamKey = teamModel.teamKey;
-      newSession.scoutedTeamKey = teamModel.teamKey;
-
-      matchStore.saveSession(newSession);
-
-      // HACK: Set the store with the new lookups.
-      useMatchScoutingStore.setState((state) => ({
-        ...state,
-        sessions: matchStore.sessions,
-      }));
-    }
-
-    // Navigate to the Confirmation screen.
-    router.replace(`/(scout-match)/confirm/${key}`);
+  const handleOnSelect = async (sessionKey: string) => {
+    router.replace(`/(scout-match)/confirm/${sessionKey}`);
   };
 
   if (!matchModels || matchModels?.length == 0) {
@@ -130,22 +79,14 @@ export default function IndexScreen() {
           />
         }
       >
-        {matchModels
-          .sort(
-            (a: MatchModel, b: MatchModel) =>
-              new Date(a.predictedTime).getTime() -
-              new Date(b.predictedTime).getTime()
-          )
-          .map((matchModel, index) => (
-            <ContainerGroup title="" key={index}>
-              <ScoutMatchSelect
-                matchModel={matchModel}
-                onSelect={(matchModel, teamModel) =>
-                  handleOnSelect(matchModel, teamModel)
-                }
-              />
-            </ContainerGroup>
-          ))}
+        {matchModels.map((matchModel, index) => (
+          <ContainerGroup title="" key={index}>
+            <ScoutMatchSelect
+              matchModel={matchModel}
+              onSelect={(sessionKey) => console.log("Selected", sessionKey)}
+            />
+          </ContainerGroup>
+        ))}
       </ScrollView>
     </View>
   );

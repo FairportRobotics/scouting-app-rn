@@ -305,11 +305,6 @@ async function refreshMatchScouting(masterKey: string, account: string) {
           .values({
             id: session.id,
 
-            eventKey: session.eventKey,
-            matchKey: session.matchKey,
-            alliance: session.alliance,
-            allianceTeam: session.allianceTeam,
-
             scheduledTeamKey: session.scheduledTeamKey,
             scoutedTeamKey: session.scheduledTeamKey,
             scouterName: session.scouterName,
@@ -331,8 +326,8 @@ async function refreshMatchScouting(masterKey: string, account: string) {
             teleopRelayPass: session.teleopRelayPass ?? 0,
             teleopNotes: session.teleopNotes ?? "",
 
-            endgameTrapScore: session.endgameTrapScore ?? 0,
-            endgameMicrophoneScore: session.endgameMicrophoneScore ?? 0,
+            endgameTrapScore: session.endgameTrapScore ?? "",
+            endgameMicrophoneScore: session.endgameMicrophoneScore ?? "",
             endgameDidRobotPark: session.endgameDidRobotPark ?? false,
             endgameDidRobotHang: session.endgameDidRobotHang ?? false,
             endgameHarmony: session.endgameHarmony ?? "",
@@ -348,11 +343,6 @@ async function refreshMatchScouting(masterKey: string, account: string) {
           .onConflictDoUpdate({
             target: matchScouting.id,
             set: {
-              eventKey: session.eventKey,
-              matchKey: session.matchKey,
-              alliance: session.alliance,
-              allianceTeam: session.allianceTeam,
-
               scheduledTeamKey: session.scheduledTeamKey,
               scoutedTeamKey: session.scheduledTeamKey,
               scouterName: session.scouterName,
@@ -374,8 +364,8 @@ async function refreshMatchScouting(masterKey: string, account: string) {
               teleopRelayPass: session.teleopRelayPass ?? 0,
               teleopNotes: session.teleopNotes ?? "",
 
-              endgameTrapScore: session.endgameTrapScore ?? 0,
-              endgameMicrophoneScore: session.endgameMicrophoneScore ?? 0,
+              endgameTrapScore: session.endgameTrapScore ?? "",
+              endgameMicrophoneScore: session.endgameMicrophoneScore ?? "",
               endgameDidRobotPark: session.endgameDidRobotPark ?? false,
               endgameDidRobotHang: session.endgameDidRobotHang ?? false,
               endgameHarmony: session.endgameHarmony ?? "",
