@@ -13,6 +13,7 @@ import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import { useCacheStore } from "@/store/cachesStore";
 import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
+import { getMatches } from "@/data/db";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function IndexScreen() {
     );
 
     setMatchModels(matchModels);
+
+    await getMatches();
   };
 
   const onRefresh = async () => {
