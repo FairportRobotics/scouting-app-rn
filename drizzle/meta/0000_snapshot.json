@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a334116a-baf2-40ff-9bfd-f88a4c5c95ee",
+  "id": "03d77250-c22a-4882-8b51-ac71a3cf0ca6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_match_team": {
@@ -702,6 +702,29 @@
           "onUpdate": "no action"
         }
       },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "team_member": {
+      "name": "team_member",
+      "columns": {
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }

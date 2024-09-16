@@ -130,6 +130,11 @@ export const levity = sqliteTable("event_levity", {
   item: text("item").notNull(),
 });
 
+export const teamMembers = sqliteTable("team_member", {
+  email: text("email").notNull().primaryKey(),
+  name: text("name").notNull(),
+});
+
 export type Event = typeof events.$inferInsert;
 export type Match = typeof eventMatches.$inferInsert;
 export type Team = typeof eventTeams.$inferInsert;
@@ -139,3 +144,4 @@ export type MatchScout = typeof matchScouting.$inferInsert;
 export type PitScout = typeof pitScouting.$inferInsert;
 
 export type Levity = typeof levity.$inferInsert;
+export type TeamMember = typeof teamMembers.$inferInsert;

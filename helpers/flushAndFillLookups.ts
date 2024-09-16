@@ -14,6 +14,8 @@ import {
   matchScouting,
   PitScout,
   pitScouting,
+  TeamMember,
+  teamMembers,
 } from "@/data/schema";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
 
@@ -23,6 +25,7 @@ export default async () => {
   const account = process.env.EXPO_PUBLIC_AZURE_ACCOUNT as string;
 
   // Clear all existing data.
+  await db.delete(teamMembers);
   await db.delete(eventMatchTeams);
   await db.delete(eventTeams);
   await db.delete(eventMatches);
@@ -34,10 +37,10 @@ export default async () => {
   await refreshMatches(masterKey, account);
   await refreshTeams(masterKey, account);
   await refreshMatchTeams(masterKey, account);
-  await refreshLevity(masterKey, account);
-
   await refreshMatchScouting(masterKey, account);
   await refreshPitScouting(masterKey, account);
+  await refreshTeamMembers(masterKey, account);
+  await refreshLevity(masterKey, account);
 };
 
 async function refreshEvents(masterKey: string, account: string) {
@@ -211,6 +214,44 @@ async function refreshMatchTeams(masterKey: string, account: string) {
     });
   } catch (error) {
     console.error("Error saving MatchTeams:", error);
+  }
+}
+
+async function refreshTeamMembers(masterKey: string, account: string) {
+  // Cache Team Members from Cosmos.
+  try {
+    console.log("Team Members: Retrieve from Cosmos and cache...");
+
+    const results = await fetchFromCosmos<TeamMember>(
+      masterKey,
+      account,
+      "crescendo",
+      "team_member"
+    );
+
+    if (results === undefined) return;
+
+    results.forEach(async (tm) => {
+      try {
+        await db
+          .insert(teamMembers)
+          .values({
+            email: tm.email,
+            name: tm.name,
+          })
+          .onConflictDoUpdate({
+            target: teamMembers.email,
+            set: {
+              name: tm.name,
+            },
+          });
+      } catch (error) {
+        console.error("Error saving Team Member:", tm);
+        console.error(error);
+      }
+    });
+  } catch (error) {
+    console.error("Error saving Team Members:", error);
   }
 }
 

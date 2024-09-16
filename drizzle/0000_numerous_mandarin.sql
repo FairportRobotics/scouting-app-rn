@@ -100,3 +100,8 @@ CREATE TABLE `scouting_pit` (
 	FOREIGN KEY (`event_key`) REFERENCES `event`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action
 );
+--> statement-breakpoint
+CREATE TABLE `team_member` (
+	`email` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL
+);
