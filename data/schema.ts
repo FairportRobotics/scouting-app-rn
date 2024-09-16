@@ -41,13 +41,44 @@ export const eventMatchTeams = sqliteTable("event_match_team", {
     .references(() => eventTeams.key),
 });
 
-export const levity = sqliteTable("levity", {
+export const matchScouting = sqliteTable("scouting_match", {
   key: text("key").notNull().primaryKey(),
-  item: text("value").notNull(),
+  eventKey: text("event_key")
+    .notNull()
+    .references(() => events.key),
+  matchKey: text("match_key")
+    .notNull()
+    .references(() => eventMatches.key),
+  scheduledTeamKey: text("scheduled_team_key")
+    .notNull()
+    .references(() => eventTeams.key),
+  scoutedTeamKey: text("scouted_team_key")
+    .notNull()
+    .references(() => eventTeams.key),
+  scouterName: text("scouter_name").notNull(),
+});
+
+export const pitScouting = sqliteTable("scouting_pit", {
+  key: text("key").notNull().primaryKey(),
+  eventKey: text("event_key")
+    .notNull()
+    .references(() => events.key),
+  teamKey: text("team_key")
+    .notNull()
+    .references(() => eventTeams.key),
+});
+
+export const levity = sqliteTable("event_levity", {
+  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  item: text("item").notNull(),
 });
 
 export type Event = typeof events.$inferInsert;
 export type Match = typeof eventMatches.$inferInsert;
 export type Team = typeof eventTeams.$inferInsert;
 export type MatchTeam = typeof eventMatchTeams.$inferInsert;
+
+export type MatchScout = typeof matchScouting.$inferInsert;
+export type PitScout = typeof pitScouting.$inferInsert;
+
 export type Levity = typeof levity.$inferInsert;

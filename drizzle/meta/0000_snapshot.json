@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "6a498131-5306-4b34-8e89-d9db656a15b0",
+  "id": "da8c6873-cd7c-45ac-ae0e-abaf4ed965c5",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_match_team": {
@@ -234,18 +234,18 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "levity": {
-      "name": "levity",
+    "event_levity": {
+      "name": "event_levity",
       "columns": {
-        "key": {
-          "name": "key",
-          "type": "text",
+        "id": {
+          "name": "id",
+          "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": true
         },
-        "value": {
-          "name": "value",
+        "item": {
+          "name": "item",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -254,6 +254,167 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "scouting_match": {
+      "name": "scouting_match",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "event_key": {
+          "name": "event_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_key": {
+          "name": "match_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "scheduled_team_key": {
+          "name": "scheduled_team_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "scouted_team_key": {
+          "name": "scouted_team_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "scouter_name": {
+          "name": "scouter_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scouting_match_event_key_event_key_fk": {
+          "name": "scouting_match_event_key_event_key_fk",
+          "tableFrom": "scouting_match",
+          "tableTo": "event",
+          "columnsFrom": [
+            "event_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scouting_match_match_key_event_match_key_fk": {
+          "name": "scouting_match_match_key_event_match_key_fk",
+          "tableFrom": "scouting_match",
+          "tableTo": "event_match",
+          "columnsFrom": [
+            "match_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scouting_match_scheduled_team_key_event_team_key_fk": {
+          "name": "scouting_match_scheduled_team_key_event_team_key_fk",
+          "tableFrom": "scouting_match",
+          "tableTo": "event_team",
+          "columnsFrom": [
+            "scheduled_team_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scouting_match_scouted_team_key_event_team_key_fk": {
+          "name": "scouting_match_scouted_team_key_event_team_key_fk",
+          "tableFrom": "scouting_match",
+          "tableTo": "event_team",
+          "columnsFrom": [
+            "scouted_team_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "scouting_pit": {
+      "name": "scouting_pit",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "event_key": {
+          "name": "event_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_key": {
+          "name": "team_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scouting_pit_event_key_event_key_fk": {
+          "name": "scouting_pit_event_key_event_key_fk",
+          "tableFrom": "scouting_pit",
+          "tableTo": "event",
+          "columnsFrom": [
+            "event_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "scouting_pit_team_key_event_team_key_fk": {
+          "name": "scouting_pit_team_key_event_team_key_fk",
+          "tableFrom": "scouting_pit",
+          "tableTo": "event_team",
+          "columnsFrom": [
+            "team_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }

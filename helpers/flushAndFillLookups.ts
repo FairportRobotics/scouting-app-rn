@@ -18,24 +18,19 @@ export default async () => {
   const masterKey = process.env.EXPO_PUBLIC_AZURE_KEY as string;
   const account = process.env.EXPO_PUBLIC_AZURE_ACCOUNT as string;
 
-  // const levity = await fetchFromCosmos<Levity>(
-  //   masterKey,
-  //   account,
-  //   "crescendo",
-  //   "event_levity"
-  // );
-
   // Clear all existing data.
   await db.delete(eventMatchTeams);
   await db.delete(eventTeams);
   await db.delete(eventMatches);
   await db.delete(events);
+  await db.delete(levity);
 
   //
   await refreshEvents(masterKey, account);
   await refreshMatches(masterKey, account);
   await refreshTeams(masterKey, account);
   await refreshMatchTeams(masterKey, account);
+  await refreshLevity(masterKey, account);
 };
 
 async function refreshEvents(masterKey: string, account: string) {
@@ -209,5 +204,34 @@ async function refreshMatchTeams(masterKey: string, account: string) {
     });
   } catch (error) {
     console.error("Error saving MatchTeams:", error);
+  }
+}
+
+async function refreshLevity(masterKey: string, account: string) {
+  // Cache MatchTeams from Cosmos.
+  try {
+    console.log("Levity: Retrieve from Cosmos and cache...");
+
+    const results = await fetchFromCosmos<Levity>(
+      masterKey,
+      account,
+      "crescendo",
+      "event_levity"
+    );
+
+    if (results === undefined) return;
+
+    results.forEach(async (l) => {
+      try {
+        await db.insert(levity).values({
+          item: l.item,
+        });
+      } catch (error) {
+        console.error("Error saving Levity:", eventMatchTeams);
+        console.error(error);
+      }
+    });
+  } catch (error) {
+    console.error("Error saving Levity:", error);
   }
 }

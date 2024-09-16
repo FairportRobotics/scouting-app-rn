@@ -34,7 +34,28 @@ CREATE TABLE `event` (
 	`end_date` text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE `levity` (
+CREATE TABLE `event_levity` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`item` text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `scouting_match` (
 	`key` text PRIMARY KEY NOT NULL,
-	`value` text NOT NULL
+	`event_key` text NOT NULL,
+	`match_key` text NOT NULL,
+	`scheduled_team_key` text NOT NULL,
+	`scouted_team_key` text NOT NULL,
+	`scouter_name` text NOT NULL,
+	FOREIGN KEY (`event_key`) REFERENCES `event`(`key`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`match_key`) REFERENCES `event_match`(`key`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`scheduled_team_key`) REFERENCES `event_team`(`key`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`scouted_team_key`) REFERENCES `event_team`(`key`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `scouting_pit` (
+	`key` text PRIMARY KEY NOT NULL,
+	`event_key` text NOT NULL,
+	`team_key` text NOT NULL,
+	FOREIGN KEY (`event_key`) REFERENCES `event`(`key`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`team_key`) REFERENCES `event_team`(`key`) ON UPDATE no action ON DELETE no action
 );
