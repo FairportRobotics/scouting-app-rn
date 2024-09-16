@@ -1,1 +1,0 @@
-ALTER TABLE `event_matches` RENAME COLUMN `type` TO `match_type`;

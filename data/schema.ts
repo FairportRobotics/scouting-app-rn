@@ -8,7 +8,7 @@ export const events = sqliteTable("event", {
   endDate: text("end_date").notNull(),
 });
 
-export const eventMatches = sqliteTable("event_matches", {
+export const eventMatches = sqliteTable("event_match", {
   key: text("key").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
@@ -19,19 +19,23 @@ export const eventMatches = sqliteTable("event_matches", {
   predictedTime: text("predicted_time"),
 });
 
-export const eventTeams = sqliteTable("event_teams", {
+export const eventTeams = sqliteTable("event_team", {
   key: text("key").notNull().primaryKey(),
-  number: integer("number").notNull(),
-  nickName: text("nickname").notNull(),
+  number: text("number").notNull(),
+  nickname: text("nickname").notNull(),
+  schoolName: text("school_name").notNull(),
 });
 
-export const eventMatchTeams = sqliteTable("event_match_teams", {
-  id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  matchkey: text("match_key")
+export const eventMatchTeams = sqliteTable("event_match_team", {
+  key: text("key").notNull().primaryKey(),
+  eventKey: text("event_key")
+    .notNull()
+    .references(() => events.key),
+  matchKey: text("match_key")
     .notNull()
     .references(() => eventMatches.key),
   alliance: text("alliance", { enum: ["Blue", "Red"] }).notNull(),
-  allianceNumber: integer("alliance_number").notNull(),
+  allianceTeam: integer("alliance_team").notNull(),
   teamKey: text("team_key")
     .notNull()
     .references(() => eventTeams.key),

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1726492661774,
-      "tag": "0000_workable_surge",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1726493823196,
-      "tag": "0001_bored_pandemic",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1726494119898,
-      "tag": "0002_married_venus",
+      "when": 1726502993035,
+      "tag": "0000_clammy_talon",
       "breakpoints": true
     }
   ]

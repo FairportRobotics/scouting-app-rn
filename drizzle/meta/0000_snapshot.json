@@ -1,82 +1,11 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "77ca123c-d58b-4287-8354-35466bb85306",
+  "id": "6a498131-5306-4b34-8e89-d9db656a15b0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "event_match_teams": {
-      "name": "event_match_teams",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "match_key": {
-          "name": "match_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "alliance": {
-          "name": "alliance",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "alliance_number": {
-          "name": "alliance_number",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "team_key": {
-          "name": "team_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "event_match_teams_match_key_event_matches_key_fk": {
-          "name": "event_match_teams_match_key_event_matches_key_fk",
-          "tableFrom": "event_match_teams",
-          "tableTo": "event_matches",
-          "columnsFrom": [
-            "match_key"
-          ],
-          "columnsTo": [
-            "key"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "event_match_teams_team_key_event_teams_key_fk": {
-          "name": "event_match_teams_team_key_event_teams_key_fk",
-          "tableFrom": "event_match_teams",
-          "tableTo": "event_teams",
-          "columnsFrom": [
-            "team_key"
-          ],
-          "columnsTo": [
-            "key"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
-    "event_matches": {
-      "name": "event_matches",
+    "event_match_team": {
+      "name": "event_match_team",
       "columns": {
         "key": {
           "name": "key",
@@ -92,22 +21,120 @@
           "notNull": true,
           "autoincrement": false
         },
-        "type": {
-          "name": "type",
+        "match_key": {
+          "name": "match_key",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "number": {
-          "name": "number",
+        "alliance": {
+          "name": "alliance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "alliance_team": {
+          "name": "alliance_team",
           "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "start_time": {
-          "name": "start_time",
+        "team_key": {
+          "name": "team_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "event_match_team_event_key_event_key_fk": {
+          "name": "event_match_team_event_key_event_key_fk",
+          "tableFrom": "event_match_team",
+          "tableTo": "event",
+          "columnsFrom": [
+            "event_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_match_team_match_key_event_match_key_fk": {
+          "name": "event_match_team_match_key_event_match_key_fk",
+          "tableFrom": "event_match_team",
+          "tableTo": "event_match",
+          "columnsFrom": [
+            "match_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "event_match_team_team_key_event_team_key_fk": {
+          "name": "event_match_team_team_key_event_team_key_fk",
+          "tableFrom": "event_match_team",
+          "tableTo": "event_team",
+          "columnsFrom": [
+            "team_key"
+          ],
+          "columnsTo": [
+            "key"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "event_match": {
+      "name": "event_match",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "event_key": {
+          "name": "event_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_type": {
+          "name": "match_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "match_number": {
+          "name": "match_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "set_number": {
+          "name": "set_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "predicted_time": {
+          "name": "predicted_time",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -116,9 +143,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "event_matches_event_key_event_key_fk": {
-          "name": "event_matches_event_key_event_key_fk",
-          "tableFrom": "event_matches",
+        "event_match_event_key_event_key_fk": {
+          "name": "event_match_event_key_event_key_fk",
+          "tableFrom": "event_match",
           "tableTo": "event",
           "columnsFrom": [
             "event_key"
@@ -133,8 +160,8 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "event_teams": {
-      "name": "event_teams",
+    "event_team": {
+      "name": "event_team",
       "columns": {
         "key": {
           "name": "key",
@@ -145,13 +172,20 @@
         },
         "number": {
           "name": "number",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "nickname": {
           "name": "nickname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "school_name": {
+          "name": "school_name",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
