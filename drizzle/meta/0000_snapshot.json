@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7bc6111d-6ad6-46d7-ab0e-3eef9373e7f0",
+  "id": "a334116a-baf2-40ff-9bfd-f88a4c5c95ee",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_match_team": {
@@ -277,6 +277,20 @@
         "match_key": {
           "name": "match_key",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "alliance": {
+          "name": "alliance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "alliance_team": {
+          "name": "alliance_team",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

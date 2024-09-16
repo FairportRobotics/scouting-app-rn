@@ -42,12 +42,16 @@ export const eventMatchTeams = sqliteTable("event_match_team", {
 
 export const matchScouting = sqliteTable("scouting_match", {
   id: text("id").notNull().primaryKey(),
+
   eventKey: text("event_key")
     .notNull()
     .references(() => events.id),
   matchKey: text("match_key")
     .notNull()
     .references(() => eventMatches.id),
+  alliance: text("alliance", { enum: ["Blue", "Red"] }).notNull(),
+  allianceTeam: integer("alliance_team").notNull(),
+
   scheduledTeamKey: text("scheduled_team_key")
     .notNull()
     .references(() => eventTeams.id),

@@ -43,6 +43,8 @@ CREATE TABLE `scouting_match` (
 	`id` text PRIMARY KEY NOT NULL,
 	`event_key` text NOT NULL,
 	`match_key` text NOT NULL,
+	`alliance` text NOT NULL,
+	`alliance_team` integer NOT NULL,
 	`scheduled_team_key` text NOT NULL,
 	`scouted_team_key` text NOT NULL,
 	`scouter_name` text NOT NULL,

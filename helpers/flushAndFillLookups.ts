@@ -12,6 +12,8 @@ import {
   MatchTeam,
   MatchScout,
   matchScouting,
+  PitScout,
+  pitScouting,
 } from "@/data/schema";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
 
@@ -35,6 +37,7 @@ export default async () => {
   await refreshLevity(masterKey, account);
 
   await refreshMatchScouting(masterKey, account);
+  await refreshPitScouting(masterKey, account);
 };
 
 async function refreshEvents(masterKey: string, account: string) {
@@ -255,15 +258,17 @@ async function refreshMatchScouting(masterKey: string, account: string) {
     if (results === undefined) return;
 
     results.forEach(async (session) => {
-      if (!session.id) return;
-
       try {
         await db
           .insert(matchScouting)
           .values({
             id: session.id,
+
             eventKey: session.eventKey,
             matchKey: session.matchKey,
+            alliance: session.alliance,
+            allianceTeam: session.allianceTeam,
+
             scheduledTeamKey: session.scheduledTeamKey,
             scoutedTeamKey: session.scheduledTeamKey,
             scouterName: session.scouterName,
@@ -304,6 +309,9 @@ async function refreshMatchScouting(masterKey: string, account: string) {
             set: {
               eventKey: session.eventKey,
               matchKey: session.matchKey,
+              alliance: session.alliance,
+              allianceTeam: session.allianceTeam,
+
               scheduledTeamKey: session.scheduledTeamKey,
               scoutedTeamKey: session.scheduledTeamKey,
               scouterName: session.scouterName,
@@ -347,5 +355,73 @@ async function refreshMatchScouting(masterKey: string, account: string) {
     });
   } catch (error) {
     console.error("Error saving Match Scouting Sessions:", error);
+  }
+}
+
+async function refreshPitScouting(masterKey: string, account: string) {
+  // Cache Scouted Matches from Cosmos.
+  try {
+    console.log("Scouted Pits: Retrieve from Cosmos and cache...");
+
+    const results = await fetchFromCosmos<PitScout>(
+      masterKey,
+      account,
+      "crescendo",
+      "pit"
+    );
+
+    if (results === undefined) return;
+
+    results.forEach(async (session) => {
+      try {
+        await db
+          .insert(pitScouting)
+          .values({
+            id: session.id,
+            eventKey: session.eventKey,
+            teamKey: session.id,
+            driveTeamExperience: session.driveTeamExperience,
+            numberOfAutoMethods: session.numberOfAutoMethods,
+            canPickUpFromGround: session.canPickUpFromGround,
+            canReceiveFromSourceChute: session.canReceiveFromSourceChute,
+            canScoreInAmp: session.canScoreInAmp,
+            canScoreInSpeaker: session.canScoreInSpeaker,
+            canScoreInTrap: session.canScoreInTrap,
+            whereCanYouScoreInSpeaker: session.whereCanYouScoreInSpeaker,
+            canFitUnderStage: session.canFitUnderStage,
+            canGetOnstage: session.canGetOnstage,
+            robotWidth: session.robotWidth,
+            onstagePosition: session.onstagePosition,
+            notes: session.notes,
+          })
+          .onConflictDoUpdate({
+            target: pitScouting.id,
+            set: {
+              eventKey: session.eventKey,
+              teamKey: session.id,
+              driveTeamExperience: session.driveTeamExperience ?? "",
+              numberOfAutoMethods: session.numberOfAutoMethods ?? "",
+              canPickUpFromGround: session.canPickUpFromGround ?? "",
+              canReceiveFromSourceChute:
+                session.canReceiveFromSourceChute ?? "",
+              canScoreInAmp: session.canScoreInAmp ?? "",
+              canScoreInSpeaker: session.canScoreInSpeaker ?? "",
+              canScoreInTrap: session.canScoreInTrap ?? "",
+              whereCanYouScoreInSpeaker:
+                session.whereCanYouScoreInSpeaker ?? "",
+              canFitUnderStage: session.canFitUnderStage ?? "",
+              canGetOnstage: session.canGetOnstage ?? "",
+              robotWidth: session.robotWidth ?? "",
+              onstagePosition: session.onstagePosition ?? "",
+              notes: session.notes ?? "",
+            },
+          });
+      } catch (error) {
+        console.error("Error saving Pit Scouting Session:", session);
+        console.error(error);
+      }
+    });
+  } catch (error) {
+    console.error("Error saving Pit Scouting Sessions:", error);
   }
 }
