@@ -3,7 +3,12 @@ import { openDatabaseSync } from "expo-sqlite/next";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import * as FileSystem from "expo-file-system";
-import { eventMatches, eventMatchTeams, matchScouting } from "./schema";
+import {
+  eventMatches,
+  eventMatchTeams,
+  matchScouting,
+  matchScoutingUploads,
+} from "./schema";
 import { eq } from "drizzle-orm/expressions";
 
 export const connection = openDatabaseSync("scouting-app.db");
@@ -45,7 +50,8 @@ export interface MatchTeamModel {
   sessionKey: string;
   teamKey: string;
   teamNumber: string;
-  matchScouted: boolean;
+  scouted: boolean;
+  uploaded: boolean;
 }
 
 export async function getMatchScouting() {
@@ -62,11 +68,16 @@ export async function getMatchScouting() {
       alliance: eventMatchTeams.alliance,
       allianceTeam: eventMatchTeams.allianceTeam,
       teamKey: eventMatchTeams.teamKey,
-      matchScouted: matchScouting.id,
+      scouted: matchScouting.id,
+      uploaded: matchScoutingUploads.id,
     })
     .from(eventMatches)
     .leftJoin(eventMatchTeams, eq(eventMatches.id, eventMatchTeams.matchKey))
-    .leftJoin(matchScouting, eq(eventMatchTeams.id, matchScouting.id));
+    .leftJoin(matchScouting, eq(eventMatchTeams.id, matchScouting.id))
+    .leftJoin(
+      matchScoutingUploads,
+      eq(eventMatchTeams.id, matchScoutingUploads.id)
+    );
 
   // Group MatchModel and add MatchTeamModels as children.
   const groupedResult = results.reduce<Record<string, MatchModel>>(
@@ -79,7 +90,8 @@ export async function getMatchScouting() {
         matchNumber,
         predictedTime,
       } = row;
-      const { sessionKey, alliance, allianceTeam, teamKey, matchScouted } = row;
+      const { sessionKey, alliance, allianceTeam, teamKey, scouted, uploaded } =
+        row;
 
       // Create the parent Match if it does not exist.
       if (!acc[matchKey]) {
@@ -101,7 +113,8 @@ export async function getMatchScouting() {
           sessionKey: sessionKey,
           teamKey: teamKey,
           teamNumber: teamKey.replace("frc", ""),
-          matchScouted: !!matchScouted,
+          scouted: !!scouted,
+          uploaded: !!uploaded,
         };
       }
 
@@ -110,7 +123,8 @@ export async function getMatchScouting() {
           sessionKey: sessionKey,
           teamKey: teamKey,
           teamNumber: teamKey.replace("frc", ""),
-          matchScouted: !!matchScouted,
+          scouted: !!scouted,
+          uploaded: !!uploaded,
         };
       }
 
@@ -124,8 +138,6 @@ export async function getMatchScouting() {
   arrayResult.sort((a, b) => {
     return a.predictedTime.getTime() - b.predictedTime.getTime();
   });
-
-  console.log(JSON.stringify(arrayResult, null, 2));
 
   return arrayResult;
 }

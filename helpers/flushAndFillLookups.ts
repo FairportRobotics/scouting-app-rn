@@ -18,6 +18,7 @@ import {
   teamMembers,
 } from "@/data/schema";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
+import postToCosmos from "./postToCosmos";
 
 export default async () => {
   // Retrieve the URL and key from env.
@@ -37,8 +38,8 @@ export default async () => {
   await refreshMatches(masterKey, account);
   await refreshTeams(masterKey, account);
   await refreshMatchTeams(masterKey, account);
-  await refreshMatchScouting(masterKey, account);
-  await refreshPitScouting(masterKey, account);
+  // await refreshMatchScouting(masterKey, account);
+  // await refreshPitScouting(masterKey, account);
   await refreshTeamMembers(masterKey, account);
   await refreshLevity(masterKey, account);
 };

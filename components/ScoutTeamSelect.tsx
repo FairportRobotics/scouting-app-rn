@@ -27,7 +27,7 @@ export default function ScoutTeamSelect({
   };
 
   const renderBadge = () => {
-    if (teamModel.matchScouted) {
+    if (teamModel.scouted) {
       return (
         <View
           style={{
@@ -39,12 +39,12 @@ export default function ScoutTeamSelect({
             height: 30,
             borderRadius: 15,
             backgroundColor:
-              teamModel.matchScouted && teamModel.matchScouted
+              teamModel.scouted && teamModel.uploaded
                 ? Colors.uploaded
                 : Colors.notUploaded,
             borderWidth: 2,
             borderColor:
-              teamModel.matchScouted && teamModel.matchScouted
+              teamModel.scouted && teamModel.uploaded
                 ? Colors.uploaded
                 : Colors.notUploaded,
             justifyContent: "center",
@@ -52,7 +52,7 @@ export default function ScoutTeamSelect({
           }}
         >
           <FontAwesomeIcon
-            icon={teamModel.matchScouted ? faCloud : faTabletScreenButton}
+            icon={teamModel.scouted ? faCloud : faTabletScreenButton}
             size={18}
             style={{
               color: "white",
@@ -77,7 +77,7 @@ export default function ScoutTeamSelect({
             width: "100%",
             height: 60,
             flexDirection: "column",
-            opacity: teamModel.matchScouted ? 0.6 : 1.0,
+            opacity: teamModel.scouted ? 0.6 : 1.0,
           },
         ]}
       >

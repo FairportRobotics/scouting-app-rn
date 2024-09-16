@@ -1,32 +1,43 @@
-import { ItemKey } from "@/constants/Types";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
-import { useCacheStore } from "@/store/cachesStore";
-import axios from "axios";
+import { MatchScout, matchScoutingUploads } from "@/data/schema";
+import fetchFromCosmos from "./fetchFromCosmos";
+import { db } from "@/data/db";
 
 export default async () => {
+  // Retrieve the URL and key from env.
+  const masterKey = process.env.EXPO_PUBLIC_AZURE_KEY as string;
+  const account = process.env.EXPO_PUBLIC_AZURE_ACCOUNT as string;
+
+  // Cache Scouted Match Uploads from Cosmos.
   try {
-    const saveUri = process.env.EXPO_PUBLIC_SAVE_URI as string;
+    const results = await fetchFromCosmos<MatchScout>(
+      masterKey,
+      account,
+      "crescendo",
+      "match"
+    );
 
-    const postData = {
-      type: "match",
-      refresh: "1",
-    };
+    if (results === undefined) return;
 
-    const response = await axios.post(saveUri, postData);
-    const uploadedKeys = (response.data.data_for as Array<string>) || [];
-
-    // Filter the keys to only those for the event.
-    const eventKey = useCacheStore.getState().event.key;
-    const eventKeys = uploadedKeys
-      .filter((key) => key.startsWith(eventKey))
-      .map((item) => ({ key: item } as ItemKey));
-
-    // Set the store with the new lookups.
-    useMatchScoutingStore.setState((state) => ({
-      ...state,
-      uploadedKeys: eventKeys,
-    }));
+    results.forEach(async (session) => {
+      try {
+        await db
+          .insert(matchScoutingUploads)
+          .values({
+            id: session.id,
+            refreshDate: new Date().toISOString(),
+          })
+          .onConflictDoUpdate({
+            target: matchScoutingUploads.id,
+            set: {
+              refreshDate: new Date().toISOString(),
+            },
+          });
+      } catch (error) {
+        console.error("Error saving Match Scouting Uploads:", session);
+        console.error(error);
+      }
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error saving Match Scouting Uploads:", error);
   }
 };

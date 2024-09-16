@@ -41,43 +41,42 @@ CREATE TABLE `event_levity` (
 --> statement-breakpoint
 CREATE TABLE `scouting_match` (
 	`id` text PRIMARY KEY NOT NULL,
-	`event_key` text NOT NULL,
-	`match_key` text NOT NULL,
-	`alliance` text NOT NULL,
-	`alliance_team` integer NOT NULL,
 	`scheduled_team_key` text NOT NULL,
 	`scouted_team_key` text NOT NULL,
 	`scouter_name` text NOT NULL,
-	`auto_started_with_note` integer NOT NULL,
-	`auto_left_start_area` integer NOT NULL,
-	`auto_speaker_Score` integer NOT NULL,
-	`auto_speaker_miss` integer NOT NULL,
-	`auto_amp_score` integer NOT NULL,
-	`auto_amp_miss` integer NOT NULL,
-	`auto_notes` text NOT NULL,
-	`teleop_speaker_score` integer NOT NULL,
-	`teleop_speaker_score_amplified` integer NOT NULL,
-	`teleop_speaker_miss` integer NOT NULL,
-	`teleop_amp_score` integer NOT NULL,
-	`teleop_amp_miss` integer NOT NULL,
-	`teleop_relay_pass` integer NOT NULL,
-	`teleop_notes` text NOT NULL,
-	`endgame_trap_score` text NOT NULL,
-	`endgame_microphone_score` text NOT NULL,
-	`endgame_did_robot_park` integer NOT NULL,
-	`endgame_did_robot_hang` integer NOT NULL,
-	`endgame_harmony` text NOT NULL,
-	`endgame_notes` text NOT NULL,
-	`final_alliance_score` integer NOT NULL,
-	`final_ranking_points` integer NOT NULL,
-	`final_alliance_result` text NOT NULL,
+	`auto_started_with_note` integer DEFAULT false,
+	`auto_left_start_area` integer DEFAULT false,
+	`auto_speaker_Score` integer DEFAULT 0,
+	`auto_speaker_miss` integer DEFAULT 0,
+	`auto_amp_score` integer DEFAULT 0,
+	`auto_amp_miss` integer DEFAULT 0,
+	`auto_notes` text DEFAULT '',
+	`teleop_speaker_score` integer DEFAULT 0,
+	`teleop_speaker_score_amplified` integer DEFAULT 0,
+	`teleop_speaker_miss` integer DEFAULT 0,
+	`teleop_amp_score` integer DEFAULT 0,
+	`teleop_amp_miss` integer DEFAULT 0,
+	`teleop_relay_pass` integer DEFAULT 0,
+	`teleop_notes` text DEFAULT '',
+	`endgame_trap_score` text DEFAULT '',
+	`endgame_microphone_score` text DEFAULT '',
+	`endgame_did_robot_park` integer DEFAULT false,
+	`endgame_did_robot_hang` integer DEFAULT false,
+	`endgame_harmony` text DEFAULT '',
+	`endgame_notes` text DEFAULT '',
+	`final_alliance_score` integer DEFAULT 0,
+	`final_ranking_points` integer DEFAULT 0,
+	`final_alliance_result` text DEFAULT '',
 	`final_violations` text NOT NULL,
-	`final_penalties` integer NOT NULL,
-	`final_notes` text NOT NULL,
-	FOREIGN KEY (`event_key`) REFERENCES `event`(`id`) ON UPDATE no action ON DELETE no action,
-	FOREIGN KEY (`match_key`) REFERENCES `event_match`(`id`) ON UPDATE no action ON DELETE no action,
+	`final_penalties` integer DEFAULT 0,
+	`final_notes` text DEFAULT '',
 	FOREIGN KEY (`scheduled_team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`scouted_team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `scouting_match_uploads` (
+	`id` text PRIMARY KEY NOT NULL,
+	`refresh_date` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `scouting_pit` (
@@ -99,6 +98,11 @@ CREATE TABLE `scouting_pit` (
 	`notes` text,
 	FOREIGN KEY (`event_key`) REFERENCES `event`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `scouting_pit_uploads` (
+	`id` text PRIMARY KEY NOT NULL,
+	`refresh_date` text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE `team_member` (

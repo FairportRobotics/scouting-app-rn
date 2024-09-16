@@ -126,13 +126,26 @@ export const teamMembers = sqliteTable("team_member", {
   name: text("name").notNull(),
 });
 
+export const matchScoutingUploads = sqliteTable("scouting_match_uploads", {
+  id: text("id").notNull().primaryKey(),
+  refreshDate: text("refresh_date").notNull(),
+});
+
+export const pitScoutingUploads = sqliteTable("scouting_pit_uploads", {
+  id: text("id").notNull().primaryKey(),
+  refreshDate: text("refresh_date").notNull(),
+});
+
 export type Event = typeof events.$inferInsert;
 export type Match = typeof eventMatches.$inferInsert;
 export type Team = typeof eventTeams.$inferInsert;
 export type MatchTeam = typeof eventMatchTeams.$inferInsert;
 
 export type MatchScout = typeof matchScouting.$inferInsert;
+export type MatchScoutUpload = typeof matchScoutingUploads.$inferInsert;
+
 export type PitScout = typeof pitScouting.$inferInsert;
+export type PitScoutUpload = typeof pitScoutingUploads.$inferInsert;
 
 export type Levity = typeof levity.$inferInsert;
 export type TeamMember = typeof teamMembers.$inferInsert;
