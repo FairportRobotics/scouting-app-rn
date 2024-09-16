@@ -1,18 +1,17 @@
-import { sql } from "drizzle-orm";
 import { text, integer, sqliteTable } from "drizzle-orm/sqlite-core";
 
 export const events = sqliteTable("event", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   name: text("name").notNull(),
   startDate: text("start_date").notNull(),
   endDate: text("end_date").notNull(),
 });
 
 export const eventMatches = sqliteTable("event_match", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
-    .references(() => events.key),
+    .references(() => events.id),
   matchType: text("match_type", { enum: ["qm", "sf", "f"] }).notNull(),
   matchNumber: integer("match_number").notNull(),
   setNumber: integer("set_number").notNull(),
@@ -20,52 +19,106 @@ export const eventMatches = sqliteTable("event_match", {
 });
 
 export const eventTeams = sqliteTable("event_team", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   number: text("number").notNull(),
   nickname: text("nickname").notNull(),
   schoolName: text("school_name").notNull(),
 });
 
 export const eventMatchTeams = sqliteTable("event_match_team", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
-    .references(() => events.key),
+    .references(() => events.id),
   matchKey: text("match_key")
     .notNull()
-    .references(() => eventMatches.key),
+    .references(() => eventMatches.id),
   alliance: text("alliance", { enum: ["Blue", "Red"] }).notNull(),
   allianceTeam: integer("alliance_team").notNull(),
   teamKey: text("team_key")
     .notNull()
-    .references(() => eventTeams.key),
+    .references(() => eventTeams.id),
 });
 
 export const matchScouting = sqliteTable("scouting_match", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
-    .references(() => events.key),
+    .references(() => events.id),
   matchKey: text("match_key")
     .notNull()
-    .references(() => eventMatches.key),
+    .references(() => eventMatches.id),
   scheduledTeamKey: text("scheduled_team_key")
     .notNull()
-    .references(() => eventTeams.key),
+    .references(() => eventTeams.id),
   scoutedTeamKey: text("scouted_team_key")
     .notNull()
-    .references(() => eventTeams.key),
+    .references(() => eventTeams.id),
   scouterName: text("scouter_name").notNull(),
+
+  autoStartedWithNote: integer("auto_started_with_note", {
+    mode: "boolean",
+  }).notNull(),
+  autoLeftStartArea: integer("auto_left_start_area", {
+    mode: "boolean",
+  }).notNull(),
+  autoSpeakerScore: integer("auto_speaker_Score").notNull(),
+  autoSpeakerMiss: integer("auto_speaker_miss").notNull(),
+  autoAmpScore: integer("auto_amp_score").notNull(),
+  autoAmpMiss: integer("auto_amp_miss").notNull(),
+  autoNotes: text("auto_notes").notNull(),
+
+  teleopSpeakerScore: integer("teleop_speaker_score").notNull(),
+  teleopSpeakerScoreAmplified: integer(
+    "teleop_speaker_score_amplified"
+  ).notNull(),
+  teleopSpeakerMiss: integer("teleop_speaker_miss").notNull(),
+  teleopAmpScore: integer("teleop_amp_score").notNull(),
+  teleopAmpMiss: integer("teleop_amp_miss").notNull(),
+  teleopRelayPass: integer("teleop_relay_pass").notNull(),
+  teleopNotes: text("teleop_notes").notNull(),
+
+  endgameTrapScore: text("endgame_trap_score").notNull(),
+  endgameMicrophoneScore: text("endgame_microphone_score").notNull(),
+  endgameDidRobotPark: integer("endgame_did_robot_park", {
+    mode: "boolean",
+  }).notNull(),
+  endgameDidRobotHang: integer("endgame_did_robot_hang", {
+    mode: "boolean",
+  }).notNull(),
+  endgameHarmony: text("endgame_harmony").notNull(),
+  endgameNotes: text("endgame_notes").notNull(),
+
+  finalAllianceScore: integer("final_alliance_score").notNull(),
+  finalRankingPoints: integer("final_ranking_points").notNull(),
+  finalAllianceResult: text("final_alliance_result").notNull(),
+  finalViolations: text("final_violations").notNull(),
+  finalPenalties: integer("final_penalties").notNull(),
+  finalNotes: text("final_notes").notNull(),
 });
 
 export const pitScouting = sqliteTable("scouting_pit", {
-  key: text("key").notNull().primaryKey(),
+  id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
-    .references(() => events.key),
+    .references(() => events.id),
   teamKey: text("team_key")
     .notNull()
-    .references(() => eventTeams.key),
+    .references(() => eventTeams.id),
+
+  driveTeamExperience: text("drive_team_experience"),
+  numberOfAutoMethods: text("number_of_auto_methods"),
+  canPickUpFromGround: text("can_pick_up_from_ground"),
+  canReceiveFromSourceChute: text("can_receive_from_source_chute"),
+  canScoreInAmp: text("can_score_in_amp"),
+  canScoreInSpeaker: text("can_score_in_speaker"),
+  canScoreInTrap: text("can_score_in_trap"),
+  whereCanYouScoreInSpeaker: text("where_can_you_score_in_speaker"),
+  canFitUnderStage: text("can_fit_under_stage"),
+  canGetOnstage: text("can_get_onstage"),
+  robotWidth: text("robot_width"),
+  onstagePosition: text("onstage_position"),
+  notes: text("notes"),
 });
 
 export const levity = sqliteTable("event_levity", {

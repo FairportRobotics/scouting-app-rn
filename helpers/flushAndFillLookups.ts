@@ -10,6 +10,8 @@ import {
   Levity,
   eventMatchTeams,
   MatchTeam,
+  MatchScout,
+  matchScouting,
 } from "@/data/schema";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
 
@@ -25,12 +27,14 @@ export default async () => {
   await db.delete(events);
   await db.delete(levity);
 
-  //
+  // Fill caches.
   await refreshEvents(masterKey, account);
   await refreshMatches(masterKey, account);
   await refreshTeams(masterKey, account);
   await refreshMatchTeams(masterKey, account);
   await refreshLevity(masterKey, account);
+
+  await refreshMatchScouting(masterKey, account);
 };
 
 async function refreshEvents(masterKey: string, account: string) {
@@ -51,13 +55,13 @@ async function refreshEvents(masterKey: string, account: string) {
         await db
           .insert(events)
           .values({
-            key: event.key,
+            id: event.id,
             name: event.name,
             startDate: event.startDate,
             endDate: event.endDate,
           })
           .onConflictDoUpdate({
-            target: events.key,
+            target: events.id,
             set: {
               name: event.name,
               startDate: event.startDate,
@@ -92,7 +96,7 @@ async function refreshMatches(masterKey: string, account: string) {
         await db
           .insert(eventMatches)
           .values({
-            key: match.key,
+            id: match.id,
             eventKey: match.eventKey,
             matchType: match.matchType,
             matchNumber: match.matchNumber,
@@ -100,7 +104,7 @@ async function refreshMatches(masterKey: string, account: string) {
             predictedTime: match.predictedTime,
           })
           .onConflictDoUpdate({
-            target: eventMatches.key,
+            target: eventMatches.id,
             set: {
               eventKey: match.eventKey,
               matchType: match.matchType,
@@ -138,13 +142,13 @@ async function refreshTeams(masterKey: string, account: string) {
         await db
           .insert(eventTeams)
           .values({
-            key: team.key,
+            id: team.id,
             number: team.number,
             nickname: team.nickname ?? "(Team nickname not known)",
             schoolName: team.schoolName ?? "(Team school not known)",
           })
           .onConflictDoUpdate({
-            target: eventTeams.key,
+            target: eventTeams.id,
             set: {
               number: team.number,
               nickname: team.nickname ?? "(Team nickname not known)",
@@ -180,7 +184,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
         await db
           .insert(eventMatchTeams)
           .values({
-            key: matchTeam.key,
+            id: matchTeam.id,
             eventKey: matchTeam.eventKey,
             matchKey: matchTeam.matchKey,
             alliance: matchTeam.alliance,
@@ -188,7 +192,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
             teamKey: matchTeam.teamKey,
           })
           .onConflictDoUpdate({
-            target: eventMatchTeams.key,
+            target: eventMatchTeams.id,
             set: {
               eventKey: matchTeam.eventKey,
               matchKey: matchTeam.matchKey,
@@ -233,5 +237,115 @@ async function refreshLevity(masterKey: string, account: string) {
     });
   } catch (error) {
     console.error("Error saving Levity:", error);
+  }
+}
+
+async function refreshMatchScouting(masterKey: string, account: string) {
+  // Cache Scouted Matches from Cosmos.
+  try {
+    console.log("Scouted Matches: Retrieve from Cosmos and cache...");
+
+    const results = await fetchFromCosmos<MatchScout>(
+      masterKey,
+      account,
+      "crescendo",
+      "match"
+    );
+
+    if (results === undefined) return;
+
+    results.forEach(async (session) => {
+      if (!session.id) return;
+
+      try {
+        await db
+          .insert(matchScouting)
+          .values({
+            id: session.id,
+            eventKey: session.eventKey,
+            matchKey: session.matchKey,
+            scheduledTeamKey: session.scheduledTeamKey,
+            scoutedTeamKey: session.scheduledTeamKey,
+            scouterName: session.scouterName,
+
+            autoStartedWithNote: session.autoStartedWithNote ?? false,
+            autoLeftStartArea: session.autoLeftStartArea ?? false,
+            autoSpeakerScore: session.autoSpeakerScore ?? 0,
+            autoSpeakerMiss: session.autoSpeakerMiss ?? 0,
+            autoAmpScore: session.autoAmpScore ?? 0,
+            autoAmpMiss: session.autoAmpMiss ?? 0,
+            autoNotes: session.autoNotes ?? "",
+
+            teleopSpeakerScore: session.teleopSpeakerScore ?? 0,
+            teleopSpeakerScoreAmplified:
+              session.teleopSpeakerScoreAmplified ?? 0,
+            teleopSpeakerMiss: session.teleopSpeakerMiss ?? 0,
+            teleopAmpScore: session.teleopAmpScore ?? 0,
+            teleopAmpMiss: session.teleopAmpMiss ?? 0,
+            teleopRelayPass: session.teleopRelayPass ?? 0,
+            teleopNotes: session.teleopNotes ?? "",
+
+            endgameTrapScore: session.endgameTrapScore ?? 0,
+            endgameMicrophoneScore: session.endgameMicrophoneScore ?? 0,
+            endgameDidRobotPark: session.endgameDidRobotPark ?? false,
+            endgameDidRobotHang: session.endgameDidRobotHang ?? false,
+            endgameHarmony: session.endgameHarmony ?? "",
+            endgameNotes: session.endgameNotes ?? "",
+
+            finalAllianceScore: session.finalAllianceScore ?? 0,
+            finalRankingPoints: session.finalRankingPoints ?? 0,
+            finalAllianceResult: session.finalAllianceResult ?? "",
+            finalViolations: session.finalViolations ?? "",
+            finalPenalties: session.finalPenalties ?? 0,
+            finalNotes: session.finalNotes ?? "",
+          })
+          .onConflictDoUpdate({
+            target: matchScouting.id,
+            set: {
+              eventKey: session.eventKey,
+              matchKey: session.matchKey,
+              scheduledTeamKey: session.scheduledTeamKey,
+              scoutedTeamKey: session.scheduledTeamKey,
+              scouterName: session.scouterName,
+
+              autoStartedWithNote: session.autoStartedWithNote ?? false,
+              autoLeftStartArea: session.autoLeftStartArea ?? false,
+              autoSpeakerScore: session.autoSpeakerScore ?? 0,
+              autoSpeakerMiss: session.autoSpeakerMiss ?? 0,
+              autoAmpScore: session.autoAmpScore ?? 0,
+              autoAmpMiss: session.autoAmpMiss ?? 0,
+              autoNotes: session.autoNotes ?? "",
+
+              teleopSpeakerScore: session.teleopSpeakerScore ?? 0,
+              teleopSpeakerScoreAmplified:
+                session.teleopSpeakerScoreAmplified ?? 0,
+              teleopSpeakerMiss: session.teleopSpeakerMiss ?? 0,
+              teleopAmpScore: session.teleopAmpScore ?? 0,
+              teleopAmpMiss: session.teleopAmpMiss ?? 0,
+              teleopRelayPass: session.teleopRelayPass ?? 0,
+              teleopNotes: session.teleopNotes ?? "",
+
+              endgameTrapScore: session.endgameTrapScore ?? 0,
+              endgameMicrophoneScore: session.endgameMicrophoneScore ?? 0,
+              endgameDidRobotPark: session.endgameDidRobotPark ?? false,
+              endgameDidRobotHang: session.endgameDidRobotHang ?? false,
+              endgameHarmony: session.endgameHarmony ?? "",
+              endgameNotes: session.endgameNotes ?? "",
+
+              finalAllianceScore: session.finalAllianceScore ?? 0,
+              finalRankingPoints: session.finalRankingPoints ?? 0,
+              finalAllianceResult: session.finalAllianceResult ?? "",
+              finalViolations: session.finalViolations ?? "",
+              finalPenalties: session.finalPenalties ?? 0,
+              finalNotes: session.finalNotes ?? "",
+            },
+          });
+      } catch (error) {
+        console.error("Error saving Match Scouting Session:", session);
+        console.error(error);
+      }
+    });
+  } catch (error) {
+    console.error("Error saving Match Scouting Sessions:", error);
   }
 }

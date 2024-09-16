@@ -1,14 +1,14 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "da8c6873-cd7c-45ac-ae0e-abaf4ed965c5",
+  "id": "7bc6111d-6ad6-46d7-ab0e-3eef9373e7f0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_match_team": {
       "name": "event_match_team",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -52,41 +52,41 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "event_match_team_event_key_event_key_fk": {
-          "name": "event_match_team_event_key_event_key_fk",
+        "event_match_team_event_key_event_id_fk": {
+          "name": "event_match_team_event_key_event_id_fk",
           "tableFrom": "event_match_team",
           "tableTo": "event",
           "columnsFrom": [
             "event_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "event_match_team_match_key_event_match_key_fk": {
-          "name": "event_match_team_match_key_event_match_key_fk",
+        "event_match_team_match_key_event_match_id_fk": {
+          "name": "event_match_team_match_key_event_match_id_fk",
           "tableFrom": "event_match_team",
           "tableTo": "event_match",
           "columnsFrom": [
             "match_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "event_match_team_team_key_event_team_key_fk": {
-          "name": "event_match_team_team_key_event_team_key_fk",
+        "event_match_team_team_key_event_team_id_fk": {
+          "name": "event_match_team_team_key_event_team_id_fk",
           "tableFrom": "event_match_team",
           "tableTo": "event_team",
           "columnsFrom": [
             "team_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -98,8 +98,8 @@
     "event_match": {
       "name": "event_match",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -143,15 +143,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "event_match_event_key_event_key_fk": {
-          "name": "event_match_event_key_event_key_fk",
+        "event_match_event_key_event_id_fk": {
+          "name": "event_match_event_key_event_id_fk",
           "tableFrom": "event_match",
           "tableTo": "event",
           "columnsFrom": [
             "event_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -163,8 +163,8 @@
     "event_team": {
       "name": "event_team",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -200,8 +200,8 @@
     "event": {
       "name": "event",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -260,8 +260,8 @@
     "scouting_match": {
       "name": "scouting_match",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -301,58 +301,240 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "auto_started_with_note": {
+          "name": "auto_started_with_note",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_left_start_area": {
+          "name": "auto_left_start_area",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_speaker_Score": {
+          "name": "auto_speaker_Score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_speaker_miss": {
+          "name": "auto_speaker_miss",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_amp_score": {
+          "name": "auto_amp_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_amp_miss": {
+          "name": "auto_amp_miss",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "auto_notes": {
+          "name": "auto_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_speaker_score": {
+          "name": "teleop_speaker_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_speaker_score_amplified": {
+          "name": "teleop_speaker_score_amplified",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_speaker_miss": {
+          "name": "teleop_speaker_miss",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_amp_score": {
+          "name": "teleop_amp_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_amp_miss": {
+          "name": "teleop_amp_miss",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_relay_pass": {
+          "name": "teleop_relay_pass",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "teleop_notes": {
+          "name": "teleop_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_trap_score": {
+          "name": "endgame_trap_score",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_microphone_score": {
+          "name": "endgame_microphone_score",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_did_robot_park": {
+          "name": "endgame_did_robot_park",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_did_robot_hang": {
+          "name": "endgame_did_robot_hang",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_harmony": {
+          "name": "endgame_harmony",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "endgame_notes": {
+          "name": "endgame_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_alliance_score": {
+          "name": "final_alliance_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_ranking_points": {
+          "name": "final_ranking_points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_alliance_result": {
+          "name": "final_alliance_result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_violations": {
+          "name": "final_violations",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_penalties": {
+          "name": "final_penalties",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "final_notes": {
+          "name": "final_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "scouting_match_event_key_event_key_fk": {
-          "name": "scouting_match_event_key_event_key_fk",
+        "scouting_match_event_key_event_id_fk": {
+          "name": "scouting_match_event_key_event_id_fk",
           "tableFrom": "scouting_match",
           "tableTo": "event",
           "columnsFrom": [
             "event_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "scouting_match_match_key_event_match_key_fk": {
-          "name": "scouting_match_match_key_event_match_key_fk",
+        "scouting_match_match_key_event_match_id_fk": {
+          "name": "scouting_match_match_key_event_match_id_fk",
           "tableFrom": "scouting_match",
           "tableTo": "event_match",
           "columnsFrom": [
             "match_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "scouting_match_scheduled_team_key_event_team_key_fk": {
-          "name": "scouting_match_scheduled_team_key_event_team_key_fk",
+        "scouting_match_scheduled_team_key_event_team_id_fk": {
+          "name": "scouting_match_scheduled_team_key_event_team_id_fk",
           "tableFrom": "scouting_match",
           "tableTo": "event_team",
           "columnsFrom": [
             "scheduled_team_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "scouting_match_scouted_team_key_event_team_key_fk": {
-          "name": "scouting_match_scouted_team_key_event_team_key_fk",
+        "scouting_match_scouted_team_key_event_team_id_fk": {
+          "name": "scouting_match_scouted_team_key_event_team_id_fk",
           "tableFrom": "scouting_match",
           "tableTo": "event_team",
           "columnsFrom": [
             "scouted_team_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -364,8 +546,8 @@
     "scouting_pit": {
       "name": "scouting_pit",
       "columns": {
-        "key": {
-          "name": "key",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
@@ -384,32 +566,123 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "drive_team_experience": {
+          "name": "drive_team_experience",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "number_of_auto_methods": {
+          "name": "number_of_auto_methods",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_pick_up_from_ground": {
+          "name": "can_pick_up_from_ground",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_receive_from_source_chute": {
+          "name": "can_receive_from_source_chute",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_score_in_amp": {
+          "name": "can_score_in_amp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_score_in_speaker": {
+          "name": "can_score_in_speaker",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_score_in_trap": {
+          "name": "can_score_in_trap",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "where_can_you_score_in_speaker": {
+          "name": "where_can_you_score_in_speaker",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_fit_under_stage": {
+          "name": "can_fit_under_stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "can_get_onstage": {
+          "name": "can_get_onstage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "robot_width": {
+          "name": "robot_width",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "onstage_position": {
+          "name": "onstage_position",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "scouting_pit_event_key_event_key_fk": {
-          "name": "scouting_pit_event_key_event_key_fk",
+        "scouting_pit_event_key_event_id_fk": {
+          "name": "scouting_pit_event_key_event_id_fk",
           "tableFrom": "scouting_pit",
           "tableTo": "event",
           "columnsFrom": [
             "event_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "scouting_pit_team_key_event_team_key_fk": {
-          "name": "scouting_pit_team_key_event_team_key_fk",
+        "scouting_pit_team_key_event_team_id_fk": {
+          "name": "scouting_pit_team_key_event_team_id_fk",
           "tableFrom": "scouting_pit",
           "tableTo": "event_team",
           "columnsFrom": [
             "team_key"
           ],
           "columnsTo": [
-            "key"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
