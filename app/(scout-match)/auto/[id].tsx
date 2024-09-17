@@ -14,19 +14,22 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Colors from "@/constants/Colors";
 import Styles from "@/constants/Styles";
+import {
+  getMatchScoutingSessionForEdit,
+  MatchScoutingSessionModel,
+  saveMatchSessionAuto,
+} from "@/data/db";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function AutoScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const matchStore = useMatchScoutingStore();
-
   // States.
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [startedWithNote, setStartedWithNote] = useState<boolean>(true);
   const [leftStartArea, setLeftStartArea] = useState<boolean>(false);
   const [speakerScore, setSpeakerScore] = useState<number>(0);
@@ -36,65 +39,53 @@ function AutoScreen() {
   const [notes, setNotes] = useState<string>("");
 
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
+    // Retrieve the session.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
 
     // Validate.
-    if (cacheSession === undefined) return;
+    if (!dbSession) return;
 
     // Set State.
-    setStartedWithNote(cacheSession.autoStartedWithNote ?? true);
-    setLeftStartArea(cacheSession.autoLeftStartArea ?? false);
-    setSpeakerScore(cacheSession.autoSpeakerScore ?? 0);
-    setSpeakerMiss(cacheSession.autoSpeakerMiss ?? 0);
-    setAmpScore(cacheSession.autoAmpScore ?? 0);
-    setAmpMiss(cacheSession.autoAmpMiss ?? 0);
-    setNotes(cacheSession?.autoNotes ?? "");
+    setSession(dbSession);
+    setStartedWithNote(dbSession.autoStartedWithNote ?? true);
+    setLeftStartArea(dbSession.autoLeftStartArea ?? false);
+    setSpeakerScore(dbSession.autoSpeakerScore ?? 0);
+    setSpeakerMiss(dbSession.autoSpeakerMiss ?? 0);
+    setAmpScore(dbSession.autoAmpScore ?? 0);
+    setAmpMiss(dbSession.autoAmpMiss ?? 0);
+    setNotes(dbSession?.autoNotes ?? "");
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
-    // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.autoStartedWithNote = startedWithNote;
-    current.autoLeftStartArea = leftStartArea;
-    current.autoSpeakerScore = speakerScore;
-    current.autoSpeakerMiss = speakerMiss;
-    current.autoAmpScore = ampScore;
-    current.autoAmpMiss = ampMiss;
-    current.autoNotes = notes;
-    matchStore.saveSession(current);
+    session.autoStartedWithNote = startedWithNote;
+    session.autoLeftStartArea = leftStartArea;
+    session.autoSpeakerScore = speakerScore;
+    session.autoSpeakerMiss = speakerMiss;
+    session.autoAmpScore = ampScore;
+    session.autoAmpMiss = ampMiss;
+    session.autoNotes = notes;
+
+    await saveMatchSessionAuto(session);
+    await postMatchSession(session);
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    saveData();
-  }, [
-    startedWithNote,
-    leftStartArea,
-    speakerScore,
-    speakerMiss,
-    ampScore,
-    ampMiss,
-    notes,
-  ]);
-
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/confirm/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/(scout-match)/teleop/${id}`);
   };
 
-  if (!(id in matchStore.sessions)) {
+  if (!session) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -104,7 +95,7 @@ function AutoScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Start">
         <View
           style={{

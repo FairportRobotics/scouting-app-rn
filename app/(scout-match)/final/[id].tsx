@@ -14,11 +14,16 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import {
+  getMatchScoutingSessionForEdit,
+  getRandomJoke,
+  MatchScoutingSessionModel,
+  saveMatchSessionFinal,
+} from "@/data/db";
+import Loading from "@/components/Loading";
 import postMatchSession from "@/helpers/postMatchSession";
 
 function FinalScreen() {
@@ -26,57 +31,57 @@ function FinalScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const cacheStore = useCacheStore();
-  const matchStore = useMatchScoutingStore();
-
   // States.
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
   const [violations, setViolations] = useState<string>("NONE_SELECTED");
   const [penalties, setPenalties] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
+  const [joke, setJoke] = useState<string>("");
 
   useEffect(() => {
+    async function getJoke() {
+      const dbJoke = await getRandomJoke();
+      setJoke(dbJoke);
+    }
+
+    getJoke();
+
     loadData();
   }, []);
 
-  useEffect(() => {
-    saveData();
-  }, [totalScore, rankingPoints, allianceResult, violations, penalties, notes]);
-
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
+    // Retrieve the session.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
 
     // Validate.
-    if (cacheSession === undefined) return;
+    if (!dbSession) return;
 
-    setTotalScore(cacheSession.finalAllianceScore ?? 0);
-    setRankingPoints(cacheSession.finalRankingPoints ?? 0);
-    setAllianceResult(cacheSession.finalAllianceResult ?? null);
-    setViolations(cacheSession.finalViolations ?? null);
-    setPenalties(cacheSession.finalPenalties ?? 0);
-    setNotes(cacheSession.finalNotes ?? "");
+    // Set State.
+    setSession(dbSession);
+    setTotalScore(dbSession.finalAllianceScore ?? 0);
+    setRankingPoints(dbSession.finalRankingPoints ?? 0);
+    setAllianceResult(dbSession.finalAllianceResult ?? "");
+    setViolations(dbSession.finalViolations ?? "");
+    setPenalties(dbSession.finalPenalties ?? 0);
+    setNotes(dbSession.finalNotes ?? "");
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
     // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.finalAllianceScore = totalScore;
-    current.finalRankingPoints = rankingPoints;
-    current.finalAllianceResult = allianceResult;
-    current.finalViolations = violations;
-    current.finalPenalties = penalties;
-    current.finalNotes = notes;
-    matchStore.saveSession(current);
+    session.finalAllianceScore = totalScore;
+    session.finalRankingPoints = rankingPoints;
+    session.finalAllianceResult = allianceResult;
+    session.finalViolations = violations;
+    session.finalPenalties = penalties;
+    session.finalNotes = notes;
 
-    // Upload.
-    postMatchSession(matchStore.sessions[id]);
+    await saveMatchSessionFinal(session);
+    await postMatchSession(session);
   };
 
   const handleChangeTotalScore = (value: string) => {
@@ -89,18 +94,18 @@ function FinalScreen() {
     setRankingPoints(parseInt(value));
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/endgame/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/`);
   };
 
   const penaltiesLabel = () => {
-    switch (matchStore.sessions[id]?.alliance) {
+    switch (session?.alliance) {
       case Alliance.Blue:
         return "Penalties: (Read the value for Penalties from the Red Alliance column)";
       case Alliance.Red:
@@ -110,17 +115,13 @@ function FinalScreen() {
     }
   };
 
-  if (!(id in matchStore.sessions)) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (!session) {
+    return <Loading />;
   }
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 1 }}>
@@ -181,13 +182,7 @@ function FinalScreen() {
       </KeyboardAvoidingView>
 
       <ContainerGroup title="Your Reward">
-        <Text>
-          {
-            cacheStore.levity[
-              Math.floor(Math.random() * cacheStore.levity.length)
-            ].item
-          }
-        </Text>
+        <Text>{joke}</Text>
       </ContainerGroup>
 
       <MatchScoutingNavigation

@@ -1,101 +1,75 @@
 import React, { useEffect, useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { View, Text, TouchableOpacity, TextInput } from "react-native";
-import { PitScoutingSession, Team } from "@/constants/Types";
 import { ContainerGroup, SelectGroup } from "@/components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { useCacheStore } from "@/store/cachesStore";
-import { usePitScoutingStore } from "@/store/pitScoutingStore";
-import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import {
+  getPitScoutingSessionForEdit,
+  getRandomJoke,
+  PitScoutingSessionModel,
+  savePitSession,
+} from "@/data/db";
+import Loading from "@/components/Loading";
+import { PitScoutingSession } from "@/data/schema";
+import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 
 function ScoutPitScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const cacheStore = useCacheStore();
-  const pitStore = usePitScoutingStore();
-
   // Support for state.
-  const [team, setTeam] = useState<Team>();
-  const [session, setSession] = useState<PitScoutingSession>(
-    {} as PitScoutingSession
-  );
+  const [session, setSession] = useState<PitScoutingSessionModel>();
+  const [joke, setJoke] = useState<string>("");
 
   useEffect(() => {
+    async function getJoke() {
+      const dbJoke = await getRandomJoke();
+      setJoke(dbJoke);
+    }
+
+    getJoke();
+
     loadData();
   }, []);
 
   const loadData = async () => {
-    // Extract the Session Key and assign to the store.
-    const key = id;
-    pitStore.currentKey = key;
+    const dbSession = await getPitScoutingSessionForEdit(id);
 
-    // Retrieve the team.
-    const cacheTeam = cacheStore.teams.find((team) => team.key == id);
+    if (!dbSession) return;
 
-    // Retrieve existing or create new PitScoutingSession.
-    let cacheSession = {} as PitScoutingSession;
-    if (key in pitStore.sessions) {
-      cacheSession = pitStore.sessions[id];
-    } else {
-      cacheSession = {
-        key: id,
-        eventKey: cacheStore.event.key,
-        driveTeamExperience: "",
-        numberOfAutoMethods: "",
-        canPickUpFromGround: "",
-        canReceiveFromSourceChute: "",
-        canScoreInAmp: "",
-        canScoreInSpeaker: "",
-        canScoreInTrap: "",
-        whereCanYouScoreInSpeaker: "",
-        canFitUnderStage: "",
-        canGetOnstage: "",
-        robotWidth: "",
-        onstagePosition: "",
-        notes: "",
-      } as PitScoutingSession;
-    }
-
-    setTeam(cacheTeam);
-    setSession(cacheSession);
+    setSession(dbSession);
   };
 
   const saveData = async () => {
-    pitStore.sessions[id] = session;
+    await savePitSession(session as PitScoutingSessionModel);
+    await postPitScoutingSession(session as PitScoutingSession);
   };
 
   const uploadDate = async () => {
-    try {
-      await postPitScoutingSession(session);
-      pitStore.sessions[id].uploadedDate = new Date();
-      loadData;
-    } catch (error) {
-      console.error(error);
-    }
+    await postPitScoutingSession(session as PitScoutingSession);
   };
 
   const handleChange = (key: string, value: string) => {
-    setSession((prevState) => ({
-      ...prevState,
-      editedDate: new Date(),
-      [key]: value,
-    }));
+    if (!session) return;
+    setSession({ ...session, [key]: value });
   };
 
   const handleOnCancel = () => {
-    router.replace("/scoutPit");
+    router.replace("/scoutPits");
   };
 
-  const handleOnComplete = () => {
-    saveData();
-    uploadDate();
-    router.replace("/scoutPit");
+  const handleOnComplete = async () => {
+    await saveData();
+    await uploadDate();
+    router.replace("/scoutPits");
   };
+
+  if (!session) {
+    return <Loading />;
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -109,14 +83,14 @@ function ScoutPitScreen() {
         }}
       >
         <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
-          Team {team?.teamNumber} - {team?.nickname}
+          Team {session.number} - {session.nickname}
         </Text>
       </View>
 
       <KeyboardAwareScrollView style={{}}>
         <ContainerGroup title="What experience does your Drive Team have?">
           <SelectGroup
-            value={session.driveTeamExperience}
+            value={session.driveTeamExperience ?? ""}
             options={[
               "All New",
               "Mostly New",
@@ -131,14 +105,14 @@ function ScoutPitScreen() {
         <ContainerGroup title="How many Auto methods do you have?">
           <TextInput
             style={[Styles.textInput, {}]}
-            value={session.numberOfAutoMethods}
+            value={session.numberOfAutoMethods ?? ""}
             onChangeText={(value) => handleChange("numberOfAutoMethods", value)}
           />
         </ContainerGroup>
 
         <ContainerGroup title="Can your robot pick up Notes from the ground?">
           <SelectGroup
-            value={session.canPickUpFromGround}
+            value={session.canPickUpFromGround ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canPickUpFromGround", value)}
           />
@@ -146,7 +120,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can your robot receive Notes from the Source Chute?">
           <SelectGroup
-            value={session.canReceiveFromSourceChute}
+            value={session.canReceiveFromSourceChute ?? ""}
             options={["Yes", "No"]}
             onChange={(value) =>
               handleChange("canReceiveFromSourceChute", value)
@@ -156,7 +130,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can you score in the Amp?">
           <SelectGroup
-            value={session.canScoreInAmp}
+            value={session.canScoreInAmp ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canScoreInAmp", value)}
           />
@@ -164,7 +138,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can you score in the Speaker?">
           <SelectGroup
-            value={session.canScoreInSpeaker}
+            value={session.canScoreInSpeaker ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canScoreInSpeaker", value)}
           />
@@ -172,7 +146,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can you score in the Trap?">
           <SelectGroup
-            value={session.canScoreInTrap}
+            value={session.canScoreInTrap ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canScoreInTrap", value)}
           />
@@ -180,7 +154,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can your robot get Onstage?">
           <SelectGroup
-            value={session.canGetOnstage}
+            value={session.canGetOnstage ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canGetOnstage", value)}
           />
@@ -188,7 +162,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="If you can score in the Trap from Onstage, where does your robot need to be positioned?">
           <SelectGroup
-            value={session.onstagePosition}
+            value={session.onstagePosition ?? ""}
             options={["Left", "Center", "Right", "Anywhere"]}
             onChange={(value) => handleChange("onstagePosition", value)}
           />
@@ -196,7 +170,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="What is the farthest your robot can score in the Speaker?">
           <SelectGroup
-            value={session.whereCanYouScoreInSpeaker}
+            value={session.whereCanYouScoreInSpeaker ?? ""}
             options={[
               "Adjacent to Subwoofer",
               "Between Subwoofer and Stage",
@@ -211,7 +185,7 @@ function ScoutPitScreen() {
 
         <ContainerGroup title="Can your robot fit under the Stage?">
           <SelectGroup
-            value={session.canFitUnderStage}
+            value={session.canFitUnderStage ?? ""}
             options={["Yes", "No"]}
             onChange={(value) => handleChange("canFitUnderStage", value)}
           />
@@ -220,7 +194,7 @@ function ScoutPitScreen() {
         <ContainerGroup title="How big is your robot with the bumpers attached (in inches)?">
           <TextInput
             style={[Styles.textInput, {}]}
-            value={session.robotWidth}
+            value={session.robotWidth ?? ""}
             placeholder="L x W x H"
             onChangeText={(value) => handleChange("robotWidth", value)}
           />
@@ -231,7 +205,7 @@ function ScoutPitScreen() {
             multiline
             maxLength={1024}
             style={[Styles.textInput, { height: 100 }]}
-            value={session.notes}
+            value={session.notes ?? ""}
             onChangeText={(text) => handleChange("notes", text)}
             placeholder="Anything else we didn't ask that might be important?"
             placeholderTextColor={Colors.placeholder}
@@ -239,13 +213,7 @@ function ScoutPitScreen() {
         </ContainerGroup>
 
         <ContainerGroup title="Your Reward">
-          <Text>
-            {
-              cacheStore.levity[
-                Math.floor(Math.random() * cacheStore.levity.length)
-              ].item
-            }
-          </Text>
+          <Text>{joke}</Text>
         </ContainerGroup>
 
         <View style={{ flex: 1, justifyContent: "flex-end" }}>

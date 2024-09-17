@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
@@ -8,38 +7,45 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Student, Team } from "@/constants/Types";
 import {
   ContainerGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
+import {
+  getMatchScoutingSessionForEdit,
+  getTeamMembers,
+  getTeams,
+  MatchScoutingSessionModel,
+  saveMatchSessionConfirm,
+} from "@/data/db";
+import { Team, TeamMember } from "@/data/schema";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import students from "@/data/studentsList";
+import Loading from "@/components/Loading";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function ConfirmScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const cacheStore = useCacheStore();
-  const matchStore = useMatchScoutingStore();
-
   // States.
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [scouterName, setScouterName] = useState<string>("");
   const [scheduledTeam, setScheduledTeam] = useState<Team>();
   const [scoutedTeam, setScoutedTeam] = useState<Team>();
   const [scoutedTeamKey, setScoutedTeamKey] = useState<string>("");
 
   // Support for selecting a new Scouter.
+  const [allScouters, setAllScouters] = useState<Array<TeamMember>>([]);
   const [scoutFilterText, setScoutFilterText] = useState<string>("");
-  const [filteredScouters, setFilteredScouters] = useState<Array<Student>>([]);
+  const [filteredScouters, setFilteredScouters] = useState<Array<TeamMember>>(
+    []
+  );
 
   // Support for selected a different Team.
+  const [allTeams, setAllTeams] = useState<Array<Team>>([]);
   const [teamFilterText, setTeamFilterText] = useState<string>("");
   const [filteredTeams, setFilteredTeams] = useState<Array<Team>>([]);
 
@@ -47,12 +53,13 @@ function ConfirmScreen() {
     loadData();
   }, []);
 
+  // Support for responding to searching for a scouter.
   useEffect(() => {
     // Convert the filter text to lower case.
     const value = scoutFilterText.toLocaleLowerCase();
 
     // Find matching Students where the filter text is part of the email address or name.
-    let filtered = students.filter(
+    let filtered = allScouters.filter(
       (student) =>
         value.length > 0 && student.name.toLowerCase().includes(value)
     );
@@ -60,16 +67,17 @@ function ConfirmScreen() {
     setFilteredScouters(filtered);
   }, [scoutFilterText]);
 
+  // Support for searching for a team.
   useEffect(() => {
     // Convert the filter text to lower case.
     const value = teamFilterText.toLowerCase();
 
     // Find matching teams where the filter text is part of the team
     // number of nickname.
-    let filtered = cacheStore.teams.filter(
+    let filtered = allTeams.filter(
       (team) =>
         value.length > 0 &&
-        (team.teamNumber.toString().includes(value) ||
+        (team.number.toString().includes(value) ||
           team.nickname.toLowerCase().includes(value))
     );
 
@@ -77,40 +85,36 @@ function ConfirmScreen() {
   }, [teamFilterText]);
 
   const lookupTeam = (teams: Array<Team>, teamKey: string) => {
-    return teams.find((team) => team.key == teamKey);
+    return teams.find((team) => team.id == teamKey);
   };
 
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
-    const cacheTeams = cacheStore.teams;
+    const dbSession = await getMatchScoutingSessionForEdit(id);
+    const dbTeams = await getTeams();
+    const dbMembers = await getTeamMembers();
 
-    // Validate.
-    if (cacheSession === undefined) return;
-    if (cacheTeams === undefined) return;
+    // Retrieve from stores.
+    if (!dbSession) return;
 
     // Set States.
-    setScouterName(cacheSession.scouterName);
-    setScheduledTeam(lookupTeam(cacheTeams, cacheSession.scheduledTeamKey));
-    setScoutedTeam(lookupTeam(cacheTeams, cacheSession.scoutedTeamKey));
-    setScoutedTeamKey(cacheSession.scoutedTeamKey);
+    setSession(dbSession);
+    setAllTeams(dbTeams);
+    setAllScouters(dbMembers);
+
+    setScouterName(dbSession.scouterName ?? "");
+    setScheduledTeam(lookupTeam(dbTeams, dbSession.scheduledTeamKey));
+    setScoutedTeam(lookupTeam(dbTeams, dbSession.scoutedTeamKey));
+    setScoutedTeamKey(dbSession.scoutedTeamKey);
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
-    // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.scouterName = scouterName;
-    current.scoutedTeamKey = scoutedTeamKey;
-    matchStore.saveSession(current);
+    session.scouterName = scouterName;
+    session.scoutedTeamKey = scoutedTeamKey;
 
-    // HACK: Set the store with the new lookups.
-    useMatchScoutingStore.setState((state) => ({
-      ...state,
-      sessions: matchStore.sessions,
-    }));
+    await saveMatchSessionConfirm(session);
+    await postMatchSession(session);
   };
 
   const handleChangeScouter = (value: string) => {
@@ -121,20 +125,20 @@ function ConfirmScreen() {
 
   const handleChangeScoutedTeam = (value: string) => {
     setScoutedTeamKey(value);
-    setScoutedTeam(lookupTeam(cacheStore.teams, value));
+    setScoutedTeam(lookupTeam(allTeams, value));
     setTeamFilterText("");
     setFilteredTeams([]);
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
 
-    if (!matchStore.isScouterSet()) {
+    if (scouterName.length === 0) {
       Alert.alert("Scouter Name Missing", "Select Scouter Name to continue");
       return;
     }
@@ -142,23 +146,17 @@ function ConfirmScreen() {
     router.replace(`/(scout-match)/auto/${id}`);
   };
 
-  if (!(id in matchStore.sessions)) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (!session) {
+    return <Loading />;
   }
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title={`Scouter Name: ${scouterName}`}>
         <TextInput
           style={[
-            matchStore.isScouterSet()
-              ? Styles.textInput
-              : Styles.textInputError,
+            scouterName.length > 0 ? Styles.textInput : Styles.textInputError,
           ]}
           value={scoutFilterText}
           onChangeText={(text) => setScoutFilterText(text)}
@@ -191,11 +189,11 @@ function ConfirmScreen() {
       </ContainerGroup>
       <ContainerGroup title="Confirm Team to be Scouted">
         <Text style={{ fontSize: 24 }}>
-          {scoutedTeam?.teamNumber} - {scoutedTeam?.nickname}
+          {scoutedTeam?.number} - {scoutedTeam?.nickname}
         </Text>
         <Text>
-          ({scheduledTeam?.teamNumber} - {scheduledTeam?.nickname} was
-          originally scheduled)
+          ({scheduledTeam?.number} - {scheduledTeam?.nickname} was originally
+          scheduled)
         </Text>
         <TextInput
           style={Styles.textInput}
@@ -214,15 +212,15 @@ function ConfirmScreen() {
                 padding: 20,
                 marginBottom: 8,
               }}
-              key={team.key}
-              onPress={() => handleChangeScoutedTeam(team.key)}
+              key={team.id}
+              onPress={() => handleChangeScoutedTeam(team.id)}
             >
               <Text
                 style={{
                   fontSize: 20,
                 }}
               >
-                {team.teamNumber} {team.nickname}
+                {team.number} {team.nickname}
               </Text>
             </TouchableOpacity>
           ))}

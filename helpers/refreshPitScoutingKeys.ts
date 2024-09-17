@@ -1,32 +1,43 @@
-import axios from "axios";
-import { usePitScoutingStore } from "@/store/pitScoutingStore";
-import { useCacheStore } from "@/store/cachesStore";
-import { ItemKey } from "@/constants/Types";
+import { PitScoutingSession, pitScoutingUploads } from "@/data/schema";
+import fetchFromCosmos from "./fetchFromCosmos";
+import { db } from "@/data/db";
 
 export default async () => {
+  // Retrieve the URL and key from env.
+  const masterKey = process.env.EXPO_PUBLIC_AZURE_KEY as string;
+  const account = process.env.EXPO_PUBLIC_AZURE_ACCOUNT as string;
+
+  // Cache Scouted Match Uploads from Cosmos.
   try {
-    const saveUri = process.env.EXPO_PUBLIC_SAVE_URI as string;
+    const results = await fetchFromCosmos<PitScoutingSession>(
+      masterKey,
+      account,
+      "crescendo",
+      "pit"
+    );
 
-    const postData = {
-      type: "pit",
-      refresh: "1",
-    };
+    if (results === undefined) return;
 
-    const response = await axios.post(saveUri, postData);
-    const uploadedKeys = (response.data.data_for as Array<string>) || [];
-
-    // Filter the keys to only those for the event.
-    const eventKey = useCacheStore.getState().event.key;
-    const eventKeys = uploadedKeys
-      .filter((key) => key.startsWith(eventKey))
-      .map((item) => ({ key: item } as ItemKey));
-
-    // Set the store with the new lookups.
-    usePitScoutingStore.setState((state) => ({
-      ...state,
-      uploadedKeys: eventKeys,
-    }));
+    results.forEach(async (session) => {
+      try {
+        await db
+          .insert(pitScoutingUploads)
+          .values({
+            id: session.id,
+            refreshDate: new Date().toISOString(),
+          })
+          .onConflictDoUpdate({
+            target: pitScoutingUploads.id,
+            set: {
+              refreshDate: new Date().toISOString(),
+            },
+          });
+      } catch (error) {
+        console.error("Error saving Pit Scouting Uploads:", session);
+        console.error(error);
+      }
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Error saving Pit Scouting Uploads:", error);
   }
 };

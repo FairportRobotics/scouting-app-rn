@@ -1,9 +1,6 @@
 import axios from "axios";
-import type { ItemKey, MatchScoutingSession } from "@/constants/Types";
-import {
-  MatchScoutingState,
-  useMatchScoutingStore,
-} from "@/store/matchScoutingStore";
+import { MatchScoutingSession } from "@/data/schema";
+import { saveUploadedMatchSessionKey } from "@/data/db";
 
 export default async (session: MatchScoutingSession) => {
   try {
@@ -11,16 +8,16 @@ export default async (session: MatchScoutingSession) => {
 
     const postData = {
       type: "match",
-      data: session,
+      data: { ...session, key: session.id },
     };
 
     const response = await axios.post(saveUri, postData);
-    const uploadedKeys = (response.data.data_for as Array<string>) || [];
 
-    const storeState: MatchScoutingState = useMatchScoutingStore.getState();
-    storeState.uploadedKeys = uploadedKeys.map(
-      (item) => ({ key: item } as ItemKey)
-    );
+    // Persist the uploaded keys.
+    const uploadedKeys = (response.data.data_for as Array<string>) || [];
+    uploadedKeys.forEach(async (key) => {
+      await saveUploadedMatchSessionKey(key);
+    });
   } catch (error) {
     console.error(error);
   }
