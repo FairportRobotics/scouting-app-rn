@@ -107,14 +107,12 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    // Retrieve the session and validate.
-    const dbSession = await getMatchScoutingSessionForEdit(id);
-    if (!dbSession) return;
+    if (!session) return;
 
-    dbSession.scouterName = scouterName;
-    dbSession.scoutedTeamKey = scoutedTeamKey;
+    session.scouterName = scouterName;
+    session.scoutedTeamKey = scoutedTeamKey;
 
-    await saveMatchSessionConfirm(dbSession);
+    await saveMatchSessionConfirm(session);
   };
 
   const handleChangeScouter = (value: string) => {
