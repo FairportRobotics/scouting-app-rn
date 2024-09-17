@@ -5,6 +5,7 @@ import { ContainerGroup, ScoutMatchSelect } from "@/components";
 import { getMatchScouting, MatchModel } from "@/data/db";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
 import Colors from "@/constants/Colors";
+import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 
 export default function IndexScreen() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function IndexScreen() {
     setIsRefreshing(true);
 
     await flushAndFillLookups();
+    await refreshMatchScoutingKeys();
     loadData();
 
     setIsRefreshing(false);
