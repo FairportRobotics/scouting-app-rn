@@ -7,12 +7,12 @@ import {
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import { MatchTeamModel } from "@/data/db";
+import { MatchSelectTeamModel } from "@/data/db";
 
 type ScoutTeamSelectProps = {
   alliance: string;
   allianceTeam: number;
-  teamModel: MatchTeamModel;
+  teamModel: MatchSelectTeamModel;
   onSelect: (sessionKey: string) => void;
 };
 

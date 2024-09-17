@@ -17,6 +17,9 @@ import {
   MatchScoutingSession,
   Match,
   levity,
+  pitScoutingSessions,
+  pitScoutingUploads,
+  PitScoutingSession,
 } from "./schema";
 import { eq } from "drizzle-orm/expressions";
 import { sql } from "drizzle-orm";
@@ -24,18 +27,18 @@ import { sql } from "drizzle-orm";
 export const connection = openDatabaseSync("scouting-app.db");
 export const db = drizzle(connection);
 
-export interface MatchModel {
+export interface MatchSelectModel {
   eventKey: string;
   matchKey: string;
   matchType: string;
   setNumber: number;
   matchNumber: number;
   predictedTime: Date;
-  blueTeams: Record<number, MatchTeamModel>;
-  redTeams: Record<number, MatchTeamModel>;
+  blueTeams: Record<number, MatchSelectTeamModel>;
+  redTeams: Record<number, MatchSelectTeamModel>;
 }
 
-export interface MatchTeamModel {
+export interface MatchSelectTeamModel {
   sessionKey: string;
   teamKey: string;
   teamNumber: string;
@@ -57,11 +60,22 @@ export type MatchResultModel = {
   uploadExists: boolean;
 };
 
+export interface TeamPitSelectModel {
+  teamKey: string;
+  teamNumber: string;
+  nickname: string;
+  schoolName: string;
+  scouted: boolean;
+  uploaded: boolean;
+}
+
+export type PitScoutingSessionModel = Match & Team & PitScoutingSession;
+
 export function initializeDb() {
   try {
-    console.log(
-      `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
-    );
+    // console.log(
+    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
+    // );
 
     const { success, error } = useMigrations(db, migrations);
 
@@ -78,7 +92,7 @@ export function initializeDb() {
   }
 }
 
-export async function getMatchesForSelection(): Promise<MatchModel[]> {
+export async function getMatchesForSelection(): Promise<MatchSelectModel[]> {
   // Get the denormalized data.
   const results = await db
     .select({
@@ -110,7 +124,7 @@ export async function getMatchesForSelection(): Promise<MatchModel[]> {
     .leftJoin(matchScoutingUploads, eq(matchTeams.id, matchScoutingUploads.id));
 
   // Group MatchModel and add MatchTeamModels as children.
-  const groupedResult = results.reduce<Record<string, MatchModel>>(
+  const groupedResult = results.reduce<Record<string, MatchSelectModel>>(
     (acc, row) => {
       const {
         eventKey,
@@ -374,29 +388,130 @@ export async function getRandomJoke(): Promise<string> {
 }
 
 export async function getMatchScoutingResults(): Promise<MatchResultModel[]> {
-  // Load all the different tables in a single query
-  const results = await db
-    .select({
-      sessionKey: matchScoutingSessions.id,
-      matchNumber: matches.matchNumber,
-      alliance: matchTeams.alliance,
-      allianceTeam: matchTeams.allianceTeam,
-      scoutedTeamNumber: teams.number,
-      scoutedTeamNickname: teams.nickname,
-      uploadExists:
-        sql`CASE WHEN ${matchScoutingUploads.id} IS NULL THEN false ELSE true END`.as(
-          "uploadExists"
-        ),
-    })
-    .from(matchScoutingSessions)
-    .innerJoin(matchTeams, eq(matchScoutingSessions.id, matchTeams.id))
-    .innerJoin(matches, eq(matchTeams.matchKey, matches.id))
-    .innerJoin(events, eq(matches.eventKey, events.id))
-    .innerJoin(teams, eq(matchScoutingSessions.scoutedTeamKey, teams.id))
-    .leftJoin(
-      matchScoutingUploads,
-      eq(matchScoutingSessions.id, matchScoutingUploads.id)
-    );
+  try {
+    // Load all the different tables in a single query
+    const results = await db
+      .select({
+        sessionKey: matchScoutingSessions.id,
+        matchNumber: matches.matchNumber,
+        alliance: matchTeams.alliance,
+        allianceTeam: matchTeams.allianceTeam,
+        scoutedTeamNumber: teams.number,
+        scoutedTeamNickname: teams.nickname,
+        uploadExists:
+          sql`CASE WHEN ${matchScoutingUploads.id} IS NULL THEN false ELSE true END`.as(
+            "uploadExists"
+          ),
+      })
+      .from(matchScoutingSessions)
+      .innerJoin(matchTeams, eq(matchScoutingSessions.id, matchTeams.id))
+      .innerJoin(matches, eq(matchTeams.matchKey, matches.id))
+      .innerJoin(events, eq(matches.eventKey, events.id))
+      .innerJoin(teams, eq(matchScoutingSessions.scoutedTeamKey, teams.id))
+      .leftJoin(
+        matchScoutingUploads,
+        eq(matchScoutingSessions.id, matchScoutingUploads.id)
+      );
 
-  return results as MatchResultModel[];
+    return results as MatchResultModel[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getPitScoutingResults(): Promise<TeamPitSelectModel[]> {
+  try {
+    const results = await db
+      .select({
+        teamKey: teams.id,
+        teamNumber: teams.number,
+        nickname: teams.nickname,
+        schoolName: teams.schoolName,
+        scouted:
+          sql`CASE WHEN ${pitScoutingSessions.id} IS NULL THEN false ELSE true END`.as(
+            "scouted"
+          ),
+        uploaded:
+          sql`CASE WHEN ${pitScoutingUploads.id} IS NULL THEN false ELSE true END`.as(
+            "uploaded"
+          ),
+      })
+      .from(teams)
+      .leftJoin(pitScoutingSessions, eq(teams.id, pitScoutingSessions.id))
+      .leftJoin(pitScoutingUploads, eq(teams.id, pitScoutingUploads.id));
+
+    return results as TeamPitSelectModel[];
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function initPitScoutingSession(teamKey: string) {
+  try {
+    // Determine if there is already an existing Match Scouting Session.
+    const existingSession = await getPitScoutingSessionForEdit(teamKey);
+    if (existingSession) return;
+
+    // Extract the match and initialize the match scouting session.
+    await db.insert(pitScoutingSessions).values({
+      id: teamKey,
+      driveTeamExperience: "",
+      numberOfAutoMethods: "",
+      canPickUpFromGround: "",
+      canReceiveFromSourceChute: "",
+      canScoreInAmp: "",
+      canScoreInSpeaker: "",
+      canScoreInTrap: "",
+      whereCanYouScoreInSpeaker: "",
+      canFitUnderStage: "",
+      canGetOnstage: "",
+      robotWidth: "",
+      onstagePosition: "",
+      notes: "",
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getPitScoutingSessionForEdit(
+  sessionKey: string
+): Promise<PitScoutingSessionModel | null> {
+  try {
+    // Load all the different tables in a single query
+    const results = await db
+      .select()
+      .from(pitScoutingSessions)
+      .where(eq(pitScoutingSessions.id, sessionKey))
+      .innerJoin(teams, eq(pitScoutingSessions.id, teams.id))
+      .limit(1);
+
+    // Validate the results.
+    if (results.length !== 1) return null;
+
+    // Combine them with the spread operator.
+    return {
+      ...results[0].event_team,
+      ...results[0].pit_scouting_session,
+    } as PitScoutingSessionModel;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function savePitSession(session: PitScoutingSession) {
+  console.log("savePitSession:", session);
+  try {
+    await db
+      .update(pitScoutingSessions)
+      .set({
+        ...session,
+      })
+      .where(eq(pitScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
 }

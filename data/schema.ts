@@ -40,7 +40,7 @@ export const matchTeams = sqliteTable("event_match_team", {
     .references(() => teams.id),
 });
 
-export const matchScoutingSessions = sqliteTable("scouting_match", {
+export const matchScoutingSessions = sqliteTable("match_scouting_session", {
   id: text("id").notNull().primaryKey(),
 
   scheduledTeamKey: text("scheduled_team_key")
@@ -92,28 +92,21 @@ export const matchScoutingSessions = sqliteTable("scouting_match", {
   finalNotes: text("final_notes").default(""),
 });
 
-export const pitScoutingSessions = sqliteTable("scouting_pit", {
+export const pitScoutingSessions = sqliteTable("pit_scouting_session", {
   id: text("id").notNull().primaryKey(),
-  eventKey: text("event_key")
-    .notNull()
-    .references(() => events.id),
-  teamKey: text("team_key")
-    .notNull()
-    .references(() => teams.id),
-
-  driveTeamExperience: text("drive_team_experience"),
-  numberOfAutoMethods: text("number_of_auto_methods"),
-  canPickUpFromGround: text("can_pick_up_from_ground"),
-  canReceiveFromSourceChute: text("can_receive_from_source_chute"),
-  canScoreInAmp: text("can_score_in_amp"),
-  canScoreInSpeaker: text("can_score_in_speaker"),
-  canScoreInTrap: text("can_score_in_trap"),
-  whereCanYouScoreInSpeaker: text("where_can_you_score_in_speaker"),
-  canFitUnderStage: text("can_fit_under_stage"),
-  canGetOnstage: text("can_get_onstage"),
-  robotWidth: text("robot_width"),
-  onstagePosition: text("onstage_position"),
-  notes: text("notes"),
+  driveTeamExperience: text("drive_team_experience").default(""),
+  numberOfAutoMethods: text("number_of_auto_methods").default(""),
+  canPickUpFromGround: text("can_pick_up_from_ground").default(""),
+  canReceiveFromSourceChute: text("can_receive_from_source_chute").default(""),
+  canScoreInAmp: text("can_score_in_amp").default(""),
+  canScoreInSpeaker: text("can_score_in_speaker").default(""),
+  canScoreInTrap: text("can_score_in_trap").notNull(),
+  whereCanYouScoreInSpeaker: text("where_can_you_score_in_speaker").default(""),
+  canFitUnderStage: text("can_fit_under_stage").default(""),
+  canGetOnstage: text("can_get_onstage").default(""),
+  robotWidth: text("robot_width").default(""),
+  onstagePosition: text("onstage_position").default(""),
+  notes: text("notes").default(""),
 });
 
 export const levity = sqliteTable("event_levity", {
@@ -126,12 +119,12 @@ export const teamMembers = sqliteTable("team_member", {
   name: text("name").notNull(),
 });
 
-export const matchScoutingUploads = sqliteTable("scouting_match_uploads", {
+export const matchScoutingUploads = sqliteTable("match_scouting_upload", {
   id: text("id").notNull().primaryKey(),
   refreshDate: text("refresh_date").notNull(),
 });
 
-export const pitScoutingUploads = sqliteTable("scouting_pit_uploads", {
+export const pitScoutingUploads = sqliteTable("pit_scouting_upload", {
   id: text("id").notNull().primaryKey(),
   refreshDate: text("refresh_date").notNull(),
 });

@@ -3,30 +3,20 @@ import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
 import { ContainerGroup } from "@/components";
 import { ResultsButton, QrCodeModal, JsonModal } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { usePitScoutingStore } from "@/store/pitScoutingStore";
 import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 import Colors from "@/constants/Colors";
-
-export type ReportRecord = {
-  key: string;
-  teamNumber: string;
-  nickname: string;
-  schoolName: string;
-  sessionExists: boolean;
-  uploadExists: boolean;
-};
+import {
+  getPitScoutingResults,
+  initPitScoutingSession,
+  TeamPitSelectModel,
+} from "@/data/db";
 
 export default function ScoutPitScreen() {
   const router = useRouter();
 
-  // Stores.
-  const cacheStore = useCacheStore();
-  const pitStore = usePitScoutingStore();
-
   // State.
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [reportRecords, setReportRecords] = useState<Array<ReportRecord>>([]);
+  const [sessions, setSessions] = useState<Array<TeamPitSelectModel>>([]);
 
   const [showQrCode, setShowQrCode] = useState<boolean>(false);
   const [qrCodeText, setQrCodeText] = useState<string>("");
@@ -46,60 +36,46 @@ export default function ScoutPitScreen() {
   };
 
   const loadData = async () => {
-    // Build a Model to encapsulate properties from multiple sources so we can
-    // more easily display the rows.
-    const teamRecords: Array<ReportRecord> = [];
+    const dbSessions = await getPitScoutingResults();
 
-    cacheStore.teams.forEach((team) => {
-      let newRecord = {
-        key: team.key,
-        teamNumber: team.teamNumber,
-        nickname: team.nickname,
-        schoolName: team.schoolName,
-        sessionExists: team.key in pitStore.sessions,
-        uploadExists: team.key in pitStore.uploadedKeys,
-      } as ReportRecord;
+    if (!dbSessions) return;
 
-      teamRecords.push(newRecord);
-    });
-
-    // Set State.
-    setReportRecords(teamRecords);
+    setSessions(dbSessions);
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const handlePitScoutTeam = (key: string) => {
-    router.replace(`/scout-pit/${key}`);
+  const handlePitScoutTeam = async (teamKey: string) => {
+    await initPitScoutingSession(teamKey);
+    router.replace(`/scout-pit/${teamKey}`);
   };
 
   const handleUploadAllSessions = async () => {
-    Object.values(pitStore.sessions).forEach(async (session) => {
-      await postPitScoutingSession(session);
+    sessions.forEach(async (session) => {
+      //await postPitScoutingSession(session);
     });
   };
 
-  const handleUploadSession = async (key: string) => {
-    const session = pitStore.sessions[key];
-    if (session === undefined) return;
-
-    await postPitScoutingSession(session);
+  const handleUploadSession = async (teamKey: string) => {
+    const session = sessions.find((item) => item.teamKey == teamKey);
+    if (!session) return;
+    //await postPitScoutingSession(session);
   };
 
-  const handleShowSessionJsonQR = async (key: string) => {
-    const session = pitStore.sessions[key];
-    if (session === undefined) return;
+  const handleShowSessionJsonQR = async (teamKey: string) => {
+    const session = sessions.find((item) => item.teamKey == teamKey);
+    if (!session) return;
 
     const json = JSON.stringify(session);
     setQrCodeText(json);
     setShowQrCode(true);
   };
 
-  const handleShareSessionJson = async (key: string) => {
-    const session = pitStore.sessions[key];
-    if (session === undefined) return;
+  const handleShareSessionJson = async (teamKey: string) => {
+    const session = sessions.find((item) => item.teamKey == teamKey);
+    if (!session) return;
 
     const json = JSON.stringify(session);
 
@@ -113,9 +89,9 @@ export default function ScoutPitScreen() {
     loadData();
   };
 
-  const handleShowSessionJson = (sessionKey: string) => {
-    const session = pitStore.sessions[sessionKey];
-    if (session === undefined) return;
+  const handleShowSessionJson = (teamKey: string) => {
+    const session = sessions.find((item) => item.teamKey == teamKey);
+    if (!session) return;
 
     const json = JSON.stringify(session);
     setJsonText(json);
@@ -137,7 +113,7 @@ export default function ScoutPitScreen() {
     );
   }
 
-  if (!reportRecords || reportRecords?.length == 0) {
+  if (!sessions || sessions?.length == 0) {
     return (
       <View
         style={{
@@ -199,7 +175,7 @@ export default function ScoutPitScreen() {
           />
         </View>
       </ContainerGroup>
-      {reportRecords.map((item, index) => (
+      {sessions.map((item, index) => (
         <ContainerGroup
           title={`${item.teamNumber} - ${item.nickname}`}
           key={index}
@@ -217,38 +193,38 @@ export default function ScoutPitScreen() {
             <ResultsButton
               label="Scout"
               faIcon="edit"
-              active={!item.sessionExists && !item.uploadExists}
-              disabled={!item.sessionExists && item.uploadExists}
-              onPress={() => handlePitScoutTeam(item.key)}
+              active={!item.scouted && !item.uploaded}
+              disabled={!item.scouted && item.uploaded}
+              onPress={() => handlePitScoutTeam(item.teamKey)}
             />
             <ResultsButton
               label="Upload"
               faIcon="upload"
-              active={item.sessionExists && !item.uploadExists}
-              disabled={!item.sessionExists}
-              showUploadExists={item.uploadExists}
-              onPress={() => handleUploadSession(item.key)}
+              active={item.scouted && !item.uploaded}
+              disabled={!item.scouted}
+              showUploadExists={item.uploaded}
+              onPress={() => handleUploadSession(item.teamKey)}
             />
             <ResultsButton
               label="JSON"
               faIcon="qr"
-              active={item.sessionExists}
-              disabled={!item.sessionExists}
-              onPress={() => handleShowSessionJsonQR(item.key)}
+              active={item.scouted}
+              disabled={!item.scouted}
+              onPress={() => handleShowSessionJsonQR(item.teamKey)}
             />
             <ResultsButton
               label="JSON"
               faIcon="share"
-              active={item.sessionExists}
-              disabled={!item.sessionExists}
-              onPress={() => handleShareSessionJson(item.key)}
+              active={item.scouted}
+              disabled={!item.scouted}
+              onPress={() => handleShareSessionJson(item.teamKey)}
             />
             <ResultsButton
               label="Data"
               faIcon="json"
-              active={item.sessionExists}
-              disabled={!item.sessionExists}
-              onPress={() => handleShowSessionJson(item.key)}
+              active={item.scouted}
+              disabled={!item.scouted}
+              onPress={() => handleShowSessionJson(item.teamKey)}
             />
           </View>
         </ContainerGroup>

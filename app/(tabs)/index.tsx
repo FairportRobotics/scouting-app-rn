@@ -5,7 +5,7 @@ import { ContainerGroup, ScoutMatchSelect } from "@/components";
 import {
   getMatchesForSelection,
   initMatchScoutingSession,
-  MatchModel,
+  MatchSelectModel,
 } from "@/data/db";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
 import Colors from "@/constants/Colors";
@@ -15,7 +15,7 @@ export default function IndexScreen() {
   const router = useRouter();
 
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
+  const [matchModels, setMatchModels] = useState<Array<MatchSelectModel>>([]);
 
   const loadData = async () => {
     const matchModels = await getMatchesForSelection();

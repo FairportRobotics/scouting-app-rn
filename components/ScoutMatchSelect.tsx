@@ -2,10 +2,10 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Alliance, AllianceTeam } from "@/constants/Enums";
 import ScoutTeamSelect from "@/components/ScoutTeamSelect";
-import { MatchModel } from "@/data/db";
+import { MatchSelectModel } from "@/data/db";
 
 type ScoutMatchSelectProps = {
-  matchModel: MatchModel;
+  matchModel: MatchSelectModel;
   onSelect: (sessionKey: string) => void;
 };
 
