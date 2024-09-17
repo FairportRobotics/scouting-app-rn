@@ -3,14 +3,12 @@ import { PitScoutingSession } from "@/data/schema";
 import { saveUploadedPitSessionKey } from "@/data/db";
 
 export default async (session: PitScoutingSession) => {
-  console.log("postPitScoutingSession", session);
   try {
     const saveUri = process.env.EXPO_PUBLIC_SAVE_URI as string;
 
-    // TODO: Add eventKey to this BS.
     const postData = {
       type: "pit",
-      data: { ...session, key: session.id },
+      data: session,
     };
 
     const response = await axios.post(saveUri, postData);
@@ -21,6 +19,6 @@ export default async (session: PitScoutingSession) => {
       await saveUploadedPitSessionKey(key);
     });
   } catch (error) {
-    console.error({ error });
+    console.error(error);
   }
 };

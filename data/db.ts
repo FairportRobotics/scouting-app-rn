@@ -71,6 +71,11 @@ export interface TeamPitSelectModel {
 
 export type PitScoutingSessionModel = Match & Team & PitScoutingSession;
 
+export type PitScoutingSessionPostModel = PitScoutingSession & {
+  key: string;
+  eventKey: string;
+};
+
 export function initializeDb() {
   try {
     // console.log(

@@ -101,6 +101,8 @@ CREATE TABLE `team_member` (
 --> statement-breakpoint
 CREATE TABLE `event_team` (
 	`id` text PRIMARY KEY NOT NULL,
+	`key` text NOT NULL,
+	`event_key` text NOT NULL,
 	`number` text NOT NULL,
 	`nickname` text NOT NULL,
 	`school_name` text NOT NULL

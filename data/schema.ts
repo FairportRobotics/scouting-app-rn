@@ -20,6 +20,8 @@ export const matches = sqliteTable("event_match", {
 
 export const teams = sqliteTable("event_team", {
   id: text("id").notNull().primaryKey(),
+  key: text("key").notNull(),
+  eventKey: text("event_key").notNull(),
   number: text("number").notNull(),
   nickname: text("nickname").notNull(),
   schoolName: text("school_name").notNull(),

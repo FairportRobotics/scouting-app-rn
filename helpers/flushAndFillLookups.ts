@@ -145,6 +145,8 @@ async function refreshTeams(masterKey: string, account: string) {
           .insert(teams)
           .values({
             id: team.id,
+            key: team.key,
+            eventKey: team.eventKey,
             number: team.number,
             nickname: team.nickname ?? "(Team nickname not known)",
             schoolName: team.schoolName ?? "(Team school not known)",
@@ -153,6 +155,8 @@ async function refreshTeams(masterKey: string, account: string) {
             target: teams.id,
             set: {
               number: team.number,
+              key: team.key,
+              eventKey: team.eventKey,
               nickname: team.nickname ?? "(Team nickname not known)",
               schoolName: team.schoolName ?? "(Team school not known)",
             },
