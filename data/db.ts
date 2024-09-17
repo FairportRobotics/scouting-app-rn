@@ -289,3 +289,22 @@ export async function saveMatchSessionAuto(session: MatchScoutingSession) {
     console.error(error);
   }
 }
+
+export async function saveMatchSessionTeleop(session: MatchScoutingSession) {
+  try {
+    await db
+      .update(matchScoutingSessions)
+      .set({
+        teleopSpeakerScore: session.teleopSpeakerScore,
+        teleopSpeakerScoreAmplified: session.teleopSpeakerScoreAmplified,
+        teleopSpeakerMiss: session.teleopSpeakerMiss,
+        teleopAmpScore: session.teleopAmpScore,
+        teleopAmpMiss: session.teleopAmpMiss,
+        teleopRelayPass: session.teleopRelayPass,
+        teleopNotes: session.teleopNotes,
+      })
+      .where(eq(matchScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
+}

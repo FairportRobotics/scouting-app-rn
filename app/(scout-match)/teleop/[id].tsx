@@ -13,20 +13,21 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import {
+  getMatchScoutingSessionForEdit,
+  MatchScoutingSessionModel,
+  saveMatchSessionTeleop,
+} from "@/data/db";
 
 function TeleopScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const matchStore = useMatchScoutingStore();
-
   // States.
-  const [sessionKey, setSessionKey] = useState<string>(id);
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [speakerScore, setSpeakerScore] = useState<number>(0);
   const [speakerScoreAmplified, setSpeakerScoreAmplified] = useState<number>(0);
   const [speakerMiss, setSpeakerMiss] = useState<number>(0);
@@ -39,47 +40,38 @@ function TeleopScreen() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    saveData();
-  }, [
-    speakerScore,
-    speakerScoreAmplified,
-    speakerMiss,
-    ampScore,
-    ampMiss,
-    pass,
-  ]);
-
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
+    // Retrieve the session.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
 
     // Validate.
-    if (cacheSession === undefined) return;
+    if (!dbSession) return;
+    console.log("Teleop Before:n", JSON.stringify(dbSession, null, 2));
 
-    setSpeakerScore(cacheSession.teleopSpeakerScore ?? 0);
-    setSpeakerScoreAmplified(cacheSession.teleopSpeakerScoreAmplified ?? 0);
-    setSpeakerMiss(cacheSession.teleopSpeakerMiss ?? 0);
-    setAmpScore(cacheSession.teleopAmpScore ?? 0);
-    setAmpMiss(cacheSession.teleopAmpMiss ?? 0);
-    setPass(cacheSession.teleopRelayPass ?? 0);
-    setNotes(cacheSession?.teleopNotes ?? "");
+    // Set State.
+    setSession(dbSession);
+    setSpeakerScore(dbSession.teleopSpeakerScore ?? 0);
+    setSpeakerScoreAmplified(dbSession.teleopSpeakerScoreAmplified ?? 0);
+    setSpeakerMiss(dbSession.teleopSpeakerMiss ?? 0);
+    setAmpScore(dbSession.teleopAmpScore ?? 0);
+    setAmpMiss(dbSession.teleopAmpMiss ?? 0);
+    setPass(dbSession.teleopRelayPass ?? 0);
+    setNotes(dbSession?.teleopNotes ?? "");
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
-    // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.teleopSpeakerScore = speakerScore;
-    current.teleopSpeakerScoreAmplified = speakerScoreAmplified;
-    current.teleopSpeakerMiss = speakerMiss;
-    current.teleopAmpScore = ampScore;
-    current.teleopAmpMiss = ampMiss;
-    current.teleopRelayPass = pass;
-    current.teleopNotes = notes;
-    matchStore.saveSession(current);
+    session.teleopSpeakerScore = speakerScore;
+    session.teleopSpeakerScoreAmplified = speakerScoreAmplified;
+    session.teleopSpeakerMiss = speakerMiss;
+    session.teleopAmpScore = ampScore;
+    session.teleopAmpMiss = ampMiss;
+    session.teleopRelayPass = pass;
+    session.teleopNotes = notes;
+    console.log("Teleop Before:n", JSON.stringify(session, null, 2));
+
+    saveMatchSessionTeleop(session);
   };
 
   const handleNavigatePrevious = () => {
@@ -92,7 +84,7 @@ function TeleopScreen() {
     router.replace(`/(scout-match)/endgame/${id}`);
   };
 
-  if (!(id in matchStore.sessions)) {
+  if (!session) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -102,7 +94,7 @@ function TeleopScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Speaker">
         <MinusPlusPair
           label="Score: Non-Amplified"

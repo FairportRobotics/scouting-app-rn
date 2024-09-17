@@ -88,22 +88,24 @@ function ConfirmScreen() {
   };
 
   const loadData = async () => {
-    const session = await getMatchScoutingSessionForEdit(id);
-    const teams = await getTeams();
-    const members = await getTeamMembers();
+    const dbSession = await getMatchScoutingSessionForEdit(id);
+    const dbTeams = await getTeams();
+    const dbMembers = await getTeamMembers();
 
     // Retrieve from stores.
-    if (!session) return;
+    if (!dbSession) return;
+
+    console.log("Confirm Before:n", JSON.stringify(dbSession, null, 2));
 
     // Set States.
-    setSession(session);
-    setAllTeams(teams);
-    setAllScouters(members);
+    setSession(dbSession);
+    setAllTeams(dbTeams);
+    setAllScouters(dbMembers);
 
-    setScouterName(session.scouterName ?? "");
-    setScheduledTeam(lookupTeam(teams, session.scheduledTeamKey));
-    setScoutedTeam(lookupTeam(teams, session.scoutedTeamKey));
-    setScoutedTeamKey(session.scoutedTeamKey);
+    setScouterName(dbSession.scouterName ?? "");
+    setScheduledTeam(lookupTeam(dbTeams, dbSession.scheduledTeamKey));
+    setScoutedTeam(lookupTeam(dbTeams, dbSession.scoutedTeamKey));
+    setScoutedTeamKey(dbSession.scoutedTeamKey);
   };
 
   const saveData = async () => {
@@ -111,6 +113,8 @@ function ConfirmScreen() {
 
     session.scouterName = scouterName;
     session.scoutedTeamKey = scoutedTeamKey;
+
+    console.log("Confirm After:n", JSON.stringify(session, null, 2));
 
     await saveMatchSessionConfirm(session);
   };

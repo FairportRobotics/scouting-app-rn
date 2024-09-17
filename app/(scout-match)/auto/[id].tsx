@@ -39,20 +39,21 @@ function AutoScreen() {
 
   const loadData = async () => {
     // Retrieve the session.
-    const session = await getMatchScoutingSessionForEdit(id);
+    const dbSession = await getMatchScoutingSessionForEdit(id);
+    console.log("Auto Before:n", JSON.stringify(dbSession, null, 2));
 
     // Validate.
-    if (!session) return;
+    if (!dbSession) return;
 
     // Set State.
-    setSession(session);
-    setStartedWithNote(session.autoStartedWithNote ?? true);
-    setLeftStartArea(session.autoLeftStartArea ?? false);
-    setSpeakerScore(session.autoSpeakerScore ?? 0);
-    setSpeakerMiss(session.autoSpeakerMiss ?? 0);
-    setAmpScore(session.autoAmpScore ?? 0);
-    setAmpMiss(session.autoAmpMiss ?? 0);
-    setNotes(session?.autoNotes ?? "");
+    setSession(dbSession);
+    setStartedWithNote(dbSession.autoStartedWithNote ?? true);
+    setLeftStartArea(dbSession.autoLeftStartArea ?? false);
+    setSpeakerScore(dbSession.autoSpeakerScore ?? 0);
+    setSpeakerMiss(dbSession.autoSpeakerMiss ?? 0);
+    setAmpScore(dbSession.autoAmpScore ?? 0);
+    setAmpMiss(dbSession.autoAmpMiss ?? 0);
+    setNotes(dbSession?.autoNotes ?? "");
   };
 
   const saveData = async () => {
@@ -65,6 +66,7 @@ function AutoScreen() {
     session.autoAmpScore = ampScore;
     session.autoAmpMiss = ampMiss;
     session.autoNotes = notes;
+    console.log("Auto After:n", JSON.stringify(session, null, 2));
 
     await saveMatchSessionAuto(session);
   };
@@ -72,18 +74,6 @@ function AutoScreen() {
   useEffect(() => {
     loadData();
   }, []);
-
-  useEffect(() => {
-    saveData();
-  }, [
-    startedWithNote,
-    leftStartArea,
-    speakerScore,
-    speakerMiss,
-    ampScore,
-    ampMiss,
-    notes,
-  ]);
 
   const handleNavigatePrevious = () => {
     saveData();
