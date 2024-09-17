@@ -188,15 +188,18 @@ export async function getMatchTeam(
 export async function getMatchScoutingSessionForEdit(
   sessionKey: string
 ): Promise<MatchScoutingSessionModel | null> {
+  // Load the
   const matchTeams = await db
     .select()
     .from(eventMatchTeams)
-    .where(eq(eventMatchTeams.id, sessionKey));
+    .where(eq(eventMatchTeams.id, sessionKey))
+    .limit(1);
 
   const matchSessions = await db
     .select()
     .from(matchScoutingSessions)
-    .where(eq(matchScoutingSessions.id, sessionKey));
+    .where(eq(matchScoutingSessions.id, sessionKey))
+    .limit(1);
 
   if (matchTeams.length !== 1) return null;
   if (matchSessions.length !== 1) return null;
@@ -207,7 +210,8 @@ export async function getMatchScoutingSessionForEdit(
   const matches = await db
     .select()
     .from(eventMatches)
-    .where(eq(eventMatches.id, matchTeam.matchKey));
+    .where(eq(eventMatches.id, matchTeam.matchKey))
+    .limit(1);
 
   if (matches.length !== 1) return null;
 
