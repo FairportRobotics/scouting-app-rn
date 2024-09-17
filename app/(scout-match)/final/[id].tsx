@@ -14,12 +14,9 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
-import postMatchSession from "@/helpers/postMatchSession";
 import {
   getMatchScoutingSessionForEdit,
   MatchScoutingSessionModel,

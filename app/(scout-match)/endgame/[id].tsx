@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  KeyboardAvoidingView,
-  TextInput,
-} from "react-native";
+import { ScrollView, KeyboardAvoidingView, TextInput } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
