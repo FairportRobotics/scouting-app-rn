@@ -270,3 +270,22 @@ export async function saveMatchSessionConfirm(session: MatchScoutingSession) {
     console.error(error);
   }
 }
+
+export async function saveMatchSessionAuto(session: MatchScoutingSession) {
+  try {
+    await db
+      .update(matchScoutingSessions)
+      .set({
+        autoStartedWithNote: session.autoStartedWithNote,
+        autoLeftStartArea: session.autoLeftStartArea,
+        autoSpeakerScore: session.autoSpeakerScore,
+        autoSpeakerMiss: session.autoSpeakerMiss,
+        autoAmpScore: session.autoAmpScore,
+        autoAmpMiss: session.autoAmpMiss,
+        autoNotes: session.autoNotes,
+      })
+      .where(eq(matchScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
+}
