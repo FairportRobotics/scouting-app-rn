@@ -397,8 +397,6 @@ async function refreshPitScouting(masterKey: string, account: string) {
           .insert(pitScoutingSessions)
           .values({
             id: session.id,
-            eventKey: session.eventKey,
-            teamKey: session.id,
             driveTeamExperience: session.driveTeamExperience,
             numberOfAutoMethods: session.numberOfAutoMethods,
             canPickUpFromGround: session.canPickUpFromGround,
@@ -416,8 +414,6 @@ async function refreshPitScouting(masterKey: string, account: string) {
           .onConflictDoUpdate({
             target: pitScoutingSessions.id,
             set: {
-              eventKey: session.eventKey,
-              teamKey: session.id,
               driveTeamExperience: session.driveTeamExperience ?? "",
               numberOfAutoMethods: session.numberOfAutoMethods ?? "",
               canPickUpFromGround: session.canPickUpFromGround ?? "",
