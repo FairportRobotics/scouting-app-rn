@@ -14,20 +14,21 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
-import postMatchSession from "@/helpers/postMatchSession";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import {
+  getMatchScoutingSessionForEdit,
+  MatchScoutingSessionModel,
+  saveMatchSessionEndgame,
+} from "@/data/db";
 
 function EndgameScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const matchStore = useMatchScoutingStore();
-
   // States.
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [trapScore, setTrapScore] = useState<string>("0");
   const [microphoneScore, setMicrophoneScore] = useState<string>("0");
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
@@ -39,38 +40,36 @@ function EndgameScreen() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    saveData();
-  }, [trapScore, microphoneScore, didRobotPark, didRobotHang, harmonyScore]);
-
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
+    // Retrieve the session.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
 
     // Validate.
-    if (cacheSession === undefined) return;
+    if (!dbSession) return;
+    console.log("Endgame Before:n", JSON.stringify(dbSession, null, 2));
 
-    setTrapScore(cacheSession.endgameTrapScore ?? "0");
-    setMicrophoneScore(cacheSession.endgameMicrophoneScore ?? "0");
-    setDidRobotPark(cacheSession.endgameDidRobotPark ?? false);
-    setDidRobotHang(cacheSession.endgameDidRobotHang ?? false);
-    setHarmonyScore(cacheSession.endgameHarmony ?? "0");
-    setNotes(cacheSession.endgameNotes ?? "");
+    setSession(dbSession);
+    setTrapScore(dbSession.endgameTrapScore ?? "0");
+    setMicrophoneScore(dbSession.endgameMicrophoneScore ?? "0");
+    setDidRobotPark(dbSession.endgameDidRobotPark ?? false);
+    setDidRobotHang(dbSession.endgameDidRobotHang ?? false);
+    setHarmonyScore(dbSession.endgameHarmony ?? "0");
+    setNotes(dbSession.endgameNotes ?? "");
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
     // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.endgameTrapScore = trapScore;
-    current.endgameMicrophoneScore = microphoneScore;
-    current.endgameDidRobotPark = didRobotPark;
-    current.endgameDidRobotHang = didRobotHang;
-    current.endgameHarmony = harmonyScore;
-    current.endgameNotes = notes;
-    matchStore.saveSession(current);
+    session.endgameTrapScore = trapScore;
+    session.endgameMicrophoneScore = microphoneScore;
+    session.endgameDidRobotPark = didRobotPark;
+    session.endgameDidRobotHang = didRobotHang;
+    session.endgameHarmony = harmonyScore;
+    session.endgameNotes = notes;
+    console.log("Endgame After:\n", JSON.stringify(session, null, 2));
+
+    await saveMatchSessionEndgame(session);
   };
 
   const handleDidRobotPark = (value: boolean) => {
@@ -95,7 +94,7 @@ function EndgameScreen() {
     router.replace(`/(scout-match)/final/${id}`);
   };
 
-  if (!(id in matchStore.sessions)) {
+  if (!session) {
     return (
       <View>
         <Text>Loading...</Text>
@@ -105,7 +104,7 @@ function EndgameScreen() {
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Stage">
         <SelectGroup
           title="Trap"

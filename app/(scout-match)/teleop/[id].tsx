@@ -69,7 +69,7 @@ function TeleopScreen() {
     session.teleopAmpMiss = ampMiss;
     session.teleopRelayPass = pass;
     session.teleopNotes = notes;
-    console.log("Teleop Before:n", JSON.stringify(session, null, 2));
+    console.log("Teleop After:\n", JSON.stringify(session, null, 2));
 
     saveMatchSessionTeleop(session);
   };

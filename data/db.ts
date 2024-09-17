@@ -308,3 +308,21 @@ export async function saveMatchSessionTeleop(session: MatchScoutingSession) {
     console.error(error);
   }
 }
+
+export async function saveMatchSessionEndgame(session: MatchScoutingSession) {
+  try {
+    await db
+      .update(matchScoutingSessions)
+      .set({
+        endgameTrapScore: session.endgameTrapScore,
+        endgameMicrophoneScore: session.endgameMicrophoneScore,
+        endgameDidRobotPark: session.endgameDidRobotPark,
+        endgameDidRobotHang: session.endgameDidRobotHang,
+        endgameHarmony: session.endgameHarmony,
+        endgameNotes: session.endgameNotes,
+      })
+      .where(eq(matchScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
+}
