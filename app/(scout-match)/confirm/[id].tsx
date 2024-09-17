@@ -18,6 +18,7 @@ import {
   getTeamMembers,
   getTeams,
   MatchScoutingSessionModel,
+  saveMatchSessionConfirm,
 } from "@/data/db";
 import { Team, TeamMember } from "@/data/schema";
 import Styles from "@/constants/Styles";
@@ -106,17 +107,12 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    // if (!(id in matchStore.sessions)) return;
-    // // Set properties and save.
-    // let current = matchStore.sessions[id];
-    // current.scouterName = scouterName;
-    // current.scoutedTeamKey = scoutedTeamKey;
-    // matchStore.saveSession(current);
-    // // HACK: Set the store with the new lookups.
-    // useMatchScoutingStore.setState((state) => ({
-    //   ...state,
-    //   sessions: matchStore.sessions,
-    // }));
+    if (!session) return;
+
+    session.scouterName = scouterName;
+    session.scoutedTeamKey = scoutedTeamKey;
+
+    await saveMatchSessionConfirm(session);
   };
 
   const handleChangeScouter = (value: string) => {

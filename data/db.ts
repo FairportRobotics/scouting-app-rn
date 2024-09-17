@@ -256,3 +256,17 @@ export async function initMatchScoutingSession(sessionKey: string) {
     console.error(error);
   }
 }
+
+export async function saveMatchSessionConfirm(session: MatchScoutingSession) {
+  try {
+    await db
+      .update(matchScoutingSessions)
+      .set({
+        scouterName: session.scouterName,
+        scoutedTeamKey: session.scoutedTeamKey,
+      })
+      .where(eq(matchScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
+}
