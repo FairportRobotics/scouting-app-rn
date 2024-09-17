@@ -4,6 +4,7 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import * as FileSystem from "expo-file-system";
 import {
+  Event,
   events,
   matches,
   matchTeams,
@@ -23,6 +24,7 @@ import {
 } from "./schema";
 import { eq } from "drizzle-orm/expressions";
 import { sql } from "drizzle-orm";
+import { ItemKey } from "@/constants/Types";
 
 export const connection = openDatabaseSync("scouting-app.db");
 export const db = drizzle(connection);
@@ -94,6 +96,32 @@ export function initializeDb() {
     }
   } catch (error) {
     console.error("Migrations exception", error);
+  }
+}
+
+export async function getEvent(): Promise<Event> {
+  try {
+    const dbEvents = await db.select().from(events).limit(1);
+    if (dbEvents.length !== 1) return {} as Event;
+    return dbEvents[0];
+  } catch (error) {
+    return {} as Event;
+  }
+}
+
+export async function getTeams(): Promise<Team[]> {
+  try {
+    return await db.select().from(teams);
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getMatches(): Promise<Match[]> {
+  try {
+    return await db.select().from(matches);
+  } catch (error) {
+    return [];
   }
 }
 
@@ -189,14 +217,6 @@ export async function getMatchesForSelection(): Promise<MatchSelectModel[]> {
   });
 
   return arrayResult;
-}
-
-export async function getTeams(): Promise<Team[]> {
-  try {
-    return await db.select().from(teams);
-  } catch (error) {
-    return [];
-  }
 }
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
@@ -555,5 +575,29 @@ export async function saveUploadedPitSessionKey(sessionKey: string) {
       });
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function getMatchScoutingKeys(): Promise<ItemKey[]> {
+  try {
+    const results = await db
+      .select({ key: matchScoutingUploads.id })
+      .from(matchScoutingUploads);
+    return results;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getPitScoutingKeys(): Promise<ItemKey[]> {
+  try {
+    const results = await db
+      .select({ key: pitScoutingUploads.id })
+      .from(pitScoutingUploads);
+    return results;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }

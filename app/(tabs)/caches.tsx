@@ -1,22 +1,26 @@
 import { ScrollView, View, Text, Button, RefreshControl } from "react-native";
 import { ContainerGroup } from "@/components";
-import { useCacheStore } from "@/store/cachesStore";
-import { usePitScoutingStore } from "@/store/pitScoutingStore";
-import { useMatchScoutingStore } from "@/store/matchScoutingStore";
 import { useEffect, useState } from "react";
 import { ItemKey } from "@/constants/Types";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
 import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import refreshPitScoutingKeys from "@/helpers/refreshPitScoutingKeys";
 import Colors from "@/constants/Colors";
+import {
+  getEvent,
+  getMatches,
+  getMatchScoutingKeys,
+  getPitScoutingKeys,
+  getTeams,
+} from "@/data/db";
+import { Event, Match, Team } from "@/data/schema";
 
 export default function Caches() {
-  // Stores.
-  const cacheStore = useCacheStore();
-  const matchStore = useMatchScoutingStore();
-  const pitStore = usePitScoutingStore();
-
   const [showCaches, setShowCaches] = useState<boolean>(false);
+
+  const [event, setEvent] = useState<Event>();
+  const [matches, setMatches] = useState<Match[]>();
+  const [teams, setTeams] = useState<Team[]>();
 
   const [matchKeys, setMatchKeys] = useState<Array<ItemKey>>([]);
   const [showMatchKeys, setShowMatchKeys] = useState<boolean>(false);
@@ -27,8 +31,16 @@ export default function Caches() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
-    setMatchKeys(matchStore.uploadedKeys);
-    setPitKeys(pitStore.uploadedKeys);
+    async function loadData() {
+      setEvent(await getEvent());
+      setMatches(await getMatches());
+      setTeams(await getTeams());
+
+      setMatchKeys(await getMatchScoutingKeys());
+      setPitKeys(await getPitScoutingKeys());
+    }
+
+    loadData();
   }, []);
 
   const onRefresh = async () => {
@@ -43,12 +55,12 @@ export default function Caches() {
 
   const handleRefreshMatchSessionKeys = async () => {
     await refreshMatchScoutingKeys();
-    setMatchKeys(matchStore.uploadedKeys);
+    setMatchKeys(await getMatchScoutingKeys());
   };
 
   const handleRefreshPitSessionKeys = async () => {
     await refreshPitScoutingKeys();
-    setPitKeys(pitStore.uploadedKeys);
+    setPitKeys(await getPitScoutingKeys());
   };
 
   return (
@@ -71,9 +83,9 @@ export default function Caches() {
         />
         {showCaches && (
           <View>
-            <Text>{JSON.stringify(cacheStore.event, null, 2)}</Text>
-            <Text>{JSON.stringify(cacheStore.matches, null, 2)}</Text>
-            <Text>{JSON.stringify(cacheStore.teams, null, 2)}</Text>
+            <Text>{JSON.stringify(event, null, 2)}</Text>
+            <Text>{JSON.stringify(matches, null, 2)}</Text>
+            <Text>{JSON.stringify(teams, null, 2)}</Text>
           </View>
         )}
       </ContainerGroup>
