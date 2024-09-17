@@ -14,7 +14,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Match Scouting",
+          title: "Scout Matches",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faHouse}
@@ -25,9 +25,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="matchResults"
+        name="matchScoutingResults"
         options={{
-          title: "Match Results",
+          title: "Match Scouting Results",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faRobot}
@@ -38,9 +38,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="scoutPit"
+        name="scoutPits"
         options={{
-          title: "Pit Scouting",
+          title: "Scout Pits",
           tabBarIcon: ({ color, size }) => (
             <FontAwesomeIcon
               icon={faPeopleArrows}

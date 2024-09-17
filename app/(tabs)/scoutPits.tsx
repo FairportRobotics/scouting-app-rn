@@ -7,9 +7,11 @@ import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 import Colors from "@/constants/Colors";
 import {
   getPitScoutingResults,
+  getPitScoutingSessionForEdit,
   initPitScoutingSession,
   TeamPitSelectModel,
 } from "@/data/db";
+import { PitScoutingSession } from "@/data/schema";
 
 export default function ScoutPitScreen() {
   const router = useRouter();
@@ -54,8 +56,20 @@ export default function ScoutPitScreen() {
 
   const handleUploadAllSessions = async () => {
     sessions.forEach(async (session) => {
-      //await postPitScoutingSession(session);
+      const dbSession = await getPitScoutingSessionForEdit(session.teamKey);
+      if (!dbSession) return;
+      await postPitScoutingSession(dbSession);
     });
+  };
+
+  const handleUploadPendingSessions = async () => {
+    sessions
+      .filter((item) => item.uploaded == false)
+      .forEach(async (session) => {
+        const dbSession = await getPitScoutingSessionForEdit(session.teamKey);
+        if (!dbSession) return;
+        await postPitScoutingSession(dbSession);
+      });
   };
 
   const handleUploadSession = async (teamKey: string) => {
@@ -156,7 +170,7 @@ export default function ScoutPitScreen() {
         />
       }
     >
-      <ContainerGroup title="All Pit Scouting Sessions">
+      <ContainerGroup title="Pit Scouting Sessions">
         <View
           style={{
             flex: 1,
@@ -172,6 +186,13 @@ export default function ScoutPitScreen() {
             active={true}
             showUploadExists={false}
             onPress={() => handleUploadAllSessions()}
+          />
+          <ResultsButton
+            label="Upload Pending"
+            faIcon="upload"
+            active={true}
+            showUploadExists={false}
+            onPress={() => handleUploadPendingSessions()}
           />
         </View>
       </ContainerGroup>

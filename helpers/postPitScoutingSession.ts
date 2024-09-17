@@ -1,27 +1,26 @@
 import axios from "axios";
-import type { ItemKey, PitScoutingSession } from "@/constants/Types";
-import {
-  PitScoutingState,
-  usePitScoutingStore,
-} from "@/store/pitScoutingStore";
+import { PitScoutingSession } from "@/data/schema";
+import { saveUploadedPitSessionKey } from "@/data/db";
 
 export default async (session: PitScoutingSession) => {
+  console.log("postPitScoutingSession", session);
   try {
     const saveUri = process.env.EXPO_PUBLIC_SAVE_URI as string;
 
+    // TODO: Add eventKey to this BS.
     const postData = {
       type: "pit",
-      data: session,
+      data: { ...session, key: session.id },
     };
 
     const response = await axios.post(saveUri, postData);
-    const uploadedKeys = (response.data.data_for as Array<string>) || [];
 
-    const storeState: PitScoutingState = usePitScoutingStore.getState();
-    storeState.uploadedKeys = uploadedKeys.map(
-      (item) => ({ key: item } as ItemKey)
-    );
+    // Persist the uploaded keys.
+    const uploadedKeys = (response.data.data_for as Array<string>) || [];
+    uploadedKeys.forEach(async (key) => {
+      await saveUploadedPitSessionKey(key);
+    });
   } catch (error) {
-    console.error(error);
+    console.error({ error });
   }
 };

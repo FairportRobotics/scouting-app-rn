@@ -23,6 +23,7 @@ import { Team, TeamMember } from "@/data/schema";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import Loading from "@/components/Loading";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function ConfirmScreen() {
   // Route.
@@ -113,6 +114,7 @@ function ConfirmScreen() {
     session.scoutedTeamKey = scoutedTeamKey;
 
     await saveMatchSessionConfirm(session);
+    await postMatchSession(session);
   };
 
   const handleChangeScouter = (value: string) => {
@@ -128,13 +130,13 @@ function ConfirmScreen() {
     setFilteredTeams([]);
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
 
     if (scouterName.length === 0) {
       Alert.alert("Scouter Name Missing", "Select Scouter Name to continue");

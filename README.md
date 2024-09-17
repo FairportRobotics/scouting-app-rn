@@ -106,6 +106,8 @@ https://learn.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-
 Stolen shamelessly from:
 https://github.com/blazerroadg/react-native-azure-cosmos/blob/master/headers.js
 
+https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
+
 ## Todo
 
 [X] Remove Auto > Score in Speaker while Amplified

@@ -24,6 +24,7 @@ import {
   saveMatchSessionFinal,
 } from "@/data/db";
 import Loading from "@/components/Loading";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function FinalScreen() {
   // Route.
@@ -79,7 +80,8 @@ function FinalScreen() {
     session.finalPenalties = penalties;
     session.finalNotes = notes;
 
-    saveMatchSessionFinal(session);
+    await saveMatchSessionFinal(session);
+    await postMatchSession(session);
   };
 
   const handleChangeTotalScore = (value: string) => {
@@ -92,13 +94,13 @@ function FinalScreen() {
     setRankingPoints(parseInt(value));
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/endgame/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/`);
   };
 

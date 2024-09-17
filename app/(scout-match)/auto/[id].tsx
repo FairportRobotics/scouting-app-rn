@@ -21,6 +21,7 @@ import {
   MatchScoutingSessionModel,
   saveMatchSessionAuto,
 } from "@/data/db";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function AutoScreen() {
   // Route.
@@ -67,19 +68,20 @@ function AutoScreen() {
     session.autoNotes = notes;
 
     await saveMatchSessionAuto(session);
+    await postMatchSession(session);
   };
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/confirm/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/(scout-match)/teleop/${id}`);
   };
 

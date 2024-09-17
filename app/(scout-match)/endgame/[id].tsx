@@ -16,6 +16,7 @@ import {
   saveMatchSessionEndgame,
 } from "@/data/db";
 import Loading from "@/components/Loading";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function EndgameScreen() {
   // Route.
@@ -63,6 +64,7 @@ function EndgameScreen() {
     session.endgameNotes = notes;
 
     await saveMatchSessionEndgame(session);
+    await postMatchSession(session);
   };
 
   const handleDidRobotPark = (value: boolean) => {
@@ -77,13 +79,13 @@ function EndgameScreen() {
     setHarmonyScore("0");
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/teleop/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/(scout-match)/final/${id}`);
   };
 

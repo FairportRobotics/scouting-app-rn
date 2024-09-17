@@ -18,7 +18,6 @@ import {
   teamMembers,
 } from "@/data/schema";
 import fetchFromCosmos from "@/helpers/fetchFromCosmos";
-import postToCosmos from "./postToCosmos";
 
 export default async () => {
   // Retrieve the URL and key from env.

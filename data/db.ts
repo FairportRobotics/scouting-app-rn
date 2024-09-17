@@ -514,3 +514,41 @@ export async function savePitSession(session: PitScoutingSession) {
     console.error(error);
   }
 }
+
+export async function saveUploadedMatchSessionKey(sessionKey: string) {
+  try {
+    await db
+      .insert(matchScoutingUploads)
+      .values({
+        id: sessionKey,
+        refreshDate: new Date().toISOString(),
+      })
+      .onConflictDoUpdate({
+        target: matchScoutingUploads.id,
+        set: {
+          refreshDate: new Date().toISOString(),
+        },
+      });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function saveUploadedPitSessionKey(sessionKey: string) {
+  try {
+    await db
+      .insert(pitScoutingUploads)
+      .values({
+        id: sessionKey,
+        refreshDate: new Date().toISOString(),
+      })
+      .onConflictDoUpdate({
+        target: pitScoutingUploads.id,
+        set: {
+          refreshDate: new Date().toISOString(),
+        },
+      });
+  } catch (error) {
+    console.error(error);
+  }
+}

@@ -31,6 +31,7 @@ export default function MatchResultsScreen() {
   const [qrCodeText, setQrCodeText] = useState<string>("");
   const [showJson, setShowJson] = useState<boolean>(false);
   const [jsonText, setJsonText] = useState<string>("");
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const onRefresh = () => {
     setIsRefreshing(true);
@@ -50,18 +51,44 @@ export default function MatchResultsScreen() {
   };
 
   const handleUploadAllSessions = async () => {
+    setIsUploading(true);
+
     sessions.forEach(async (session) => {
-      //await postMatchSession(session);
+      const dbSession = await getMatchScoutingSessionForEdit(
+        session.sessionKey
+      );
+      if (!dbSession) return;
+
+      await postMatchSession(dbSession);
     });
-    await refreshMatchScoutingKeys();
+
+    loadData();
+
+    setIsUploading(false);
+  };
+
+  const handleUploadPendingSessions = async () => {
+    setIsUploading(true);
+
+    sessions
+      .filter((item) => item.uploadExists == false)
+      .forEach(async (session) => {
+        const dbSession = await getMatchScoutingSessionForEdit(
+          session.sessionKey
+        );
+        if (!dbSession) return;
+        await postMatchSession(dbSession);
+      });
+
+    loadData();
+
+    setIsUploading(false);
   };
 
   const handleUploadSession = async (sessionKey: string) => {
-    const session = sessions.find((item) => item.sessionKey == sessionKey);
-    if (session === undefined) return;
-
-    //await postMatchSession(session);
-    await refreshMatchScoutingKeys();
+    const dbSession = await getMatchScoutingSessionForEdit(sessionKey);
+    if (!dbSession) return;
+    await postMatchSession(dbSession);
   };
 
   const handleShowSessionJsonQR = (sessionKey: string) => {
@@ -146,7 +173,7 @@ export default function MatchResultsScreen() {
           />
         }
       >
-        <ContainerGroup title="All Match Scouting Sessions">
+        <ContainerGroup title="Match Scouting Sessions">
           <View
             style={{
               flex: 1,
@@ -161,7 +188,16 @@ export default function MatchResultsScreen() {
               faIcon="upload"
               active={true}
               showUploadExists={false}
+              disabled={isUploading}
               onPress={() => handleUploadAllSessions()}
+            />
+            <ResultsButton
+              label="Upload Pending"
+              faIcon="upload"
+              active={true}
+              showUploadExists={false}
+              disabled={isUploading}
+              onPress={() => handleUploadPendingSessions()}
             />
           </View>
         </ContainerGroup>
@@ -184,6 +220,7 @@ export default function MatchResultsScreen() {
                 <ResultsButton
                   label="Upload"
                   faIcon="upload"
+                  disabled={isUploading}
                   active={session.uploadExists}
                   showUploadExists={session.uploadExists}
                   onPress={() => handleUploadSession(session.sessionKey)}

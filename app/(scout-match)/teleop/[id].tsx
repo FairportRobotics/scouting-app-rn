@@ -15,6 +15,7 @@ import {
   saveMatchSessionTeleop,
 } from "@/data/db";
 import Loading from "@/components/Loading";
+import postMatchSession from "@/helpers/postMatchSession";
 
 function TeleopScreen() {
   // Route.
@@ -64,16 +65,17 @@ function TeleopScreen() {
     session.teleopRelayPass = pass;
     session.teleopNotes = notes;
 
-    saveMatchSessionTeleop(session);
+    await saveMatchSessionTeleop(session);
+    await postMatchSession(session);
   };
 
-  const handleNavigatePrevious = () => {
-    saveData();
+  const handleNavigatePrevious = async () => {
+    await saveData();
     router.replace(`/(scout-match)/auto/${id}`);
   };
 
-  const handleNavigateNext = () => {
-    saveData();
+  const handleNavigateNext = async () => {
+    await saveData();
     router.replace(`/(scout-match)/endgame/${id}`);
   };
 

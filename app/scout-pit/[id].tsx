@@ -11,6 +11,8 @@ import {
   savePitSession,
 } from "@/data/db";
 import Loading from "@/components/Loading";
+import { PitScoutingSession } from "@/data/schema";
+import postPitScoutingSession from "@/helpers/postPitScoutingSession";
 
 function ScoutPitScreen() {
   // Route.
@@ -34,16 +36,11 @@ function ScoutPitScreen() {
 
   const saveData = async () => {
     await savePitSession(session as PitScoutingSessionModel);
+    await postPitScoutingSession(session as PitScoutingSession);
   };
 
   const uploadDate = async () => {
-    // try {
-    //   await postPitScoutingSession(session);
-    //   pitStore.sessions[id].uploadedDate = new Date();
-    //   loadData;
-    // } catch (error) {
-    //   console.error(error);
-    // }
+    await postPitScoutingSession(session as PitScoutingSession);
   };
 
   const handleChange = (key: string, value: string) => {
@@ -52,13 +49,13 @@ function ScoutPitScreen() {
   };
 
   const handleOnCancel = () => {
-    router.replace("/scoutPit");
+    router.replace("/scoutPits");
   };
 
-  const handleOnComplete = () => {
-    saveData();
-    uploadDate();
-    router.replace("/scoutPit");
+  const handleOnComplete = async () => {
+    await saveData();
+    await uploadDate();
+    router.replace("/scoutPits");
   };
 
   if (!session) {
