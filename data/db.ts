@@ -92,8 +92,14 @@ export async function getMatchesForSelection(): Promise<MatchModel[]> {
       alliance: matchTeams.alliance,
       allianceTeam: matchTeams.allianceTeam,
       teamKey: matchTeams.teamKey,
-      scouted: matchScoutingSessions.id,
-      uploaded: matchScoutingUploads.id,
+      scouted:
+        sql`CASE WHEN ${matchScoutingSessions.id} IS NULL THEN false ELSE true END`.as(
+          "scouted"
+        ),
+      uploaded:
+        sql`CASE WHEN ${matchScoutingUploads.id} IS NULL THEN false ELSE true END`.as(
+          "uploaded"
+        ),
     })
     .from(matches)
     .leftJoin(matchTeams, eq(matches.id, matchTeams.matchKey))

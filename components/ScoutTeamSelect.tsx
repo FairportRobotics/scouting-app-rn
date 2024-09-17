@@ -52,7 +52,7 @@ export default function ScoutTeamSelect({
           }}
         >
           <FontAwesomeIcon
-            icon={teamModel.scouted ? faCloud : faTabletScreenButton}
+            icon={teamModel.uploaded ? faCloud : faTabletScreenButton}
             size={18}
             style={{
               color: "white",
