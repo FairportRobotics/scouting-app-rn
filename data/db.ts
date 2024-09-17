@@ -4,9 +4,9 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import * as FileSystem from "expo-file-system";
 import {
-  eventMatches,
-  eventMatchTeams,
-  eventTeams,
+  matches,
+  matchTeams,
+  teams,
   matchScoutingSessions,
   matchScoutingUploads,
   teamMembers,
@@ -20,27 +20,6 @@ import { eq } from "drizzle-orm/expressions";
 
 export const connection = openDatabaseSync("scouting-app.db");
 export const db = drizzle(connection);
-
-export function initializeDb() {
-  try {
-    // console.log(
-    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
-    // );
-
-    const { success, error } = useMigrations(db, migrations);
-
-    if (success) {
-      return;
-    }
-
-    if (error) {
-      console.error("Migrations were not successful", error);
-      return;
-    }
-  } catch (error) {
-    console.error("Migrations exception", error);
-  }
-}
 
 export interface MatchModel {
   eventKey: string;
@@ -65,33 +44,51 @@ export type MatchScoutingSessionModel = Match &
   MatchTeam &
   MatchScoutingSession;
 
+export function initializeDb() {
+  try {
+    // console.log(
+    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
+    // );
+
+    const { success, error } = useMigrations(db, migrations);
+
+    if (success) {
+      return;
+    }
+
+    if (error) {
+      console.error("Migrations were not successful", error);
+      return;
+    }
+  } catch (error) {
+    console.error("Migrations exception", error);
+  }
+}
+
 export async function getMatchesForSelection(): Promise<MatchModel[]> {
   // Get the denormalized data.
   const results = await db
     .select({
-      eventKey: eventMatches.eventKey,
-      matchKey: eventMatches.id,
-      matchType: eventMatches.matchType,
-      setNumber: eventMatches.setNumber,
-      matchNumber: eventMatches.matchNumber,
-      predictedTime: eventMatches.predictedTime,
-      sessionKey: eventMatchTeams.id,
-      alliance: eventMatchTeams.alliance,
-      allianceTeam: eventMatchTeams.allianceTeam,
-      teamKey: eventMatchTeams.teamKey,
+      eventKey: matches.eventKey,
+      matchKey: matches.id,
+      matchType: matches.matchType,
+      setNumber: matches.setNumber,
+      matchNumber: matches.matchNumber,
+      predictedTime: matches.predictedTime,
+      sessionKey: matchTeams.id,
+      alliance: matchTeams.alliance,
+      allianceTeam: matchTeams.allianceTeam,
+      teamKey: matchTeams.teamKey,
       scouted: matchScoutingSessions.id,
       uploaded: matchScoutingUploads.id,
     })
-    .from(eventMatches)
-    .leftJoin(eventMatchTeams, eq(eventMatches.id, eventMatchTeams.matchKey))
+    .from(matches)
+    .leftJoin(matchTeams, eq(matches.id, matchTeams.matchKey))
     .leftJoin(
       matchScoutingSessions,
-      eq(eventMatchTeams.id, matchScoutingSessions.id)
+      eq(matchTeams.id, matchScoutingSessions.id)
     )
-    .leftJoin(
-      matchScoutingUploads,
-      eq(eventMatchTeams.id, matchScoutingUploads.id)
-    );
+    .leftJoin(matchScoutingUploads, eq(matchTeams.id, matchScoutingUploads.id));
 
   // Group MatchModel and add MatchTeamModels as children.
   const groupedResult = results.reduce<Record<string, MatchModel>>(
@@ -158,7 +155,7 @@ export async function getMatchesForSelection(): Promise<MatchModel[]> {
 
 export async function getTeams(): Promise<Team[]> {
   try {
-    return await db.select().from(eventTeams);
+    return await db.select().from(teams);
   } catch (error) {
     return [];
   }
@@ -177,8 +174,8 @@ export async function getMatchTeam(
 ): Promise<MatchTeam | null> {
   const matchTeam = await db
     .select()
-    .from(eventMatchTeams)
-    .where(eq(eventMatchTeams.id, sessionKey));
+    .from(matchTeams)
+    .where(eq(matchTeams.id, sessionKey));
 
   if (matchTeam.length !== 1) return null;
 
@@ -191,10 +188,10 @@ export async function getMatchScoutingSessionForEdit(
   // Load all the different tables in a single query
   const results = await db
     .select()
-    .from(eventMatchTeams)
-    .where(eq(eventMatchTeams.id, sessionKey))
+    .from(matchTeams)
+    .where(eq(matchTeams.id, sessionKey))
     .leftJoin(matchScoutingSessions, eq(matchScoutingSessions.id, sessionKey))
-    .leftJoin(eventMatches, eq(eventMatches.id, eventMatchTeams.matchKey))
+    .leftJoin(matches, eq(matches.id, matchTeams.matchKey))
     .limit(1);
 
   // Validate the results.

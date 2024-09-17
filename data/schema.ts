@@ -7,7 +7,7 @@ export const events = sqliteTable("event", {
   endDate: text("end_date").notNull(),
 });
 
-export const eventMatches = sqliteTable("event_match", {
+export const matches = sqliteTable("event_match", {
   id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
@@ -18,26 +18,26 @@ export const eventMatches = sqliteTable("event_match", {
   predictedTime: text("predicted_time"),
 });
 
-export const eventTeams = sqliteTable("event_team", {
+export const teams = sqliteTable("event_team", {
   id: text("id").notNull().primaryKey(),
   number: text("number").notNull(),
   nickname: text("nickname").notNull(),
   schoolName: text("school_name").notNull(),
 });
 
-export const eventMatchTeams = sqliteTable("event_match_team", {
+export const matchTeams = sqliteTable("event_match_team", {
   id: text("id").notNull().primaryKey(),
   eventKey: text("event_key")
     .notNull()
     .references(() => events.id),
   matchKey: text("match_key")
     .notNull()
-    .references(() => eventMatches.id),
+    .references(() => matches.id),
   alliance: text("alliance", { enum: ["Blue", "Red"] }).notNull(),
   allianceTeam: integer("alliance_team").notNull(),
   teamKey: text("team_key")
     .notNull()
-    .references(() => eventTeams.id),
+    .references(() => teams.id),
 });
 
 export const matchScoutingSessions = sqliteTable("scouting_match", {
@@ -45,10 +45,10 @@ export const matchScoutingSessions = sqliteTable("scouting_match", {
 
   scheduledTeamKey: text("scheduled_team_key")
     .notNull()
-    .references(() => eventTeams.id),
+    .references(() => teams.id),
   scoutedTeamKey: text("scouted_team_key")
     .notNull()
-    .references(() => eventTeams.id),
+    .references(() => teams.id),
   scouterName: text("scouter_name").default(""),
 
   autoStartedWithNote: integer("auto_started_with_note", {
@@ -99,7 +99,7 @@ export const pitScoutingSessions = sqliteTable("scouting_pit", {
     .references(() => events.id),
   teamKey: text("team_key")
     .notNull()
-    .references(() => eventTeams.id),
+    .references(() => teams.id),
 
   driveTeamExperience: text("drive_team_experience"),
   numberOfAutoMethods: text("number_of_auto_methods"),
@@ -137,9 +137,9 @@ export const pitScoutingUploads = sqliteTable("scouting_pit_uploads", {
 });
 
 export type Event = typeof events.$inferInsert;
-export type Match = typeof eventMatches.$inferInsert;
-export type Team = typeof eventTeams.$inferInsert;
-export type MatchTeam = typeof eventMatchTeams.$inferInsert;
+export type Match = typeof matches.$inferInsert;
+export type Team = typeof teams.$inferInsert;
+export type MatchTeam = typeof matchTeams.$inferInsert;
 
 export type MatchScoutingSession = typeof matchScoutingSessions.$inferInsert;
 export type MatchScoutUpload = typeof matchScoutingUploads.$inferInsert;

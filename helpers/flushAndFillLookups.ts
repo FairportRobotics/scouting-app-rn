@@ -1,14 +1,14 @@
 import { db } from "@/data/db";
 import {
   events,
-  eventMatches,
-  eventTeams,
+  matches,
+  teams,
   Event,
   Match,
   Team,
   levity,
   Levity,
-  eventMatchTeams,
+  matchTeams,
   MatchTeam,
   MatchScoutingSession,
   matchScoutingSessions,
@@ -27,9 +27,9 @@ export default async () => {
 
   // Clear all existing data.
   await db.delete(teamMembers);
-  await db.delete(eventMatchTeams);
-  await db.delete(eventTeams);
-  await db.delete(eventMatches);
+  await db.delete(matchTeams);
+  await db.delete(teams);
+  await db.delete(matches);
   await db.delete(events);
   await db.delete(levity);
 
@@ -99,7 +99,7 @@ async function refreshMatches(masterKey: string, account: string) {
     results.forEach(async (match) => {
       try {
         await db
-          .insert(eventMatches)
+          .insert(matches)
           .values({
             id: match.id,
             eventKey: match.eventKey,
@@ -109,7 +109,7 @@ async function refreshMatches(masterKey: string, account: string) {
             predictedTime: match.predictedTime,
           })
           .onConflictDoUpdate({
-            target: eventMatches.id,
+            target: matches.id,
             set: {
               eventKey: match.eventKey,
               matchType: match.matchType,
@@ -143,7 +143,7 @@ async function refreshTeams(masterKey: string, account: string) {
     results.forEach(async (team) => {
       try {
         await db
-          .insert(eventTeams)
+          .insert(teams)
           .values({
             id: team.id,
             number: team.number,
@@ -151,7 +151,7 @@ async function refreshTeams(masterKey: string, account: string) {
             schoolName: team.schoolName ?? "(Team school not known)",
           })
           .onConflictDoUpdate({
-            target: eventTeams.id,
+            target: teams.id,
             set: {
               number: team.number,
               nickname: team.nickname ?? "(Team nickname not known)",
@@ -184,7 +184,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
       // Populate the Match records.
       try {
         await db
-          .insert(eventMatchTeams)
+          .insert(matchTeams)
           .values({
             id: matchTeam.id,
             eventKey: matchTeam.eventKey,
@@ -194,7 +194,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
             teamKey: matchTeam.teamKey,
           })
           .onConflictDoUpdate({
-            target: eventMatchTeams.id,
+            target: matchTeams.id,
             set: {
               eventKey: matchTeam.eventKey,
               matchKey: matchTeam.matchKey,
@@ -267,7 +267,7 @@ async function refreshLevity(masterKey: string, account: string) {
           item: l.item,
         });
       } catch (error) {
-        console.error("Error saving Levity:", eventMatchTeams);
+        console.error("Error saving Levity:", matchTeams);
         console.error(error);
       }
     });
