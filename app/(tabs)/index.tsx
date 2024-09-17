@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, RefreshControl, View, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { ContainerGroup, ScoutMatchSelect } from "@/components";
-import { getMatchScouting, MatchModel } from "@/data/db";
+import {
+  getMatchesForSelection,
+  initMatchScoutingSession,
+  MatchModel,
+} from "@/data/db";
 import flushAndFillLookups from "@/helpers/flushAndFillLookups";
 import Colors from "@/constants/Colors";
 import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
@@ -14,7 +18,7 @@ export default function IndexScreen() {
   const [matchModels, setMatchModels] = useState<Array<MatchModel>>([]);
 
   const loadData = async () => {
-    const matchModels = await getMatchScouting();
+    const matchModels = await getMatchesForSelection();
     setMatchModels(matchModels);
   };
 
@@ -33,6 +37,7 @@ export default function IndexScreen() {
   }, []);
 
   const handleOnSelect = async (sessionKey: string) => {
+    await initMatchScoutingSession(sessionKey);
     router.replace(`/(scout-match)/confirm/${sessionKey}`);
   };
 
@@ -85,7 +90,7 @@ export default function IndexScreen() {
           <ContainerGroup title="" key={index}>
             <ScoutMatchSelect
               matchModel={matchModel}
-              onSelect={(sessionKey) => console.log("Selected", sessionKey)}
+              onSelect={(sessionKey) => handleOnSelect(sessionKey)}
             />
           </ContainerGroup>
         ))}

@@ -10,10 +10,10 @@ import {
   Levity,
   eventMatchTeams,
   MatchTeam,
-  MatchScout,
-  matchScouting,
-  PitScout,
-  pitScouting,
+  MatchScoutingSession,
+  matchScoutingSessions,
+  PitScoutingSession,
+  pitScoutingSessions,
   TeamMember,
   teamMembers,
 } from "@/data/schema";
@@ -181,6 +181,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
     if (results === undefined) return;
 
     results.forEach(async (matchTeam) => {
+      // Populate the Match records.
       try {
         await db
           .insert(eventMatchTeams)
@@ -203,7 +204,7 @@ async function refreshMatchTeams(masterKey: string, account: string) {
             },
           });
       } catch (error) {
-        console.error("Error saving MatchTeam:", eventMatchTeams);
+        console.error("Error saving Match Team:", matchTeam);
         console.error(error);
       }
     });
@@ -280,7 +281,7 @@ async function refreshMatchScouting(masterKey: string, account: string) {
   try {
     console.log("Scouted Matches: Retrieve from Cosmos and cache...");
 
-    const results = await fetchFromCosmos<MatchScout>(
+    const results = await fetchFromCosmos<MatchScoutingSession>(
       masterKey,
       account,
       "crescendo",
@@ -292,7 +293,7 @@ async function refreshMatchScouting(masterKey: string, account: string) {
     results.forEach(async (session) => {
       try {
         await db
-          .insert(matchScouting)
+          .insert(matchScoutingSessions)
           .values({
             id: session.id,
 
@@ -332,7 +333,7 @@ async function refreshMatchScouting(masterKey: string, account: string) {
             finalNotes: session.finalNotes ?? "",
           })
           .onConflictDoUpdate({
-            target: matchScouting.id,
+            target: matchScoutingSessions.id,
             set: {
               scheduledTeamKey: session.scheduledTeamKey,
               scoutedTeamKey: session.scheduledTeamKey,
@@ -385,7 +386,7 @@ async function refreshPitScouting(masterKey: string, account: string) {
   try {
     console.log("Scouted Pits: Retrieve from Cosmos and cache...");
 
-    const results = await fetchFromCosmos<PitScout>(
+    const results = await fetchFromCosmos<PitScoutingSession>(
       masterKey,
       account,
       "crescendo",
@@ -397,7 +398,7 @@ async function refreshPitScouting(masterKey: string, account: string) {
     results.forEach(async (session) => {
       try {
         await db
-          .insert(pitScouting)
+          .insert(pitScoutingSessions)
           .values({
             id: session.id,
             eventKey: session.eventKey,
@@ -417,7 +418,7 @@ async function refreshPitScouting(masterKey: string, account: string) {
             notes: session.notes,
           })
           .onConflictDoUpdate({
-            target: pitScouting.id,
+            target: pitScoutingSessions.id,
             set: {
               eventKey: session.eventKey,
               teamKey: session.id,

@@ -1,11 +1,11 @@
 import { View, Text, ColorValue } from "react-native";
-import { MatchScoutingSession } from "@/constants/Types";
 import { Alliance } from "@/constants/Enums";
 import { useCacheStore } from "@/store/cachesStore";
 import Colors from "@/constants/Colors";
+import { MatchScoutingSessionModel } from "@/data/db";
 
 type MatchScoutingHeaderProps = {
-  session: MatchScoutingSession;
+  session: MatchScoutingSessionModel;
 };
 
 export default function MatchScoutingHeader({

@@ -6,8 +6,15 @@ import * as FileSystem from "expo-file-system";
 import {
   eventMatches,
   eventMatchTeams,
-  matchScouting,
+  eventTeams,
+  matchScoutingSessions,
   matchScoutingUploads,
+  teamMembers,
+  Team,
+  TeamMember,
+  MatchTeam,
+  MatchScoutingSession,
+  Match,
 } from "./schema";
 import { eq } from "drizzle-orm/expressions";
 
@@ -54,7 +61,11 @@ export interface MatchTeamModel {
   uploaded: boolean;
 }
 
-export async function getMatchScouting() {
+export type MatchScoutingSessionModel = Match &
+  MatchTeam &
+  MatchScoutingSession;
+
+export async function getMatchesForSelection(): Promise<MatchModel[]> {
   // Get the denormalized data.
   const results = await db
     .select({
@@ -68,12 +79,15 @@ export async function getMatchScouting() {
       alliance: eventMatchTeams.alliance,
       allianceTeam: eventMatchTeams.allianceTeam,
       teamKey: eventMatchTeams.teamKey,
-      scouted: matchScouting.id,
+      scouted: matchScoutingSessions.id,
       uploaded: matchScoutingUploads.id,
     })
     .from(eventMatches)
     .leftJoin(eventMatchTeams, eq(eventMatches.id, eventMatchTeams.matchKey))
-    .leftJoin(matchScouting, eq(eventMatchTeams.id, matchScouting.id))
+    .leftJoin(
+      matchScoutingSessions,
+      eq(eventMatchTeams.id, matchScoutingSessions.id)
+    )
     .leftJoin(
       matchScoutingUploads,
       eq(eventMatchTeams.id, matchScoutingUploads.id)
@@ -140,4 +154,120 @@ export async function getMatchScouting() {
   });
 
   return arrayResult;
+}
+
+export async function getTeams(): Promise<Team[]> {
+  try {
+    return await db.select().from(eventTeams);
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getTeamMembers(): Promise<TeamMember[]> {
+  try {
+    return await db.select().from(teamMembers);
+  } catch (error) {
+    return [];
+  }
+}
+
+export async function getMatchTeam(
+  sessionKey: string
+): Promise<MatchTeam | null> {
+  const matchTeam = await db
+    .select()
+    .from(eventMatchTeams)
+    .where(eq(eventMatchTeams.id, sessionKey));
+
+  if (matchTeam.length !== 1) return null;
+
+  return matchTeam[0];
+}
+
+export async function getMatchScoutingSessionForEdit(
+  sessionKey: string
+): Promise<MatchScoutingSessionModel | null> {
+  const matchTeams = await db
+    .select()
+    .from(eventMatchTeams)
+    .where(eq(eventMatchTeams.id, sessionKey));
+
+  const matchSessions = await db
+    .select()
+    .from(matchScoutingSessions)
+    .where(eq(matchScoutingSessions.id, sessionKey));
+
+  if (matchTeams.length !== 1) return null;
+  if (matchSessions.length !== 1) return null;
+
+  const session = matchSessions[0];
+  const matchTeam = matchTeams[0];
+
+  const matches = await db
+    .select()
+    .from(eventMatches)
+    .where(eq(eventMatches.id, matchTeam.matchKey));
+
+  if (matches.length !== 1) return null;
+
+  const match = matches[0];
+
+  return {
+    ...session,
+    ...matchTeam,
+    ...match,
+  } as MatchScoutingSessionModel;
+}
+
+export async function initMatchScoutingSession(sessionKey: string) {
+  try {
+    // Determine if there is already an existing Match Scouting Session.
+    const existingSession = await getMatchScoutingSessionForEdit(sessionKey);
+    if (existingSession) return;
+
+    // Exract the match and initialize the match scouting session.
+    const matchTeam = await getMatchTeam(sessionKey);
+    if (!matchTeam) return null;
+
+    await db.insert(matchScoutingSessions).values({
+      id: sessionKey,
+
+      scheduledTeamKey: matchTeam.teamKey,
+      scoutedTeamKey: matchTeam.teamKey,
+      scouterName: "",
+
+      autoStartedWithNote: false,
+      autoLeftStartArea: false,
+      autoSpeakerScore: 0,
+      autoSpeakerMiss: 0,
+      autoAmpScore: 0,
+      autoAmpMiss: 0,
+      autoNotes: "",
+
+      teleopSpeakerScore: 0,
+      teleopSpeakerScoreAmplified: 0,
+      teleopSpeakerMiss: 0,
+      teleopAmpScore: 0,
+      teleopAmpMiss: 0,
+      teleopRelayPass: 0,
+      teleopNotes: "",
+
+      endgameTrapScore: "",
+      endgameMicrophoneScore: "",
+      endgameDidRobotPark: false,
+      endgameDidRobotHang: false,
+      endgameHarmony: "",
+      endgameNotes: "",
+
+      finalAllianceScore: 0,
+      finalRankingPoints: 0,
+      finalAllianceResult: "",
+      finalViolations: "",
+      finalPenalties: 0,
+      finalNotes: "",
+    });
+  } catch (error) {
+    console.error(error);
+  }
 }

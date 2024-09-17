@@ -43,7 +43,7 @@ CREATE TABLE `scouting_match` (
 	`id` text PRIMARY KEY NOT NULL,
 	`scheduled_team_key` text NOT NULL,
 	`scouted_team_key` text NOT NULL,
-	`scouter_name` text NOT NULL,
+	`scouter_name` text DEFAULT '',
 	`auto_started_with_note` integer DEFAULT false,
 	`auto_left_start_area` integer DEFAULT false,
 	`auto_speaker_Score` integer DEFAULT 0,

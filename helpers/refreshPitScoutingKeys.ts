@@ -1,4 +1,4 @@
-import { PitScout, pitScoutingUploads } from "@/data/schema";
+import { PitScoutingSession, pitScoutingUploads } from "@/data/schema";
 import fetchFromCosmos from "./fetchFromCosmos";
 import { db } from "@/data/db";
 
@@ -9,7 +9,7 @@ export default async () => {
 
   // Cache Scouted Match Uploads from Cosmos.
   try {
-    const results = await fetchFromCosmos<PitScout>(
+    const results = await fetchFromCosmos<PitScoutingSession>(
       masterKey,
       account,
       "crescendo",

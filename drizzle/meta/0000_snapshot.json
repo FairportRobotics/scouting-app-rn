@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "656e8772-5cd0-4cee-b63f-80b662024ce8",
+  "id": "50c5cf65-deea-4d43-8568-08309e36492e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event_match_team": {
@@ -285,8 +285,9 @@
           "name": "scouter_name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": false,
+          "autoincrement": false,
+          "default": "''"
         },
         "auto_started_with_note": {
           "name": "auto_started_with_note",
