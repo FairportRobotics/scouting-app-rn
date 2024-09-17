@@ -19,6 +19,7 @@ import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import {
   getMatchScoutingSessionForEdit,
+  getRandomJoke,
   MatchScoutingSessionModel,
   saveMatchSessionFinal,
 } from "@/data/db";
@@ -37,8 +38,16 @@ function FinalScreen() {
   const [violations, setViolations] = useState<string>("NONE_SELECTED");
   const [penalties, setPenalties] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
+  const [joke, setJoke] = useState<string>("");
 
   useEffect(() => {
+    async function getJoke() {
+      const dbJoke = await getRandomJoke();
+      setJoke(dbJoke);
+    }
+
+    getJoke();
+
     loadData();
   }, []);
 
@@ -173,7 +182,7 @@ function FinalScreen() {
       </KeyboardAvoidingView>
 
       <ContainerGroup title="Your Reward">
-        <Text>JOKE HERE</Text>
+        <Text>{joke}</Text>
       </ContainerGroup>
 
       <MatchScoutingNavigation
