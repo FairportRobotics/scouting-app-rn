@@ -73,11 +73,7 @@ export default function MatchResultsScreen() {
     sessions
       .filter((item) => item.uploadExists == false)
       .forEach(async (session) => {
-        const dbSession = await getMatchScoutingSessionForEdit(
-          session.sessionKey
-        );
-        if (!dbSession) return;
-        await postMatchSession(dbSession);
+        await handleUploadSession(session.sessionKey);
       });
 
     loadData();

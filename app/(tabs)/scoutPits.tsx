@@ -42,6 +42,18 @@ export default function ScoutPitScreen() {
 
     if (!dbSessions) return;
 
+    // Sort by team number. Note that some team numbers contain letters
+    // so we'll need to account for that.
+    dbSessions.sort((a, b) => {
+      const aNumber = parseInt(a.teamNumber, 10);
+      const bNumber = parseInt(b.teamNumber, 10);
+
+      if (isNaN(aNumber)) return -1;
+      if (isNaN(bNumber)) return 1;
+
+      return aNumber - bNumber;
+    });
+
     setSessions(dbSessions);
   };
 
@@ -66,16 +78,17 @@ export default function ScoutPitScreen() {
     sessions
       .filter((item) => item.uploaded == false)
       .forEach(async (session) => {
-        const dbSession = await getPitScoutingSessionForEdit(session.teamKey);
-        if (!dbSession) return;
-        await postPitScoutingSession(dbSession);
+        await handleUploadSession(session.teamKey);
       });
   };
 
   const handleUploadSession = async (teamKey: string) => {
     const session = sessions.find((item) => item.teamKey == teamKey);
     if (!session) return;
-    //await postPitScoutingSession(session);
+
+    const dbSession = await getPitScoutingSessionForEdit(session?.teamKey);
+    if (!dbSession) return;
+    await postPitScoutingSession(dbSession);
   };
 
   const handleShowSessionJsonQR = async (teamKey: string) => {

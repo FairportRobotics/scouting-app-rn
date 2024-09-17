@@ -7,6 +7,7 @@ import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import {
   getPitScoutingSessionForEdit,
+  getRandomJoke,
   PitScoutingSessionModel,
   savePitSession,
 } from "@/data/db";
@@ -21,8 +22,16 @@ function ScoutPitScreen() {
 
   // Support for state.
   const [session, setSession] = useState<PitScoutingSessionModel>();
+  const [joke, setJoke] = useState<string>("");
 
   useEffect(() => {
+    async function getJoke() {
+      const dbJoke = await getRandomJoke();
+      setJoke(dbJoke);
+    }
+
+    getJoke();
+
     loadData();
   }, []);
 
@@ -204,14 +213,7 @@ function ScoutPitScreen() {
         </ContainerGroup>
 
         <ContainerGroup title="Your Reward">
-          <Text>
-            {/* {
-              cacheStore.levity[
-                Math.floor(Math.random() * cacheStore.levity.length)
-              ].item
-            } */}
-            TODO: JOKE
-          </Text>
+          <Text>{joke}</Text>
         </ContainerGroup>
 
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
