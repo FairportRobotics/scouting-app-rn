@@ -503,7 +503,6 @@ export async function getPitScoutingSessionForEdit(
 }
 
 export async function savePitSession(session: PitScoutingSession) {
-  console.log("savePitSession:", session);
   try {
     await db
       .update(pitScoutingSessions)
