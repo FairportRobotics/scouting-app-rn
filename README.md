@@ -86,11 +86,6 @@ Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs
 **Axios**
 https://axios-http.com/docs/intro
 
-**Store**
-zustand
-
-Using AsyncStorage (https://react-native-async-storage.github.io/async-storage/docs/install) to persist. This is not the fastest, but it works and it's less maintenance than SQLite direct.
-
 **Azure REST**
 Unable to use the Azure SDK dues to unresolved issues with an incompatible library that cannot be patched. Expo doctor still complains. So, I've found a solution that uses REST. It's bare-bones but it works.
 
@@ -110,16 +105,6 @@ https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
 
 ## Todo
 
-[X] Remove Auto > Score in Speaker while Amplified
+[ ] Prevent moving from Confirm screen without entering the scouter name for both Done and tapping the navigation.
 
-[X] Read TBA Event, Matches and Teams from Azure.
-
-[X] Use store with persisted backend.
-
-[X] Remove all TBA-caching
-
-[X] Remove all references to Practice Match
-
-[X] Remove all referenes to Practice Team
-
-[X] Prevent bypassing Match > Confirm > Name by tapping tab.
+[ ] Pre-populate the Scouter Name by taking name the last saved Match.
