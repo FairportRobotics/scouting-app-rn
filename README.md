@@ -108,3 +108,5 @@ https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
 [ ] Prevent moving from Confirm screen without entering the scouter name for both Done and tapping the navigation.
 
 [ ] Pre-populate the Scouter Name by taking name the last saved Match.
+
+[ ] Figure out how to POST to Azure so we don't need to use the API.
