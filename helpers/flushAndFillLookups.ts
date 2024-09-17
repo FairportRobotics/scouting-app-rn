@@ -47,7 +47,6 @@ export default async () => {
 async function refreshEvents(masterKey: string, account: string) {
   // Cache Event(s) from Cosmos.
   try {
-    console.log("Events: Retrieve from Cosmos and cache...");
     const results = await fetchFromCosmos<Event>(
       masterKey,
       account,
@@ -88,7 +87,6 @@ async function refreshEvents(masterKey: string, account: string) {
 async function refreshMatches(masterKey: string, account: string) {
   // Cache Matches from Cosmos.
   try {
-    console.log("Matches: Retrieve from Cosmos and cache...");
     const results = await fetchFromCosmos<Match>(
       masterKey,
       account,
@@ -133,8 +131,6 @@ async function refreshMatches(masterKey: string, account: string) {
 async function refreshTeams(masterKey: string, account: string) {
   // Cache Teams from Cosmos.
   try {
-    console.log("Teams: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<Team>(
       masterKey,
       account,
@@ -175,8 +171,6 @@ async function refreshTeams(masterKey: string, account: string) {
 async function refreshMatchTeams(masterKey: string, account: string) {
   // Cache MatchTeams from Cosmos.
   try {
-    console.log("Match Teams: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<MatchTeam>(
       masterKey,
       account,
@@ -221,8 +215,6 @@ async function refreshMatchTeams(masterKey: string, account: string) {
 async function refreshTeamMembers(masterKey: string, account: string) {
   // Cache Team Members from Cosmos.
   try {
-    console.log("Team Members: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<TeamMember>(
       masterKey,
       account,
@@ -259,8 +251,6 @@ async function refreshTeamMembers(masterKey: string, account: string) {
 async function refreshLevity(masterKey: string, account: string) {
   // Cache MatchTeams from Cosmos.
   try {
-    console.log("Levity: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<Levity>(
       masterKey,
       account,
