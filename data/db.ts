@@ -23,9 +23,9 @@ export const db = drizzle(connection);
 
 export function initializeDb() {
   try {
-    console.log(
-      `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
-    );
+    // console.log(
+    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
+    // );
 
     const { success, error } = useMigrations(db, migrations);
 
@@ -188,39 +188,23 @@ export async function getMatchTeam(
 export async function getMatchScoutingSessionForEdit(
   sessionKey: string
 ): Promise<MatchScoutingSessionModel | null> {
-  // Load the
-  const matchTeams = await db
+  // Load all the different tables in a single query
+  const results = await db
     .select()
     .from(eventMatchTeams)
     .where(eq(eventMatchTeams.id, sessionKey))
+    .leftJoin(matchScoutingSessions, eq(matchScoutingSessions.id, sessionKey))
+    .leftJoin(eventMatches, eq(eventMatches.id, eventMatchTeams.matchKey))
     .limit(1);
 
-  const matchSessions = await db
-    .select()
-    .from(matchScoutingSessions)
-    .where(eq(matchScoutingSessions.id, sessionKey))
-    .limit(1);
+  // Validate the results.
+  if (results.length !== 1) return null;
 
-  if (matchTeams.length !== 1) return null;
-  if (matchSessions.length !== 1) return null;
-
-  const session = matchSessions[0];
-  const matchTeam = matchTeams[0];
-
-  const matches = await db
-    .select()
-    .from(eventMatches)
-    .where(eq(eventMatches.id, matchTeam.matchKey))
-    .limit(1);
-
-  if (matches.length !== 1) return null;
-
-  const match = matches[0];
-
+  // Combine them with the spread operator.
   return {
-    ...session,
-    ...matchTeam,
-    ...match,
+    ...results[0].event_match,
+    ...results[0].event_match_team,
+    ...results[0].scouting_match,
   } as MatchScoutingSessionModel;
 }
 
