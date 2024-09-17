@@ -20,6 +20,7 @@ import {
   MatchScoutingSessionModel,
   saveMatchSessionTeleop,
 } from "@/data/db";
+import Loading from "@/components/Loading";
 
 function TeleopScreen() {
   // Route.
@@ -46,7 +47,7 @@ function TeleopScreen() {
 
     // Validate.
     if (!dbSession) return;
-    console.log("Teleop Before:n", JSON.stringify(dbSession, null, 2));
+    console.log("Teleop Before:\n", JSON.stringify(dbSession, null, 2));
 
     // Set State.
     setSession(dbSession);
@@ -85,11 +86,7 @@ function TeleopScreen() {
   };
 
   if (!session) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <Loading />;
   }
 
   return (

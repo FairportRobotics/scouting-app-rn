@@ -20,17 +20,20 @@ import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import postMatchSession from "@/helpers/postMatchSession";
+import {
+  getMatchScoutingSessionForEdit,
+  MatchScoutingSessionModel,
+  saveMatchSessionFinal,
+} from "@/data/db";
+import Loading from "@/components/Loading";
 
 function FinalScreen() {
   // Route.
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Stores.
-  const cacheStore = useCacheStore();
-  const matchStore = useMatchScoutingStore();
-
   // States.
+  const [session, setSession] = useState<MatchScoutingSessionModel>();
   const [totalScore, setTotalScore] = useState<number>(0);
   const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
@@ -42,41 +45,37 @@ function FinalScreen() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    saveData();
-  }, [totalScore, rankingPoints, allianceResult, violations, penalties, notes]);
-
   const loadData = async () => {
-    // Retrieve from stores.
-    if (!(id in matchStore.sessions)) return;
-    const cacheSession = matchStore.sessions[id];
+    // Retrieve the session.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
 
     // Validate.
-    if (cacheSession === undefined) return;
+    if (!dbSession) return;
+    console.log("Final Before:\n", JSON.stringify(dbSession, null, 2));
 
-    setTotalScore(cacheSession.finalAllianceScore ?? 0);
-    setRankingPoints(cacheSession.finalRankingPoints ?? 0);
-    setAllianceResult(cacheSession.finalAllianceResult ?? null);
-    setViolations(cacheSession.finalViolations ?? null);
-    setPenalties(cacheSession.finalPenalties ?? 0);
-    setNotes(cacheSession.finalNotes ?? "");
+    // Set State.
+    setSession(dbSession);
+    setTotalScore(dbSession.finalAllianceScore ?? 0);
+    setRankingPoints(dbSession.finalRankingPoints ?? 0);
+    setAllianceResult(dbSession.finalAllianceResult ?? "");
+    setViolations(dbSession.finalViolations ?? "");
+    setPenalties(dbSession.finalPenalties ?? 0);
+    setNotes(dbSession.finalNotes ?? "");
   };
 
   const saveData = async () => {
-    if (!(id in matchStore.sessions)) return;
+    if (!session) return;
 
     // Set properties and save.
-    let current = matchStore.sessions[id];
-    current.finalAllianceScore = totalScore;
-    current.finalRankingPoints = rankingPoints;
-    current.finalAllianceResult = allianceResult;
-    current.finalViolations = violations;
-    current.finalPenalties = penalties;
-    current.finalNotes = notes;
-    matchStore.saveSession(current);
+    session.finalAllianceScore = totalScore;
+    session.finalRankingPoints = rankingPoints;
+    session.finalAllianceResult = allianceResult;
+    session.finalViolations = violations;
+    session.finalPenalties = penalties;
+    session.finalNotes = notes;
+    console.log("Final After:\n", JSON.stringify(session, null, 2));
 
-    // Upload.
-    postMatchSession(matchStore.sessions[id]);
+    saveMatchSessionFinal(session);
   };
 
   const handleChangeTotalScore = (value: string) => {
@@ -100,7 +99,7 @@ function FinalScreen() {
   };
 
   const penaltiesLabel = () => {
-    switch (matchStore.sessions[id]?.alliance) {
+    switch (session?.alliance) {
       case Alliance.Blue:
         return "Penalties: (Read the value for Penalties from the Red Alliance column)";
       case Alliance.Red:
@@ -110,17 +109,13 @@ function FinalScreen() {
     }
   };
 
-  if (!(id in matchStore.sessions)) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+  if (!session) {
+    return <Loading />;
   }
 
   return (
     <ScrollView style={{ flex: 1 }}>
-      <MatchScoutingHeader session={matchStore.sessions[id]} />
+      <MatchScoutingHeader session={session} />
       <ContainerGroup title="Alliance">
         <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
           <View style={{ flex: 1 }}>
@@ -181,13 +176,7 @@ function FinalScreen() {
       </KeyboardAvoidingView>
 
       <ContainerGroup title="Your Reward">
-        <Text>
-          {
-            cacheStore.levity[
-              Math.floor(Math.random() * cacheStore.levity.length)
-            ].item
-          }
-        </Text>
+        <Text>JOKE HERE</Text>
       </ContainerGroup>
 
       <MatchScoutingNavigation

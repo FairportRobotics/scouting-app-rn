@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
@@ -23,6 +24,7 @@ import {
 import { Team, TeamMember } from "@/data/schema";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
+import Loading from "@/components/Loading";
 
 function ConfirmScreen() {
   // Route.
@@ -95,7 +97,7 @@ function ConfirmScreen() {
     // Retrieve from stores.
     if (!dbSession) return;
 
-    console.log("Confirm Before:n", JSON.stringify(dbSession, null, 2));
+    console.log("Confirm Before:\n", JSON.stringify(dbSession, null, 2));
 
     // Set States.
     setSession(dbSession);
@@ -114,7 +116,7 @@ function ConfirmScreen() {
     session.scouterName = scouterName;
     session.scoutedTeamKey = scoutedTeamKey;
 
-    console.log("Confirm After:n", JSON.stringify(session, null, 2));
+    console.log("Confirm After:\n", JSON.stringify(session, null, 2));
 
     await saveMatchSessionConfirm(session);
   };
@@ -149,11 +151,7 @@ function ConfirmScreen() {
   };
 
   if (!session) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <Loading />;
   }
 
   return (

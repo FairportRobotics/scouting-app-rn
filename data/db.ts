@@ -15,6 +15,7 @@ import {
   MatchTeam,
   MatchScoutingSession,
   Match,
+  levity,
 } from "./schema";
 import { eq } from "drizzle-orm/expressions";
 
@@ -324,5 +325,32 @@ export async function saveMatchSessionEndgame(session: MatchScoutingSession) {
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {
     console.error(error);
+  }
+}
+
+export async function saveMatchSessionFinal(session: MatchScoutingSession) {
+  try {
+    await db
+      .update(matchScoutingSessions)
+      .set({
+        finalAllianceScore: session.finalAllianceScore,
+        finalRankingPoints: session.finalRankingPoints,
+        finalAllianceResult: session.finalAllianceResult,
+        finalViolations: session.finalViolations,
+        finalPenalties: session.finalPenalties,
+        finalNotes: session.finalNotes,
+      })
+      .where(eq(matchScoutingSessions.id, session.id));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getRandomJoke(): Promise<string> {
+  try {
+    const jokes = await db.select().from(levity);
+    return jokes[Math.floor(Math.random() * jokes.length)].item;
+  } catch (error) {
+    return "Sorry. No joke for you.";
   }
 }

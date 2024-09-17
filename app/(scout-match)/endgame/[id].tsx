@@ -21,6 +21,7 @@ import {
   MatchScoutingSessionModel,
   saveMatchSessionEndgame,
 } from "@/data/db";
+import Loading from "@/components/Loading";
 
 function EndgameScreen() {
   // Route.
@@ -46,7 +47,7 @@ function EndgameScreen() {
 
     // Validate.
     if (!dbSession) return;
-    console.log("Endgame Before:n", JSON.stringify(dbSession, null, 2));
+    console.log("Endgame Before:\n", JSON.stringify(dbSession, null, 2));
 
     setSession(dbSession);
     setTrapScore(dbSession.endgameTrapScore ?? "0");
@@ -95,11 +96,7 @@ function EndgameScreen() {
   };
 
   if (!session) {
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
+    return <Loading />;
   }
 
   return (
