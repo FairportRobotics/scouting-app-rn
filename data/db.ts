@@ -234,7 +234,7 @@ export async function getMatchScoutingSessionForEdit(
   return {
     ...results[0].event_match,
     ...results[0].event_match_team,
-    ...results[0].scouting_match,
+    ...results[0].match_scouting_session,
   } as MatchScoutingSessionModel;
 }
 
