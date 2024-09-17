@@ -57,7 +57,6 @@ function FinalScreen() {
 
     // Validate.
     if (!dbSession) return;
-    console.log("Final Before:\n", JSON.stringify(dbSession, null, 2));
 
     // Set State.
     setSession(dbSession);
@@ -79,7 +78,6 @@ function FinalScreen() {
     session.finalViolations = violations;
     session.finalPenalties = penalties;
     session.finalNotes = notes;
-    console.log("Final After:\n", JSON.stringify(session, null, 2));
 
     saveMatchSessionFinal(session);
   };

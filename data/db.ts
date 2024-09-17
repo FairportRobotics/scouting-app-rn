@@ -4,6 +4,7 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import * as FileSystem from "expo-file-system";
 import {
+  events,
   matches,
   matchTeams,
   teams,
@@ -18,6 +19,7 @@ import {
   levity,
 } from "./schema";
 import { eq } from "drizzle-orm/expressions";
+import { sql } from "drizzle-orm";
 
 export const connection = openDatabaseSync("scouting-app.db");
 export const db = drizzle(connection);
@@ -45,11 +47,21 @@ export type MatchScoutingSessionModel = Match &
   MatchTeam &
   MatchScoutingSession;
 
+export type MatchResultModel = {
+  sessionKey: string;
+  matchNumber: number;
+  alliance: string;
+  allianceTeam: number;
+  scoutedTeamNumber: string;
+  scoutedTeamNickname: string;
+  uploadExists: boolean;
+};
+
 export function initializeDb() {
   try {
-    // console.log(
-    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
-    // );
+    console.log(
+      `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
+    );
 
     const { success, error } = useMigrations(db, migrations);
 
@@ -189,10 +201,10 @@ export async function getMatchScoutingSessionForEdit(
   // Load all the different tables in a single query
   const results = await db
     .select()
-    .from(matchTeams)
-    .where(eq(matchTeams.id, sessionKey))
-    .leftJoin(matchScoutingSessions, eq(matchScoutingSessions.id, sessionKey))
-    .leftJoin(matches, eq(matches.id, matchTeams.matchKey))
+    .from(matchScoutingSessions)
+    .where(eq(matchScoutingSessions.id, sessionKey))
+    .innerJoin(matchTeams, eq(matchScoutingSessions.id, matchTeams.id))
+    .innerJoin(matches, eq(matches.id, matchTeams.matchKey))
     .limit(1);
 
   // Validate the results.
@@ -212,7 +224,7 @@ export async function initMatchScoutingSession(sessionKey: string) {
     const existingSession = await getMatchScoutingSessionForEdit(sessionKey);
     if (existingSession) return;
 
-    // Exract the match and initialize the match scouting session.
+    // Extract the match and initialize the match scouting session.
     const matchTeam = await getMatchTeam(sessionKey);
     if (!matchTeam) return null;
 
@@ -353,4 +365,32 @@ export async function getRandomJoke(): Promise<string> {
   } catch (error) {
     return "Sorry. No joke for you.";
   }
+}
+
+export async function getMatchScoutingResults(): Promise<MatchResultModel[]> {
+  // Load all the different tables in a single query
+  const results = await db
+    .select({
+      sessionKey: matchScoutingSessions.id,
+      matchNumber: matches.matchNumber,
+      alliance: matchTeams.alliance,
+      allianceTeam: matchTeams.allianceTeam,
+      scoutedTeamNumber: teams.number,
+      scoutedTeamNickname: teams.nickname,
+      uploadExists:
+        sql`CASE WHEN ${matchScoutingUploads.id} IS NULL THEN false ELSE true END`.as(
+          "uploadExists"
+        ),
+    })
+    .from(matchScoutingSessions)
+    .innerJoin(matchTeams, eq(matchScoutingSessions.id, matchTeams.id))
+    .innerJoin(matches, eq(matchTeams.matchKey, matches.id))
+    .innerJoin(events, eq(matches.eventKey, events.id))
+    .innerJoin(teams, eq(matchScoutingSessions.scoutedTeamKey, teams.id))
+    .leftJoin(
+      matchScoutingUploads,
+      eq(matchScoutingSessions.id, matchScoutingUploads.id)
+    );
+
+  return results as MatchResultModel[];
 }

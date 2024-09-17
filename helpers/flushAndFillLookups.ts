@@ -279,8 +279,6 @@ async function refreshLevity(masterKey: string, account: string) {
 async function refreshMatchScouting(masterKey: string, account: string) {
   // Cache Scouted Matches from Cosmos.
   try {
-    console.log("Scouted Matches: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<MatchScoutingSession>(
       masterKey,
       account,
@@ -384,8 +382,6 @@ async function refreshMatchScouting(masterKey: string, account: string) {
 async function refreshPitScouting(masterKey: string, account: string) {
   // Cache Scouted Matches from Cosmos.
   try {
-    console.log("Scouted Pits: Retrieve from Cosmos and cache...");
-
     const results = await fetchFromCosmos<PitScoutingSession>(
       masterKey,
       account,

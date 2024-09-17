@@ -41,7 +41,6 @@ function TeleopScreen() {
 
     // Validate.
     if (!dbSession) return;
-    console.log("Teleop Before:\n", JSON.stringify(dbSession, null, 2));
 
     // Set State.
     setSession(dbSession);
@@ -64,7 +63,6 @@ function TeleopScreen() {
     session.teleopAmpMiss = ampMiss;
     session.teleopRelayPass = pass;
     session.teleopNotes = notes;
-    console.log("Teleop After:\n", JSON.stringify(session, null, 2));
 
     saveMatchSessionTeleop(session);
   };

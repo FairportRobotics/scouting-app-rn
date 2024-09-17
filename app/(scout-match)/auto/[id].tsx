@@ -40,7 +40,6 @@ function AutoScreen() {
   const loadData = async () => {
     // Retrieve the session.
     const dbSession = await getMatchScoutingSessionForEdit(id);
-    console.log("Auto Before:\n", JSON.stringify(dbSession, null, 2));
 
     // Validate.
     if (!dbSession) return;
@@ -66,7 +65,6 @@ function AutoScreen() {
     session.autoAmpScore = ampScore;
     session.autoAmpMiss = ampMiss;
     session.autoNotes = notes;
-    console.log("Auto After:\n", JSON.stringify(session, null, 2));
 
     await saveMatchSessionAuto(session);
   };

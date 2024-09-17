@@ -95,8 +95,6 @@ function ConfirmScreen() {
     // Retrieve from stores.
     if (!dbSession) return;
 
-    console.log("Confirm Before:\n", JSON.stringify(dbSession, null, 2));
-
     // Set States.
     setSession(dbSession);
     setAllTeams(dbTeams);
@@ -109,14 +107,14 @@ function ConfirmScreen() {
   };
 
   const saveData = async () => {
-    if (!session) return;
+    // Retrieve the session and validate.
+    const dbSession = await getMatchScoutingSessionForEdit(id);
+    if (!dbSession) return;
 
-    session.scouterName = scouterName;
-    session.scoutedTeamKey = scoutedTeamKey;
+    dbSession.scouterName = scouterName;
+    dbSession.scoutedTeamKey = scoutedTeamKey;
 
-    console.log("Confirm After:\n", JSON.stringify(session, null, 2));
-
-    await saveMatchSessionConfirm(session);
+    await saveMatchSessionConfirm(dbSession);
   };
 
   const handleChangeScouter = (value: string) => {

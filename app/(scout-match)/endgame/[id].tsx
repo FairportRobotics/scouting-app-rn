@@ -41,7 +41,6 @@ function EndgameScreen() {
 
     // Validate.
     if (!dbSession) return;
-    console.log("Endgame Before:\n", JSON.stringify(dbSession, null, 2));
 
     setSession(dbSession);
     setTrapScore(dbSession.endgameTrapScore ?? "0");
@@ -62,7 +61,6 @@ function EndgameScreen() {
     session.endgameDidRobotHang = didRobotHang;
     session.endgameHarmony = harmonyScore;
     session.endgameNotes = notes;
-    console.log("Endgame After:\n", JSON.stringify(session, null, 2));
 
     await saveMatchSessionEndgame(session);
   };
