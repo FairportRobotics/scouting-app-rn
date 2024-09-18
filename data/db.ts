@@ -26,9 +26,7 @@ import { eq, desc } from "drizzle-orm/expressions";
 import { sql } from "drizzle-orm";
 import { ItemKey } from "@/constants/Types";
 
-export const connection = openDatabaseSync(
-  process.env.EXPO_PUBLIC_DB_URL as string
-);
+export const connection = openDatabaseSync("scouting-app.db");
 export const db = drizzle(connection);
 
 export interface MatchSelectModel {
