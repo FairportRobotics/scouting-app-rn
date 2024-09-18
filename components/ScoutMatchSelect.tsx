@@ -92,7 +92,7 @@ export default function ScoutMatchSelect({
           onSelect={(teamModel) => handleOnSelect(teamModel)}
         />
         <ScoutTeamSelect
-          teamModel={matchModel.redTeams["3"]}
+          teamModel={matchModel.redTeams["2"]}
           alliance="Red"
           allianceTeam={2}
           onSelect={(teamModel) => handleOnSelect(teamModel)}
