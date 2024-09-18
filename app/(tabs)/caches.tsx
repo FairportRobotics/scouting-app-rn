@@ -4,8 +4,8 @@ import {
   Text,
   Button,
   RefreshControl,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { ContainerGroup } from "@/components";
 import { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import {
   getTeams,
 } from "@/data/db";
 import { Event, Match, Team } from "@/data/schema";
+import * as Clipboard from "expo-clipboard";
 
 export default function Caches() {
   const [showCaches, setShowCaches] = useState<boolean>(false);
@@ -135,12 +136,9 @@ export default function Caches() {
 
       <ContainerGroup title="SQLite Database Path">
         <View>
-          <TextInput
-            multiline
-            maxLength={2048}
-            numberOfLines={6}
-            value={databasePath}
-          />
+          <TouchableOpacity onPress={() => Clipboard.setString(databasePath)}>
+            <Text>{databasePath} </Text>
+          </TouchableOpacity>
         </View>
       </ContainerGroup>
     </ScrollView>

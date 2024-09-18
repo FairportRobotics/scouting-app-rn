@@ -56,7 +56,7 @@
     "react-native-svg": "^14.2.0",
     "react-native-web": "~0.19.6",
     "rn-fetch-blob": "^0.12.0",
-    "zustand": "^4.5.2"
+    "expo-clipboard": "~5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

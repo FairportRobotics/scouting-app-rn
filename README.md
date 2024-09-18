@@ -56,8 +56,9 @@ Here's how to do this:
 
 1. Stop the application if running.
 2. Delete the `drizzle` folder in the project. This is where Drizzle creates the migration scripts and the manifest that tracks the migrations.
-3. Delete the scouting-app.db file. This is easier said than done. The best way to determine where the database is
+3. Delete the scouting-app.db file. The path can be found on the Caches screen.
 4. Execute the command `npx drizzle-kit generate`
+5. Start the app and it will create an empty copy of the database.
 
 ### Github
 
