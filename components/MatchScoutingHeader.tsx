@@ -1,6 +1,5 @@
 import { View, Text, ColorValue } from "react-native";
 import { Alliance } from "@/constants/Enums";
-import { useCacheStore } from "@/store/cachesStore";
 import Colors from "@/constants/Colors";
 import { MatchScoutingSessionModel } from "@/data/db";
 
@@ -11,11 +10,6 @@ type MatchScoutingHeaderProps = {
 export default function MatchScoutingHeader({
   session,
 }: MatchScoutingHeaderProps) {
-  const cacheStore = useCacheStore();
-  const scoutedTeam = cacheStore.teams.find(
-    (team) => team.key == session.scoutedTeamKey
-  );
-
   const allianceColor = (): ColorValue => {
     switch (session?.alliance) {
       case Alliance.Blue:
@@ -45,7 +39,7 @@ export default function MatchScoutingHeader({
         {session.alliance} {session.allianceTeam}
       </Text>
       <Text style={{ color: "white", fontSize: 24, fontWeight: "bold" }}>
-        Team {scoutedTeam?.teamNumber}
+        Team {session.teamKey.replace("frc", "")}
       </Text>
     </View>
   );

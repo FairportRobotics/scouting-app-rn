@@ -92,6 +92,9 @@ export const matchScoutingSessions = sqliteTable("match_scouting_session", {
   finalViolations: text("final_violations").notNull(),
   finalPenalties: integer("final_penalties").default(0),
   finalNotes: text("final_notes").default(""),
+
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 });
 
 export const pitScoutingSessions = sqliteTable("pit_scouting_session", {

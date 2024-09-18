@@ -41,6 +41,8 @@ CREATE TABLE `match_scouting_session` (
 	`final_violations` text NOT NULL,
 	`final_penalties` integer DEFAULT 0,
 	`final_notes` text DEFAULT '',
+	`created_at` integer NOT NULL,
+	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`scheduled_team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`scouted_team_key`) REFERENCES `event_team`(`id`) ON UPDATE no action ON DELETE no action
 );

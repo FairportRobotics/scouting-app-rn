@@ -1,4 +1,12 @@
-import { ScrollView, View, Text, Button, RefreshControl } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  Button,
+  RefreshControl,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { ContainerGroup } from "@/components";
 import { useEffect, useState } from "react";
 import { ItemKey } from "@/constants/Types";
@@ -7,6 +15,7 @@ import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import refreshPitScoutingKeys from "@/helpers/refreshPitScoutingKeys";
 import Colors from "@/constants/Colors";
 import {
+  getDatabasePath,
   getEvent,
   getMatches,
   getMatchScoutingKeys,
@@ -14,6 +23,7 @@ import {
   getTeams,
 } from "@/data/db";
 import { Event, Match, Team } from "@/data/schema";
+import * as Clipboard from "expo-clipboard";
 
 export default function Caches() {
   const [showCaches, setShowCaches] = useState<boolean>(false);
@@ -29,6 +39,8 @@ export default function Caches() {
   const [showPitKeys, setShowPitKeys] = useState<boolean>(false);
 
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  const [databasePath, setDatabasePath] = useState<string>(getDatabasePath());
 
   useEffect(() => {
     async function loadData() {
@@ -120,6 +132,14 @@ export default function Caches() {
             <Text>{JSON.stringify(pitKeys, null, 2)}</Text>
           </View>
         )}
+      </ContainerGroup>
+
+      <ContainerGroup title="SQLite Database Path">
+        <View>
+          <TouchableOpacity onPress={() => Clipboard.setString(databasePath)}>
+            <Text>{databasePath} </Text>
+          </TouchableOpacity>
+        </View>
       </ContainerGroup>
     </ScrollView>
   );

@@ -36,6 +36,8 @@ Any changes made to code should immediately be deployed and available on the dev
 
 **Prebuild**
 
+On Macs, you can prebuild the iOS and Android versions of the app by running a command that builds the native assemblies.
+
 ```
 npx expo prebuild
 ```
@@ -46,7 +48,17 @@ npx expo prebuild
 eas update --branch <desired name of branch> --message "<some message>"
 ```
 
-## Setup
+## Drizzle and the SQLite database.
+
+When developing and making significant changes to the schema, I find it best to delete the database and the client and rebuild from scratch. The reason for this is that it is very easy for the database migration scrips to get out of sync with the database and the app will crash.
+
+Here's how to do this:
+
+1. Stop the application if running.
+2. Delete the `drizzle` folder in the project. This is where Drizzle creates the migration scripts and the manifest that tracks the migrations.
+3. Delete the scouting-app.db file. The path can be found on the Caches screen.
+4. Execute the command `npx drizzle-kit generate`
+5. Start the app and it will create an empty copy of the database.
 
 ### Github
 
@@ -77,14 +89,29 @@ eas update --branch <name-of-branch> --message "Some message"
 
 ## Resources and Technologies
 
+**React Native**
+
+[React Native](https://reactnative.dev/) is a framework that allows developers to write rich applications that can run on Android and iOS.
+
+**Expo**
+
+[Expo](https://expo.dev/) allow us to more easily develop the scouting application in React Native.
+
+**SQLite**
+
+[SQLite](https://www.sqlite.org/) is a lightweight, relational database that can be deployed with applications. It's performant and [ACID](https://en.wikipedia.org/wiki/ACID) compliant making it a great choice for this application.
+
+**Drizzle ORM**
+
+I chose [Drizzle](https://orm.drizzle.team/) as the ORM to interact with SQLite. I wanted to use Prisma but I could NOT get it working with the existing project. Creating a new project and configuring Prisma worked great, but there's something within the dependency tree that causes Prisma to fail.
+
 **Icons**
 
 Using [FontAwesome](https://fontawesome.com/search?o=r&m=free) for icons as SVGs in React Native are not trivial.
 
-**Expo**
-
 **Axios**
-https://axios-http.com/docs/intro
+
+[Axios](https://axios-http.com/docs/intro) is a library which wraps fetch() requests. This is used to call into [Cosmos DB](https://learn.microsoft.com/en-us/rest/api/cosmos-db/) via the [REST](https://en.wikipedia.org/wiki/REST) API.
 
 **Azure REST**
 Unable to use the Azure SDK dues to unresolved issues with an incompatible library that cannot be patched. Expo doctor still complains. So, I've found a solution that uses REST. It's bare-bones but it works.
@@ -108,3 +135,5 @@ https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
 [ ] Prevent moving from Confirm screen without entering the scouter name for both Done and tapping the navigation.
 
 [ ] Pre-populate the Scouter Name by taking name the last saved Match.
+
+[ ] Figure out how to POST to Azure so we don't need to use the API.
