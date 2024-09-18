@@ -78,12 +78,12 @@ export type PitScoutingSessionPostModel = PitScoutingSession & {
   eventKey: string;
 };
 
+export function getDatabasePath(): string {
+  return `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`;
+}
+
 export function initializeDb() {
   try {
-    // console.log(
-    //   `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`
-    // );
-
     const { success, error } = useMigrations(db, migrations);
 
     if (success) {

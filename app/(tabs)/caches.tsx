@@ -1,4 +1,12 @@
-import { ScrollView, View, Text, Button, RefreshControl } from "react-native";
+import {
+  ScrollView,
+  View,
+  Text,
+  Button,
+  RefreshControl,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { ContainerGroup } from "@/components";
 import { useEffect, useState } from "react";
 import { ItemKey } from "@/constants/Types";
@@ -7,6 +15,7 @@ import refreshMatchScoutingKeys from "@/helpers/refreshMatchScoutingKeys";
 import refreshPitScoutingKeys from "@/helpers/refreshPitScoutingKeys";
 import Colors from "@/constants/Colors";
 import {
+  getDatabasePath,
   getEvent,
   getMatches,
   getMatchScoutingKeys,
@@ -29,6 +38,8 @@ export default function Caches() {
   const [showPitKeys, setShowPitKeys] = useState<boolean>(false);
 
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  const [databasePath, setDatabasePath] = useState<string>(getDatabasePath());
 
   useEffect(() => {
     async function loadData() {
@@ -120,6 +131,17 @@ export default function Caches() {
             <Text>{JSON.stringify(pitKeys, null, 2)}</Text>
           </View>
         )}
+      </ContainerGroup>
+
+      <ContainerGroup title="SQLite Database Path">
+        <View>
+          <TextInput
+            multiline
+            maxLength={2048}
+            numberOfLines={6}
+            value={databasePath}
+          />
+        </View>
       </ContainerGroup>
     </ScrollView>
   );
