@@ -26,7 +26,9 @@ import { eq } from "drizzle-orm/expressions";
 import { sql } from "drizzle-orm";
 import { ItemKey } from "@/constants/Types";
 
-export const connection = openDatabaseSync("scouting-app.db");
+export const connection = openDatabaseSync(
+  process.env.EXPO_PUBLIC_DB_URL as string
+);
 export const db = drizzle(connection);
 
 export interface MatchSelectModel {
@@ -79,7 +81,10 @@ export type PitScoutingSessionPostModel = PitScoutingSession & {
 };
 
 export function getDatabasePath(): string {
-  return `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`;
+  return `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`.replace(
+    "file://",
+    ""
+  );
 }
 
 export function initializeDb() {
