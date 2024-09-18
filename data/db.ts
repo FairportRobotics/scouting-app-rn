@@ -22,7 +22,7 @@ import {
   pitScoutingUploads,
   PitScoutingSession,
 } from "./schema";
-import { eq } from "drizzle-orm/expressions";
+import { eq, desc } from "drizzle-orm/expressions";
 import { sql } from "drizzle-orm";
 import { ItemKey } from "@/constants/Types";
 
@@ -224,6 +224,22 @@ export async function getMatchesForSelection(): Promise<MatchSelectModel[]> {
   return arrayResult;
 }
 
+export async function getLastScouterName(): Promise<string> {
+  try {
+    const results = await db
+      .select({
+        scouterName: matchScoutingSessions.scouterName,
+      })
+      .from(matchScoutingSessions)
+      .orderBy(desc(matchScoutingSessions.createdAt))
+      .limit(1);
+
+    return results.length === 1 ? results[0].scouterName ?? "" : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 export async function getTeamMembers(): Promise<TeamMember[]> {
   try {
     return await db.select().from(teamMembers);
@@ -274,6 +290,9 @@ export async function initMatchScoutingSession(sessionKey: string) {
     const existingSession = await getMatchScoutingSessionForEdit(sessionKey);
     if (existingSession) return;
 
+    // Get the default scouter name.
+    const defaultScouterName = await getLastScouterName();
+
     // Extract the match and initialize the match scouting session.
     const matchTeam = await getMatchTeam(sessionKey);
     if (!matchTeam) return null;
@@ -283,7 +302,7 @@ export async function initMatchScoutingSession(sessionKey: string) {
 
       scheduledTeamKey: matchTeam.teamKey,
       scoutedTeamKey: matchTeam.teamKey,
-      scouterName: "",
+      scouterName: defaultScouterName,
 
       autoStartedWithNote: false,
       autoLeftStartArea: false,
@@ -314,6 +333,9 @@ export async function initMatchScoutingSession(sessionKey: string) {
       finalViolations: "",
       finalPenalties: 0,
       finalNotes: "",
+
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   } catch (error) {
     console.error(error);
@@ -327,6 +349,7 @@ export async function saveMatchSessionConfirm(session: MatchScoutingSession) {
       .set({
         scouterName: session.scouterName,
         scoutedTeamKey: session.scoutedTeamKey,
+        updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {
@@ -346,6 +369,7 @@ export async function saveMatchSessionAuto(session: MatchScoutingSession) {
         autoAmpScore: session.autoAmpScore,
         autoAmpMiss: session.autoAmpMiss,
         autoNotes: session.autoNotes,
+        updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {
@@ -365,6 +389,7 @@ export async function saveMatchSessionTeleop(session: MatchScoutingSession) {
         teleopAmpMiss: session.teleopAmpMiss,
         teleopRelayPass: session.teleopRelayPass,
         teleopNotes: session.teleopNotes,
+        updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {
@@ -383,6 +408,7 @@ export async function saveMatchSessionEndgame(session: MatchScoutingSession) {
         endgameDidRobotHang: session.endgameDidRobotHang,
         endgameHarmony: session.endgameHarmony,
         endgameNotes: session.endgameNotes,
+        updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {
@@ -401,6 +427,7 @@ export async function saveMatchSessionFinal(session: MatchScoutingSession) {
         finalViolations: session.finalViolations,
         finalPenalties: session.finalPenalties,
         finalNotes: session.finalNotes,
+        updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
   } catch (error) {

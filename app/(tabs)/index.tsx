@@ -37,7 +37,10 @@ export default function IndexScreen() {
   }, []);
 
   const handleOnSelect = async (sessionKey: string) => {
+    console.log(new Date().toISOString(), "handleOnSelect");
+    console.log(new Date().toISOString(), "initMatchScoutingSession()");
     await initMatchScoutingSession(sessionKey);
+    console.log(new Date().toISOString(), "router.replace()");
     router.replace(`/(scout-match)/confirm/${sessionKey}`);
   };
 
