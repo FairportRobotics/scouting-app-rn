@@ -175,6 +175,6 @@ dist/*
 expo-env.d.ts
 # @end expo-cli
 
-# ignores all .env files
-.env*
+.env
+.env.production
 eas.json

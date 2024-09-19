@@ -14,6 +14,12 @@ npm install
 
 We only need to do this one time.
 
+## Configure .env
+
+To run the project, we need to configure our environment variables. We do this by creating a `.env` file in the root of the project directory.
+
+Refer to `.env.local` for instructions on how to configure the `.env` file and where the necessary fields can be obtained.
+
 ## Running the Project
 
 In order to debug and see the application, we need to install the "Expo Go" app on your iOS device. The iPads will have this installed already, but if you want to test on a personal device, you will need the app.
