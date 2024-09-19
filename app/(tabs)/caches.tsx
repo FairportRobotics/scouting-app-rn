@@ -23,6 +23,7 @@ import {
   getTeams,
 } from "@/data/db";
 import { Event, Match, Team } from "@/data/schema";
+import * as FileSystem from "expo-file-system";
 import * as Clipboard from "expo-clipboard";
 
 export default function Caches() {
@@ -73,6 +74,13 @@ export default function Caches() {
   const handleRefreshPitSessionKeys = async () => {
     await refreshPitScoutingKeys();
     setPitKeys(await getPitScoutingKeys());
+  };
+
+  const deleteDatabaseAsync = async (databasePath: string) => {
+    // Add code here to delete the file indicated by the databasePath
+    // Example:
+    // await fs.unlink(databasePath);
+    await FileSystem.deleteAsync(databasePath);
   };
 
   return (
@@ -137,7 +145,11 @@ export default function Caches() {
       <ContainerGroup title="SQLite Database Path">
         <View>
           <TouchableOpacity onPress={() => Clipboard.setString(databasePath)}>
-            <Text>{databasePath} </Text>
+            <Text>{databasePath.replace("file://", "")}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => deleteDatabaseAsync(databasePath)}>
+            <Text>Delete</Text>
           </TouchableOpacity>
         </View>
       </ContainerGroup>

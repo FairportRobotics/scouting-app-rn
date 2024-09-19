@@ -79,10 +79,7 @@ export type PitScoutingSessionPostModel = PitScoutingSession & {
 };
 
 export function getDatabasePath(): string {
-  return `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`.replace(
-    "file://",
-    ""
-  );
+  return `${FileSystem.documentDirectory}/SQLite/${connection.databaseName}`;
 }
 
 export function initializeDb() {
