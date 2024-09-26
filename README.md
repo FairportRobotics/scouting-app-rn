@@ -161,3 +161,5 @@ https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
 [ ] Prevent overwriting of scouter data if two different scouters edit the same match. Do we make the scouter name part of the PK or something else?
 
 [ ] Implement primitive Auth so we don't need to "ask" who the scouter is. Can also use Auth to allow access to different parts of the app.
+https://www.youtube.com/watch?v=AE7dKIKMJy4
+https://www.youtube.com/watch?v=68bM7TC9D1Q
