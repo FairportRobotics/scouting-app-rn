@@ -140,6 +140,24 @@ https://devblogs.microsoft.com/cosmosdb/announcing-javascript-sdk-v4/
 
 [ ] Prevent moving from Confirm screen without entering the scouter name for both Done and tapping the navigation.
 
-[ ] Pre-populate the Scouter Name by taking name the last saved Match.
+[X] Pre-populate the Scouter Name by taking name the last saved Match.
 
 [ ] Figure out how to POST to Azure so we don't need to use the API.
+
+[X] Remove Notes fields from the following:
+
+- Auto
+- Teleop
+- Endgame
+
+[X] From Final, remove:
+
+- Total Score
+- Ranking Points
+- Penalties
+
+[ ] Change notes placeholder text or instructions on Finals screen to something more descriptive. TBD.
+
+[ ] Prevent overwriting of scouter data if two different scouters edit the same match. Do we make the scouter name part of the PK or something else?
+
+[ ] Implement primitive Auth so we don't need to "ask" who the scouter is. Can also use Auth to allow access to different parts of the app.

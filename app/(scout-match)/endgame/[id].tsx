@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, KeyboardAvoidingView, TextInput } from "react-native";
+import { ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   Check,
@@ -8,8 +8,6 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import Styles from "@/constants/Styles";
-import Colors from "@/constants/Colors";
 import {
   getMatchScoutingSessionForEdit,
   MatchScoutingSessionModel,
@@ -30,7 +28,6 @@ function EndgameScreen() {
   const [didRobotPark, setDidRobotPark] = useState<boolean>(false);
   const [didRobotHang, setDidRobotHang] = useState<boolean>(false);
   const [harmonyScore, setHarmonyScore] = useState<string>("NONE_SELECTED");
-  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -49,7 +46,6 @@ function EndgameScreen() {
     setDidRobotPark(dbSession.endgameDidRobotPark ?? false);
     setDidRobotHang(dbSession.endgameDidRobotHang ?? false);
     setHarmonyScore(dbSession.endgameHarmony ?? "0");
-    setNotes(dbSession.endgameNotes ?? "");
   };
 
   const saveData = async () => {
@@ -61,7 +57,6 @@ function EndgameScreen() {
     session.endgameDidRobotPark = didRobotPark;
     session.endgameDidRobotHang = didRobotHang;
     session.endgameHarmony = harmonyScore;
-    session.endgameNotes = notes;
 
     await saveMatchSessionEndgame(session);
     await postMatchSession(session);
@@ -132,20 +127,6 @@ function EndgameScreen() {
           onChange={(value) => setHarmonyScore(value ?? "NONE_SELECTED")}
         />
       </ContainerGroup>
-
-      <KeyboardAvoidingView behavior="position">
-        <ContainerGroup title="Notes">
-          <TextInput
-            multiline
-            maxLength={1024}
-            style={[Styles.textInput, { height: 80 }]}
-            value={notes}
-            onChangeText={(text) => setNotes(text)}
-            placeholder="Endgame notes..."
-            placeholderTextColor={Colors.placeholder}
-          />
-        </ContainerGroup>
-      </KeyboardAvoidingView>
 
       <MatchScoutingNavigation
         previousLabel="Teleop"
