@@ -63,7 +63,6 @@ export const matchScoutingSessions = sqliteTable("match_scouting_session", {
   autoSpeakerMiss: integer("auto_speaker_miss").default(0),
   autoAmpScore: integer("auto_amp_score").default(0),
   autoAmpMiss: integer("auto_amp_miss").default(0),
-  autoNotes: text("auto_notes").default(""),
 
   teleopSpeakerScore: integer("teleop_speaker_score").default(0),
   teleopSpeakerScoreAmplified: integer(
@@ -73,7 +72,6 @@ export const matchScoutingSessions = sqliteTable("match_scouting_session", {
   teleopAmpScore: integer("teleop_amp_score").default(0),
   teleopAmpMiss: integer("teleop_amp_miss").default(0),
   teleopRelayPass: integer("teleop_relay_pass").default(0),
-  teleopNotes: text("teleop_notes").default(""),
 
   endgameTrapScore: text("endgame_trap_score").default(""),
   endgameMicrophoneScore: text("endgame_microphone_score").default(""),
@@ -84,13 +82,9 @@ export const matchScoutingSessions = sqliteTable("match_scouting_session", {
     mode: "boolean",
   }).default(false),
   endgameHarmony: text("endgame_harmony").default(""),
-  endgameNotes: text("endgame_notes").default(""),
 
-  finalAllianceScore: integer("final_alliance_score").default(0),
-  finalRankingPoints: integer("final_ranking_points").default(0),
   finalAllianceResult: text("final_alliance_result").default(""),
   finalViolations: text("final_violations").notNull(),
-  finalPenalties: integer("final_penalties").default(0),
   finalNotes: text("final_notes").default(""),
 
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),

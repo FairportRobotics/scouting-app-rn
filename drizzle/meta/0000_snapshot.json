@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "32a5e120-3a12-4d11-afd1-d25fafd42173",
+  "id": "9040e423-8ecc-4183-95a0-3eec74150e20",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "event": {
@@ -144,14 +144,6 @@
           "autoincrement": false,
           "default": 0
         },
-        "auto_notes": {
-          "name": "auto_notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "''"
-        },
         "teleop_speaker_score": {
           "name": "teleop_speaker_score",
           "type": "integer",
@@ -200,14 +192,6 @@
           "autoincrement": false,
           "default": 0
         },
-        "teleop_notes": {
-          "name": "teleop_notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "''"
-        },
         "endgame_trap_score": {
           "name": "endgame_trap_score",
           "type": "text",
@@ -248,30 +232,6 @@
           "autoincrement": false,
           "default": "''"
         },
-        "endgame_notes": {
-          "name": "endgame_notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "''"
-        },
-        "final_alliance_score": {
-          "name": "final_alliance_score",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "final_ranking_points": {
-          "name": "final_ranking_points",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
         "final_alliance_result": {
           "name": "final_alliance_result",
           "type": "text",
@@ -286,14 +246,6 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
-        },
-        "final_penalties": {
-          "name": "final_penalties",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
         },
         "final_notes": {
           "name": "final_notes",

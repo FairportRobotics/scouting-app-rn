@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, KeyboardAvoidingView, TextInput } from "react-native";
+import { ScrollView } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
@@ -7,8 +7,6 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import Styles from "@/constants/Styles";
-import Colors from "@/constants/Colors";
 import {
   getMatchScoutingSessionForEdit,
   MatchScoutingSessionModel,
@@ -30,7 +28,6 @@ function TeleopScreen() {
   const [ampScore, setAmpScore] = useState<number>(0);
   const [ampMiss, setAmpMiss] = useState<number>(0);
   const [pass, setPass] = useState<number>(0);
-  const [notes, setNotes] = useState<string>("");
 
   useEffect(() => {
     loadData();
@@ -51,7 +48,6 @@ function TeleopScreen() {
     setAmpScore(dbSession.teleopAmpScore ?? 0);
     setAmpMiss(dbSession.teleopAmpMiss ?? 0);
     setPass(dbSession.teleopRelayPass ?? 0);
-    setNotes(dbSession?.teleopNotes ?? "");
   };
 
   const saveData = async () => {
@@ -63,7 +59,6 @@ function TeleopScreen() {
     session.teleopAmpScore = ampScore;
     session.teleopAmpMiss = ampMiss;
     session.teleopRelayPass = pass;
-    session.teleopNotes = notes;
 
     await saveMatchSessionTeleop(session);
     await postMatchSession(session);
@@ -124,20 +119,6 @@ function TeleopScreen() {
           onChange={(delta) => setPass(pass + delta)}
         />
       </ContainerGroup>
-
-      <KeyboardAvoidingView behavior="position">
-        <ContainerGroup title="Notes">
-          <TextInput
-            multiline
-            maxLength={1024}
-            style={[Styles.textInput, { height: 80 }]}
-            value={notes}
-            onChangeText={(text) => setNotes(text)}
-            placeholder="Teleop notes..."
-            placeholderTextColor={Colors.placeholder}
-          />
-        </ContainerGroup>
-      </KeyboardAvoidingView>
 
       <MatchScoutingNavigation
         previousLabel="Auto"

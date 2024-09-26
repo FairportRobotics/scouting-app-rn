@@ -305,7 +305,6 @@ export async function initMatchScoutingSession(sessionKey: string) {
       autoSpeakerMiss: 0,
       autoAmpScore: 0,
       autoAmpMiss: 0,
-      autoNotes: "",
 
       teleopSpeakerScore: 0,
       teleopSpeakerScoreAmplified: 0,
@@ -313,20 +312,15 @@ export async function initMatchScoutingSession(sessionKey: string) {
       teleopAmpScore: 0,
       teleopAmpMiss: 0,
       teleopRelayPass: 0,
-      teleopNotes: "",
 
       endgameTrapScore: "",
       endgameMicrophoneScore: "",
       endgameDidRobotPark: false,
       endgameDidRobotHang: false,
       endgameHarmony: "",
-      endgameNotes: "",
 
-      finalAllianceScore: 0,
-      finalRankingPoints: 0,
       finalAllianceResult: "",
       finalViolations: "",
-      finalPenalties: 0,
       finalNotes: "",
 
       createdAt: new Date(),
@@ -363,7 +357,6 @@ export async function saveMatchSessionAuto(session: MatchScoutingSession) {
         autoSpeakerMiss: session.autoSpeakerMiss,
         autoAmpScore: session.autoAmpScore,
         autoAmpMiss: session.autoAmpMiss,
-        autoNotes: session.autoNotes,
         updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
@@ -383,7 +376,6 @@ export async function saveMatchSessionTeleop(session: MatchScoutingSession) {
         teleopAmpScore: session.teleopAmpScore,
         teleopAmpMiss: session.teleopAmpMiss,
         teleopRelayPass: session.teleopRelayPass,
-        teleopNotes: session.teleopNotes,
         updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
@@ -402,7 +394,6 @@ export async function saveMatchSessionEndgame(session: MatchScoutingSession) {
         endgameDidRobotPark: session.endgameDidRobotPark,
         endgameDidRobotHang: session.endgameDidRobotHang,
         endgameHarmony: session.endgameHarmony,
-        endgameNotes: session.endgameNotes,
         updatedAt: new Date(),
       })
       .where(eq(matchScoutingSessions.id, session.id));
@@ -416,11 +407,8 @@ export async function saveMatchSessionFinal(session: MatchScoutingSession) {
     await db
       .update(matchScoutingSessions)
       .set({
-        finalAllianceScore: session.finalAllianceScore,
-        finalRankingPoints: session.finalRankingPoints,
         finalAllianceResult: session.finalAllianceResult,
         finalViolations: session.finalViolations,
-        finalPenalties: session.finalPenalties,
         finalNotes: session.finalNotes,
         updatedAt: new Date(),
       })

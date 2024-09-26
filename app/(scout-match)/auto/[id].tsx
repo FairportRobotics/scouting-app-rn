@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  View,
-  Text,
-  ScrollView,
-  KeyboardAvoidingView,
-  TextInput,
-} from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import {
   Check,
   MinusPlusPair,
@@ -14,8 +8,6 @@ import {
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import Colors from "@/constants/Colors";
-import Styles from "@/constants/Styles";
 import {
   getMatchScoutingSessionForEdit,
   MatchScoutingSessionModel,
@@ -36,7 +28,6 @@ function AutoScreen() {
   const [speakerMiss, setSpeakerMiss] = useState<number>(0);
   const [ampScore, setAmpScore] = useState<number>(0);
   const [ampMiss, setAmpMiss] = useState<number>(0);
-  const [notes, setNotes] = useState<string>("");
 
   const loadData = async () => {
     // Retrieve the session.
@@ -53,7 +44,6 @@ function AutoScreen() {
     setSpeakerMiss(dbSession.autoSpeakerMiss ?? 0);
     setAmpScore(dbSession.autoAmpScore ?? 0);
     setAmpMiss(dbSession.autoAmpMiss ?? 0);
-    setNotes(dbSession?.autoNotes ?? "");
   };
 
   const saveData = async () => {
@@ -65,7 +55,6 @@ function AutoScreen() {
     session.autoSpeakerMiss = speakerMiss;
     session.autoAmpScore = ampScore;
     session.autoAmpMiss = ampMiss;
-    session.autoNotes = notes;
 
     await saveMatchSessionAuto(session);
     await postMatchSession(session);
@@ -144,21 +133,6 @@ function AutoScreen() {
           onChange={(delta) => setAmpMiss(ampMiss + delta)}
         />
       </ContainerGroup>
-
-      <KeyboardAvoidingView behavior="position">
-        <ContainerGroup title="Notes">
-          <TextInput
-            multiline
-            maxLength={1024}
-            style={[Styles.textInput, { height: 80 }]}
-            value={notes}
-            onChangeText={(text) => setNotes(text)}
-            placeholder="Auto notes..."
-            placeholderTextColor={Colors.placeholder}
-          />
-        </ContainerGroup>
-      </KeyboardAvoidingView>
-
       <MatchScoutingNavigation
         previousLabel="Confirm"
         nextLabel="Teleop"

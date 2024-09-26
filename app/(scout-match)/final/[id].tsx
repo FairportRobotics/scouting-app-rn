@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
   TextInput,
   Text,
   KeyboardAvoidingView,
@@ -9,12 +8,10 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   ContainerGroup,
-  MinusPlusPair,
   SelectGroup,
   MatchScoutingNavigation,
   MatchScoutingHeader,
 } from "@/components";
-import { Alliance } from "@/constants/Enums";
 import Styles from "@/constants/Styles";
 import Colors from "@/constants/Colors";
 import {
@@ -33,11 +30,8 @@ function FinalScreen() {
 
   // States.
   const [session, setSession] = useState<MatchScoutingSessionModel>();
-  const [totalScore, setTotalScore] = useState<number>(0);
-  const [rankingPoints, setRankingPoints] = useState<number>(0);
   const [allianceResult, setAllianceResult] = useState<string>("NONE_SELECTED");
   const [violations, setViolations] = useState<string>("NONE_SELECTED");
-  const [penalties, setPenalties] = useState<number>(0);
   const [notes, setNotes] = useState<string>("");
   const [joke, setJoke] = useState<string>("");
 
@@ -61,11 +55,8 @@ function FinalScreen() {
 
     // Set State.
     setSession(dbSession);
-    setTotalScore(dbSession.finalAllianceScore ?? 0);
-    setRankingPoints(dbSession.finalRankingPoints ?? 0);
     setAllianceResult(dbSession.finalAllianceResult ?? "");
     setViolations(dbSession.finalViolations ?? "");
-    setPenalties(dbSession.finalPenalties ?? 0);
     setNotes(dbSession.finalNotes ?? "");
   };
 
@@ -73,25 +64,12 @@ function FinalScreen() {
     if (!session) return;
 
     // Set properties and save.
-    session.finalAllianceScore = totalScore;
-    session.finalRankingPoints = rankingPoints;
     session.finalAllianceResult = allianceResult;
     session.finalViolations = violations;
-    session.finalPenalties = penalties;
     session.finalNotes = notes;
 
     await saveMatchSessionFinal(session);
     await postMatchSession(session);
-  };
-
-  const handleChangeTotalScore = (value: string) => {
-    value = value.replace(/[^0-9]/g, "") || "0";
-    setTotalScore(parseInt(value));
-  };
-
-  const handleChangeRankingPoints = (value: string) => {
-    value = value.replace(/[^0-9]/g, "") || "0";
-    setRankingPoints(parseInt(value));
   };
 
   const handleNavigatePrevious = async () => {
@@ -104,17 +82,6 @@ function FinalScreen() {
     router.replace(`/`);
   };
 
-  const penaltiesLabel = () => {
-    switch (session?.alliance) {
-      case Alliance.Blue:
-        return "Penalties: (Read the value for Penalties from the Red Alliance column)";
-      case Alliance.Red:
-        return "Penalties: (Read the value for Penalties from the Blue Alliance column)";
-      default:
-        return "Penalties: (Error. Ignore Penalties.)";
-    }
-  };
-
   if (!session) {
     return <Loading />;
   }
@@ -122,28 +89,6 @@ function FinalScreen() {
   return (
     <ScrollView style={{ flex: 1 }}>
       <MatchScoutingHeader session={session} />
-      <ContainerGroup title="Alliance">
-        <View style={{ width: "100%", flexDirection: "row", gap: 20 }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20 }}>Total Score</Text>
-            <TextInput
-              style={[Styles.textInput, { width: "100%" }]}
-              inputMode="numeric"
-              value={totalScore.toString()}
-              onChangeText={(value) => handleChangeTotalScore(value)}
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20 }}>Ranking Points</Text>
-            <TextInput
-              style={[Styles.textInput, { width: "100%" }]}
-              inputMode="numeric"
-              value={rankingPoints.toString()}
-              onChangeText={(value) => handleChangeRankingPoints(value)}
-            />
-          </View>
-        </View>
-      </ContainerGroup>
 
       <ContainerGroup title="Overall">
         <SelectGroup
@@ -157,14 +102,6 @@ function FinalScreen() {
           options={["Yellow", "Red", "Disabled", "Disqualified"]}
           value={violations}
           onChange={(value) => setViolations(value ?? "NONE_SELECTED")}
-        />
-      </ContainerGroup>
-
-      <ContainerGroup title={penaltiesLabel()}>
-        <MinusPlusPair
-          label="Penalties"
-          count={penalties}
-          onChange={(delta) => setPenalties(penalties + delta)}
         />
       </ContainerGroup>
       <KeyboardAvoidingView behavior="position">
