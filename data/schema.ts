@@ -116,6 +116,7 @@ export const levity = sqliteTable("event_levity", {
 export const teamMembers = sqliteTable("team_member", {
   email: text("email").notNull().primaryKey(),
   name: text("name").notNull(),
+  pin: text("pin").notNull(),
 });
 
 export const matchScoutingUploads = sqliteTable("match_scouting_upload", {
