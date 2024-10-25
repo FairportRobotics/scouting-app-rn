@@ -11,7 +11,6 @@ import {
   initPitScoutingSession,
   TeamPitSelectModel,
 } from "@/data/db";
-import { PitScoutingSession } from "@/data/schema";
 
 export default function ScoutPitScreen() {
   const router = useRouter();
@@ -228,7 +227,6 @@ export default function ScoutPitScreen() {
               label="Scout"
               faIcon="edit"
               active={!item.scouted && !item.uploaded}
-              disabled={!item.scouted && item.uploaded}
               onPress={() => handlePitScoutTeam(item.teamKey)}
             />
             <ResultsButton
