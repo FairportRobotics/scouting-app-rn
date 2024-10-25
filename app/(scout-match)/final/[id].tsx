@@ -112,14 +112,14 @@ function FinalScreen() {
             style={[Styles.textInput, { height: 80 }]}
             value={notes}
             onChangeText={(text) => setNotes(text)}
-            placeholder="Note anything that you didn't capture in Auto, Teleop or Endgame..."
+            placeholder="Did anything unusual happen that might be important for scouting later?"
             placeholderTextColor={Colors.placeholder}
           />
         </ContainerGroup>
       </KeyboardAvoidingView>
 
       <ContainerGroup title="Your Reward">
-        <Text>{joke}</Text>
+        <Text style={{ fontSize: 32 }}>{joke}</Text>
       </ContainerGroup>
 
       <MatchScoutingNavigation
